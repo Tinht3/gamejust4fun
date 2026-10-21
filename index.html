@@ -501,6 +501,26 @@ body{min-height:100%;background-attachment:fixed}
 .pb-gen b{color:var(--ivory)}
 .pb-genrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px}
 .pb-genrow label{width:96px}
+/* ===== multiple choice tiles + paste importer ===== */
+.mc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:4px}
+@media (max-width:560px){.mc{grid-template-columns:1fr}}
+.mc-opt{font:inherit;display:flex;align-items:center;gap:12px;text-align:left;padding:12px 14px;border-radius:14px;border:2px solid rgba(0,0,0,.14);background:rgba(0,0,0,.035);color:inherit;cursor:pointer;font-size:clamp(1.05rem,2.2vw,1.45rem);font-weight:600;line-height:1.25;transition:transform .12s}
+.mc-opt:hover{transform:translateY(-2px)}
+.mc-opt:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.mc-opt b{flex:0 0 auto;display:grid;place-items:center;width:2em;height:2em;border-radius:50%;background:#2a2366;color:#fff;font-size:.85em}
+.mc-opt span{min-width:0;overflow-wrap:anywhere}
+.mc-opt.picked{border-color:#f2a63a;box-shadow:0 0 0 3px rgba(242,166,58,.35)}
+.mc-opt.right{border-color:#1f9d6b;background:#d8f3e6;color:#0d3b26}
+.mc-opt.right b{background:#1f9d6b}
+.mc-opt.wrong{border-color:#d8384f;background:#fde1e5;color:#5c0d1a}
+.mc-opt.wrong b{background:#d8384f}
+.mcimp{display:flex;flex-direction:column;gap:8px}
+.mcimp .mi-open{align-self:flex-start}
+.mi-panel{display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:14px;border:2px dashed var(--felt-line);background:rgba(var(--tint),.04)}
+.mi-list{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:.9rem}
+.mi-opts{display:flex;flex-wrap:wrap;gap:4px 12px;color:var(--muted)}
+.mi-opts i{font-style:normal}
+.mi-opts i.ok{color:var(--mint);font-weight:700}
 /* ===== shared reward / penalty deck ===== */
 .deck-btn{white-space:nowrap}
 .deck-veil .box{align-items:center;text-align:center;max-width:640px}
@@ -1071,7 +1091,7 @@ function viewQuestion(){
   const t = cur(), q = S.curQ;
   const card = q ? `<div class="qcard" data-a="${esc(q.a || '')}">
       <div class="kicker">Câu hỏi cho ${nm(t)}</div>
-      <p class="qtext">${esc(q.q)}</p>
+      ${qHTML(q, S.showAns)}
       ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="A.showAns()">Hiện đáp án</button>`) : ''}
     </div>` : `<div class="qcard"><div class="kicker">Câu hỏi cho ${nm(t)}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   return `<div class="stage">
@@ -1379,7 +1399,7 @@ const B = (() => {
   const nextBtn = () => `<button class="btn btn-gold" onclick="B.next()">${S.turn + 1 >= S.turns ? 'Xem kết quả chung cuộc' : 'Lượt tiếp →'}</button>`;
   const qCard = (title) => {
     const q = S.curQ;
-    return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div><p class="qtext">${esc(q.q)}</p>
+    return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div>${qHTML(q, S.showAns)}
       ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="B.showAns()">Hiện đáp án</button>`) : ''}</div>`
       : `<div class="qcard"><div class="kicker">${title}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
@@ -1689,7 +1709,7 @@ const D = (() => {
   const itemCard = id => `<div class="slip ${ITEMS[id].mood}"><span class="slip-no">Hộp bí ẩn · phiếu ${id}</span><span class="slip-t">${ITEMS[id].t}</span><span class="slip-d">${ITEMS[id].d}</span></div>`;
   const qCard = title => {
     const q = S.curQ;
-    return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div><p class="qtext">${esc(q.q)}</p>
+    return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div>${qHTML(q, S.showAns)}
       ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="D.showAns()">Hiện đáp án</button>`) : ''}</div>`
       : `<div class="qcard"><div class="kicker">${title}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
@@ -1994,7 +2014,7 @@ Tiến 3`;
   /* ---------- views ---------- */
   const qCard = title => {
     const q = S.curQ;
-    return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div><p class="qtext">${esc(q.q)}</p>
+    return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div>${qHTML(q, S.showAns)}
       ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="H.showAns()">Hiện đáp án</button>`) : ''}</div>`
       : `<div class="qcard"><div class="kicker">${title}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
@@ -2315,7 +2335,7 @@ const P = (() => {
   const lvChips = () => `<div class="row">${[1,3,5].map(v => `<button class="chip lv ${S.lvl === v ? 'sel' : ''}" onclick="P.level(${v})">${LV[v]} · ${v}đ</button>`).join('')}</div>`;
   const qCard = title => {
     const q = S.curQ;
-    return q ? `<div class="qcard"><div class="kicker">${title} · ${LV[S.lvl]} ${S.lvl}đ</div><p class="qtext">${esc(q.q)}</p>
+    return q ? `<div class="qcard"><div class="kicker">${title} · ${LV[S.lvl]} ${S.lvl}đ</div>${qHTML(q, S.showAns)}
       ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="P.showAns()">Hiện đáp án</button>`) : ''}</div>`
       : `<div class="qcard"><div class="kicker">${title} · ${LV[S.lvl]} ${S.lvl}đ</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
@@ -2604,7 +2624,7 @@ const T = (() => {
   const pile = () => `<div class="pile" aria-label="${S.bombs} quả ${noun()}">${Array.from({ length:S.maxB }, (_, i) => `<span class="${i < S.bombs ? '' : 'off'}">${icon()}</span>`).join('')}</div>`;
   const qCard = title => {
     const q = S.curQ;
-    return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div><p class="qtext">${esc(q.q)}</p>
+    return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div>${qHTML(q, S.showAns)}
       ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="T.showAns()">Hiện đáp án</button>`) : ''}</div>`
       : `<div class="qcard"><div class="kicker">${title}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
@@ -2943,7 +2963,7 @@ Hôm qua qua nói qua mà qua không qua`;
     </div>`;
   const qCard = title => {
     const q = S.curQ;
-    return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div><p class="qtext">${esc(q.q)}</p>
+    return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div>${qHTML(q, S.showAns)}
       ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="M.showAns()">Hiện đáp án</button>`) : ''}</div>`
       : `<div class="qcard"><div class="kicker">${title}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
@@ -3291,7 +3311,7 @@ Lộc vua ban | một viên kẹo | 4`;
     <button class="btn btn-gold" onclick="K.begin()">Trẫm ra đề thứ nhất</button>`;
   function vQuestion(){
     const q = S.curQ;
-    const body = q ? `<p class="qtext" data-a="${esc(q.a || '')}">${esc(q.q)}</p>${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="K.showAns()">Hiện đáp án</button>`) : ''}`
+    const body = q ? `<div data-a="${esc(q.a || '')}">${qHTML(q, S.showAns)}</div>${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="K.showAns()">Hiện đáp án</button>`) : ''}`
       : `<p class="qtext">Mời các ái khanh xem đề trên slide Canva.</p>`;
     return `${kingMode() ? `<div class="kicker">Đức vua ${esc(S.king)} chọn</div><h2>Ái khanh <span class="team-name">${esc(S.who)}</span> trả lời</h2>` : ''}${scroll(`Đề thi số ${S.qi}`, body)}
       ${kingMode() ? '' : '<div class="row heir"><label for="k-who">Tên ái khanh trả lời (không bắt buộc)<input id="k-who" placeholder="vd: Minh"></label></div>'}
@@ -3750,7 +3770,7 @@ Quality check`;
   /* ---------- views ---------- */
   const qCard = title => {
     const q = S.curQ;
-    return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div><p class="qtext">${esc(q.q)}</p>
+    return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div>${qHTML(q, S.showAns)}
       ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="C.showAns()">Hiện đáp án</button>`) : ''}</div>`
       : `<div class="qcard"><div class="kicker">${title}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
@@ -4393,6 +4413,203 @@ const Refill = (() => {
   return { run, toast };
 })();
 
+/* ================= Trắc nghiệm A/B/C/D =================
+   Câu lưu dạng: "Câu hỏi (A. ...  B. ...  C. ...  D. ...) | B. đáp án".
+   Khi chiếu, phần lựa chọn được tách thành các ô bấm được. */
+var MCPICK = null; // lựa chọn học sinh vừa nói, để giữ khi màn hình vẽ lại
+
+// tìm dãy "A. … B. … C. …" liên tiếp trong một đoạn chữ; first = chữ cái phải bắt đầu (null = bất kì)
+function mcSplit(text, first){
+  const re = /(^|[\s(\[;\/,])\*?([A-Fa-f])\s*[\.\):]\s+/g;
+  const hits = []; let m, want = first ? first.charCodeAt(0) : null, lower = null;
+  while ((m = re.exec(text))) {
+    const ch = m[2], up = ch.toUpperCase().charCodeAt(0), isLow = ch !== ch.toUpperCase();
+    if (want === null) { want = up; lower = isLow; }
+    if (up === want && (lower === null || lower === isLow)) {
+      if (lower === null) lower = isLow;
+      hits.push({ L:String.fromCharCode(up), at:m.index + m[1].length, start:m.index + m[0].length, star:/\*/.test(m[0]) });
+      want++;
+    }
+  }
+  if (hits.length < 2) return null;
+  const opts = hits.map((h, i) => {
+    let t = text.slice(h.start, i + 1 < hits.length ? hits[i + 1].at : text.length).trim();
+    if (i === hits.length - 1) t = t.replace(/[\)\]]\s*[\.?!]?\s*$/, '');
+    t = t.replace(/[;\/,]\s*$/, '').trim();
+    return { L:h.L, t, star:h.star };
+  });
+  return { stem:text.slice(0, hits[0].at).trim().replace(/[\(\[]\s*$/, '').trim(), opts };
+}
+function mcParse(text){ const r = mcSplit(String(text || ''), 'A'); return r && r.opts.every(o => o.t) ? r : null; }
+function mcKey(a, opts){
+  a = String(a || '').trim();
+  const m = /^\(?([A-Fa-f])(?:[\.\):\s]|$)/.exec(a);
+  if (m && opts.some(o => o.L === m[1].toUpperCase())) return m[1].toUpperCase();
+  const hit = opts.find(o => o.t.toLowerCase() === a.toLowerCase());
+  return hit ? hit.L : '';
+}
+// what every game's question card shows
+function qHTML(q, show){
+  const mc = mcParse(q && q.q);
+  if (!mc) return `<p class="qtext">${esc(q.q)}</p>`;
+  const key = mcKey(q.a, mc.opts), picked = MCPICK && MCPICK.q === q.q ? MCPICK.L : '';
+  return `<p class="qtext">${esc(mc.stem)}</p>
+    <div class="mc" data-key="${key}" data-q="${esc(q.q)}">${mc.opts.map(o => {
+      const cls = [o.L === picked ? 'picked' : '', show && o.L === key ? 'right' : '', show && o.L === picked && o.L !== key ? 'wrong' : ''].join(' ');
+      return `<button type="button" class="mc-opt ${cls}" data-l="${o.L}" onclick="mcPick(this)"><b>${o.L}</b><span>${esc(o.t)}</span></button>`;
+    }).join('')}</div>`;
+}
+// người dẫn bấm ô học sinh chọn: đánh dấu lựa chọn, chưa lộ đáp án; bấm lần nữa để chấm luôn
+function mcPick(btn){
+  const box = btn.closest('.mc'), key = box.dataset.key, L = btn.dataset.l;
+  const again = btn.classList.contains('picked');
+  MCPICK = { q:box.dataset.q, L };
+  box.querySelectorAll('.mc-opt').forEach(b => b.classList.remove('picked', 'right', 'wrong'));
+  btn.classList.add('picked');
+  if (again && key) {
+    box.querySelector(`[data-l="${key}"]`).classList.add('right');
+    if (L !== key) btn.classList.add('wrong');
+    L === key ? SFX.coin() : SFX.bonk();
+  } else SFX.click();
+}
+
+/* ---------- Ô dán câu trắc nghiệm dưới mỗi ô câu hỏi ---------- */
+const MCImport = (() => {
+  const TARGETS = { 'qtext':false, 'b-qtext':false, 'd-qtext':false, 'h-qtext':false, 'p-qtext':true, 't-qtext':false, 'm-qtext':false, 'k-qtext':false, 'c-qtext':false };
+  const parsed = {}, level = {};
+  const EXAMPLE = `1. She ___ to school every day.
+A. go
+B. goes
+C. going
+D. gone
+Answer: B
+
+2. What is the past form of "teach"?  A. teached  B. taught  C. teach  D. teaching
+
+Đáp án: 2B`;
+
+  function parse(raw){
+    let text = String(raw || '').replace(/\r/g, '').replace(/ /g, ' ');
+    const keyMap = {};
+    // bảng đáp án gom ở cuối: "Đáp án: 1B 2C 3-A, 4.D" hoặc mỗi dòng "1. B"
+    text = text.replace(/^[ \t]*(?:đáp án|dap an|answer key|answers?|key|đa)[ \t]*[:：]?[ \t]*((?:\d+[ \t]*[\.\-:)]?[ \t]*[A-Fa-f]\b[ \t,;]*){1,})$/gim, (m, body) => {
+      body.replace(/(\d+)\s*[\.\-:)]?\s*([A-Fa-f])\b/g, (x, n, l) => { keyMap[+n] = l.toUpperCase(); }); return '';
+    });
+    const startRe = /^\s*(?:câu|cau|question|q)?\s*(\d+)\s*[\.\):]\s*(.*)$/i;
+    const optRe = /^\s*\*?\s*([A-Fa-f])\s*[\.\):]\s+\S/;
+    const ansRe = /^\s*(?:answer|ans|đáp án|dap an|key|đa)\s*[:：\-]?\s*\(?([A-Fa-f])\b/i;
+    const blocks = []; let cur = null;
+    const close = () => { if (cur) blocks.push(cur); cur = null; };
+    const takeInline = b => { const r = mcSplit(b.stem, 'A'); if (r) { b.stem = r.stem; b.opts.push(...r.opts); } };
+    for (const ln of text.split('\n')) {
+      if (!ln.trim()) { if (cur && cur.opts.length) close(); continue; }
+      let m;
+      if (cur && (m = ansRe.exec(ln))) { cur.ans = m[1].toUpperCase(); continue; }
+      if (!optRe.test(ln) && (m = startRe.exec(ln))) { close(); cur = { n:+m[1], stem:m[2].trim(), opts:[], ans:null }; takeInline(cur); continue; }
+      if (optRe.test(ln)) {
+        if (!cur) cur = { n:null, stem:'', opts:[], ans:null };
+        const next = cur.opts.length ? String.fromCharCode(cur.opts[cur.opts.length - 1].L.charCodeAt(0) + 1) : null;
+        const r = mcSplit(ln, next);
+        if (r) cur.opts.push(...r.opts); else { const one = /^\s*(\*?)\s*([A-Fa-f])\s*[\.\):]\s+(.*)$/.exec(ln); cur.opts.push({ L:one[2].toUpperCase(), t:one[3].trim(), star:!!one[1] }); }
+        continue;
+      }
+      if (!cur) cur = { n:null, stem:'', opts:[], ans:null };
+      if (cur.opts.length) cur.opts[cur.opts.length - 1].t += ' ' + ln.trim();
+      else { cur.stem += (cur.stem ? ' ' : '') + ln.trim(); if (!cur.opts.length) takeInline(cur); }
+    }
+    close();
+    return blocks.filter(b => b.stem && b.opts.length >= 2).map(b => {
+      const mark = /\s*(\(\s*(đúng|dung|correct)\s*\)|[✓✔]|\*)\s*$/i;
+      b.opts.forEach(o => { if (mark.test(o.t)) { o.star = true; o.t = o.t.replace(mark, ''); } o.t = o.t.replace(/^\*\s*/, '').trim(); });
+      const starred = b.opts.find(o => o.star);
+      const L = b.ans || (starred && starred.L) || (b.n != null ? keyMap[b.n] : null) || '';
+      return { stem:cleanQ(b.stem), opts:b.opts.map(o => ({ L:o.L, t:cleanQ(o.t) })), ans:L };
+    });
+  }
+  const lineOf = (it, withLevel, lv) => {
+    const o = it.opts.find(x => x.L === it.ans);
+    return (withLevel ? (lv || 1) + ' | ' : '') + `${it.stem} (${it.opts.map(x => `${x.L}. ${x.t}`).join('  ')}) | ${o ? `${o.L}. ${o.t}` : ''}`;
+  };
+
+  function boxHTML(id){
+    return `<div class="mcimp" id="mi-${id}">
+      <button type="button" class="ghost mi-open">📋 Dán câu trắc nghiệm A/B/C/D</button>
+      <div class="mi-panel" hidden>
+        <label>Dán nguyên văn từ Word, Google Docs, đề thi… Mỗi câu có các lựa chọn A, B, C, D. Đáp án ghi kiểu “Answer: B”, đánh dấu * cạnh lựa chọn đúng, hoặc gom cuối bài “Đáp án: 1B 2C 3A”.
+          <textarea class="mi-src" spellcheck="false" style="min-height:170px" placeholder="${esc(EXAMPLE)}"></textarea></label>
+        ${TARGETS[id] ? `<div class="row mi-lv" style="justify-content:flex-start"><span class="note">Mức điểm cho các câu này:</span>${[1, 3, 5].map(v => `<button type="button" class="chip mi-lvb ${v === 1 ? 'sel' : ''}" data-v="${v}">${v}đ</button>`).join('')}</div>` : ''}
+        <div class="mi-prev"></div>
+        <div class="row" style="justify-content:flex-start">
+          <button type="button" class="btn btn-gold mi-add" disabled>Thêm vào danh sách</button>
+          <button type="button" class="ghost mi-ai" hidden>✨ AI giải các câu thiếu đáp án</button>
+          <button type="button" class="ghost mi-close">Đóng</button>
+        </div>
+        <p class="note mi-msg" role="status"></p>
+      </div>
+    </div>`;
+  }
+  function preview(id){
+    const box = document.getElementById('mi-' + id), list = parsed[id] || [];
+    const missing = list.filter(x => !x.ans).length;
+    box.querySelector('.mi-prev').innerHTML = list.length ? `<p class="note">Nhận được <b>${list.length}</b> câu${missing ? `, <b class="neg">${missing}</b> câu chưa có đáp án` : ', đủ đáp án 👍'}.</p>
+      <ol class="mi-list">${list.slice(0, 6).map(it => `<li><span>${esc(it.stem)}</span><span class="mi-opts">${it.opts.map(o => `<i class="${o.L === it.ans ? 'ok' : ''}">${o.L}. ${esc(o.t)}</i>`).join('')}</span></li>`).join('')}${list.length > 6 ? `<li class="note">… và ${list.length - 6} câu nữa</li>` : ''}</ol>`
+      : `<p class="note">Chưa nhận được câu nào. Mỗi câu cần ít nhất 2 lựa chọn A, B.</p>`;
+    box.querySelector('.mi-add').disabled = !list.length;
+    box.querySelector('.mi-ai').hidden = !(missing && typeof AI !== 'undefined' && AI.available());
+  }
+  async function solve(id){
+    const box = document.getElementById('mi-' + id), list = parsed[id] || [];
+    const miss = list.map((it, i) => ({ it, i })).filter(x => !x.it.ans);
+    if (!miss.length) return;
+    if (AI.needsPass()) { box.querySelector('.mi-msg').textContent = 'Nhập mã dùng AI ở khung đọc ảnh bên dưới trước nha.'; return; }
+    const btn = box.querySelector('.mi-ai'); btn.disabled = true;
+    box.querySelector('.mi-msg').textContent = `AI đang giải ${miss.length} câu…`;
+    const prompt = `Choose the correct option for each multiple-choice question below (English-learning exercises for Vietnamese students).
+${miss.map(x => `#${x.i}: ${x.it.stem}\n${x.it.opts.map(o => `${o.L}. ${o.t}`).join('\n')}`).join('\n\n')}
+
+Reply with only a JSON array like [{"i":0,"a":"B"}], one object per question, using the # numbers above.`;
+    try {
+      const arr = await AI.ask(prompt, []);
+      let n = 0;
+      (Array.isArray(arr) ? arr : []).forEach(r => { const it = list[+r.i]; const L = String(r.a || '').trim().toUpperCase().charAt(0); if (it && !it.ans && it.opts.some(o => o.L === L)) { it.ans = L; n++; } });
+      box.querySelector('.mi-msg').textContent = n ? `AI đã điền ${n} đáp án (tô xanh). Cô xem lại trước khi thêm nha.` : 'AI chưa giải được câu nào.';
+    } catch (e) { box.querySelector('.mi-msg').textContent = (typeof AIERR !== 'undefined' && AIERR[e && e.code]) || 'Có lỗi với AI.'; }
+    btn.disabled = false; preview(id);
+  }
+  function wire(id){
+    const box = document.getElementById('mi-' + id), panel = box.querySelector('.mi-panel'), src = box.querySelector('.mi-src');
+    level[id] = 1;
+    box.querySelector('.mi-open').addEventListener('click', () => { panel.hidden = !panel.hidden; if (!panel.hidden) { src.focus(); preview(id); } });
+    box.querySelector('.mi-close').addEventListener('click', () => { panel.hidden = true; });
+    src.addEventListener('input', () => { parsed[id] = parse(src.value); box.querySelector('.mi-msg').textContent = ''; preview(id); });
+    box.querySelectorAll('.mi-lvb').forEach(b => b.addEventListener('click', () => {
+      level[id] = +b.dataset.v; box.querySelectorAll('.mi-lvb').forEach(x => x.classList.toggle('sel', x === b));
+    }));
+    box.querySelector('.mi-ai').addEventListener('click', () => solve(id));
+    box.querySelector('.mi-add').addEventListener('click', () => {
+      const list = parsed[id] || []; if (!list.length) return;
+      const ta = document.getElementById(id); if (!ta) return;
+      const prev = ta.value.trim();
+      ta.value = (prev ? prev + '\n' : '') + list.map(it => lineOf(it, TARGETS[id], level[id])).join('\n');
+      ta.scrollTop = ta.scrollHeight;
+      ta.dispatchEvent(new Event('input', { bubbles:true }));
+      const miss = list.filter(x => !x.ans).length;
+      box.querySelector('.mi-msg').textContent = `Đã thêm ${list.length} câu trắc nghiệm vào danh sách${miss ? `, ${miss} câu chưa có đáp án (cô điền sau dấu | nha)` : ''}.`;
+      src.value = ''; parsed[id] = []; preview(id); SFX.coin();
+    });
+  }
+  function attach(){
+    Object.keys(TARGETS).forEach(id => {
+      const ta = document.getElementById(id);
+      if (!ta || document.getElementById('mi-' + id)) return;
+      (ta.closest('label') || ta).insertAdjacentHTML('afterend', boxHTML(id));
+      wire(id);
+    });
+  }
+  new MutationObserver(attach).observe(document.body, { childList:true, subtree:true });
+  attach();
+  return { parse };
+})();
 </script>
 
 </body>
