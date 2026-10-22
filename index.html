@@ -4154,13 +4154,20 @@ const AI = (() => {
     let r;
     try { r = await fetch('/api/claude', { method:'POST', signal, headers:{ 'content-type':'application/json', 'x-passcode':pass() }, body:JSON.stringify({ prompt, images:imgs }) }); }
     catch (e) { throw { code:e && e.name === 'AbortError' ? 'cancelled' : 'network' }; }
-    if (r.status === 401) throw { code:'bad_passcode' };
+    if (r.status === 401) { serverNeedsPass = true; throw { code:'bad_passcode' }; }
     if (r.status === 404 || r.status === 405) throw { code:'no_function' };
     const data = await r.json().catch(() => ({}));
     if (!r.ok) throw { code:data.error || 'upstream', message:data.message };
     return parse(data.text || '');
   }
-  return { ask, inClaude, onWeb, available:() => inClaude() || onWeb(), pass, setPass, needsPass:() => onWeb() && !pass(), auto:() => onWeb() && !!pass() };
+  // hỏi hàm trên Netlify: có đặt APP_PASSCODE không (null = chưa biết)
+  let serverNeedsPass = null;
+  if (onWeb()) fetch('/api/claude').then(r => r.ok ? r.json() : null).then(d => {
+    serverNeedsPass = d ? !!d.needPass : true;
+    document.querySelectorAll('.pb-pass').forEach(el => { el.hidden = !(serverNeedsPass && !pass()); });
+  }).catch(() => { serverNeedsPass = true; });
+  const needsPass = () => onWeb() && serverNeedsPass === true && !pass();
+  return { ask, inClaude, onWeb, available:() => inClaude() || onWeb(), pass, setPass, needsPass, auto:() => onWeb() && !needsPass() };
 })();
 
 /* ---------- Khung dưới mỗi ô câu hỏi: nhặt từ ảnh + soạn thêm câu tương tự ---------- */
@@ -4408,7 +4415,7 @@ const Refill = (() => {
     const key = g + ':' + info.all.length; if (offered[key]) return; offered[key] = true;
     if (AI.auto()) run(g); // trên Netlify đã có mã: tự bổ sung
     else if (AI.inClaude()) toast(`Sắp hết câu hỏi (còn ${Math.max(0, info.left)} câu chưa hỏi). <button class="ghost" onclick="Refill.run('${g}')">✨ Để AI soạn thêm 10 câu</button>`, true);
-    else toast('Sắp hết câu hỏi. Nhập mã dùng AI ở màn hình cài đặt để AI tự bổ sung.');
+    else if (AI.needsPass()) toast('Sắp hết câu hỏi. Nhập mã dùng AI ở màn hình cài đặt để AI tự bổ sung.');
   }, 2000);
   return { run, toast };
 })();
