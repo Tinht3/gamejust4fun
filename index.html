@@ -535,6 +535,8 @@ body{min-height:100%;background-attachment:fixed}
 .mi-opts{display:flex;flex-wrap:wrap;gap:4px 12px;color:var(--muted)}
 .mi-opts i{font-style:normal}
 .mi-opts i.ok{color:var(--mint);font-weight:700}
+.team-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.team-ctl .ghost:disabled{opacity:.4}
 /* ===== shared reward / penalty deck ===== */
 .deck-btn{white-space:nowrap}
 .deck-veil .box{align-items:center;text-align:center;max-width:640px}
@@ -1051,7 +1053,7 @@ const fanHTML = `<div class="fan" aria-hidden="true">
 </div>`;
 
 function viewSetup(){
-  const names = [...S.teamNames]; while (names.length < 6) names.push('');
+  const names = [...S.teamNames];
   return `<div class="stage">
     ${fanHTML}
     <div class="kicker">Trò chơi thuyết trình · 4 lá đỏ + 1 Joker</div>
@@ -1418,7 +1420,7 @@ const B = (() => {
   const slipCard = id => `<div class="slip ${SLIPS[id].mood}"><span class="slip-no">Phiếu ${id}</span><span class="slip-t">${SLIPS[id].t}</span><span class="slip-d">${SLIPS[id].d}</span></div>`;
 
   function vSetup(){
-    const names = [...S.names]; while (names.length < 6) names.push('');
+    const names = [...S.names];
     return `<div class="stage">
       ${cake}
       <div class="kicker">Trò chơi thuyết trình · 100 tỷ mỗi đội</div>
@@ -1723,7 +1725,7 @@ const D = (() => {
   };
 
   function vSetup(){
-    const names = [...S.names]; while (names.length < 5) names.push('');
+    const names = [...S.names];
     return `
       ${mbox}
       <div class="kicker">Trò chơi thuyết trình · Làm tỷ phú một buổi</div>
@@ -2030,7 +2032,7 @@ Tiến 3`;
     }).join('')}</div>` : '';
 
   function vSetup(){
-    const names = [...S.names]; while (names.length < 6) names.push('');
+    const names = [...S.names];
     return `
       <div class="kicker">Trò chơi thuyết trình · Kho báu cách 5 bước</div>
       <h1>Đại hải trình</h1>
@@ -2365,7 +2367,7 @@ const P = (() => {
   };
 
   function vSetup(){
-    const names = [...S.names]; while (names.length < 6) names.push('');
+    const names = [...S.names];
     return `
       <div class="pcards big" aria-hidden="true"><span class="pcard">🏴<small>Cướp lượt</small></span><span class="pcard">⚔️<small>Tấn công</small></span><span class="pcard back">🂠<small>×2</small></span><span class="pcard back">🂠<small>Trừ đôi</small></span></div>
       <div class="kicker">Trò chơi thuyết trình · 4 lá mỗi đội</div>
@@ -2648,7 +2650,7 @@ const T = (() => {
   };
 
   function vSetup(){
-    const names = [...S.names]; while (names.length < 6) names.push('');
+    const names = [...S.names];
     return `
       ${art(true)}
       <div class="kicker">Trò chơi thuyết trình · Nhóm thuyết trình làm khủng bố</div>
@@ -3789,7 +3791,7 @@ Quality check`;
       : `<div class="qcard"><div class="kicker">${title}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
   function vSetup(){
-    const names = [...S.names]; while (names.length < 5) names.push('');
+    const names = [...S.names];
     return `<div class="factory-hero" aria-hidden="true">🏭</div>
       <div class="kicker">Trò chơi thuyết trình · Quy trình sản xuất</div>
       <h1>Băng chuyền</h1>
@@ -4470,7 +4472,7 @@ function withPassages(items, toLine){
   if (cur) out.push('>>');
   return out;
 }
-const isPassageLine = l => /^\s*>>/.test(l);
+function isPassageLine(l){ return /^\s*>>/.test(l); }
 // the passage shown above the question, with the blank being asked highlighted
 function passageHTML(q){
   if (!q || !q.p) return '';
@@ -4818,6 +4820,57 @@ Reply with only a JSON array like [{"i":${part[0]},"level":3}], one object per q
   }
   const unlevelled = ta => ta.value.split('\n').filter(l => l.trim() && !LV.test(l) && !isPassageLine(l)).length;
   return { classify, unlevelled };
+})();
+/* ================= Thêm / bớt nhóm ở màn hình cài đặt ================= */
+const TeamCtl = (() => {
+  // attribute on the name inputs -> [min, max] teams for that game
+  const GROUPS = { 'data-name':[2, 12], 'data-bname':[2, 12], 'data-dname':[2, 12], 'data-hname':[2, 6], 'data-pname':[2, 12], 'data-tname':[2, 12], 'data-cname':[1, 8] };
+  const labelsOf = attr => [...document.querySelectorAll(`input[${attr}]`)].map(i => i.closest('label')).filter(Boolean);
+  function sync(attr){
+    const ctl = document.querySelector(`.team-ctl[data-attr="${attr}"]`); if (!ctl) return;
+    const n = labelsOf(attr).length, [min, max] = GROUPS[attr];
+    ctl.querySelector('.tc-add').disabled = n >= max;
+    ctl.querySelector('.tc-del').disabled = n <= min;
+    ctl.querySelector('.tc-n').textContent = `${n} ô tên`;
+  }
+  function add(attr){
+    const labs = labelsOf(attr), last = labs[labs.length - 1]; if (!last) return;
+    if (labs.length >= GROUPS[attr][1]) return;
+    const copy = last.cloneNode(true), inp = copy.querySelector('input');
+    const k = labs.length + 1;
+    // "Đội 5 (không bắt buộc)" -> "Đội 6"
+    const first = copy.firstChild;
+    if (first && first.nodeType === 3) first.textContent = first.textContent.replace(/\d+/, k).replace(/\s*\(không bắt buộc\)/, '');
+    inp.id = inp.id.replace(/\d+$/, '') + (k - 1) + '-x' + Date.now().toString(36);
+    copy.setAttribute('for', inp.id);
+    inp.value = ''; inp.placeholder = 'Tên nhóm';
+    last.after(copy);
+    inp.focus(); sync(attr); SFX.click();
+  }
+  function del(attr){
+    const labs = labelsOf(attr);
+    if (labs.length <= GROUPS[attr][0]) return;
+    labs[labs.length - 1].remove(); sync(attr); SFX.click();
+  }
+  function attach(){
+    Object.keys(GROUPS).forEach(attr => {
+      const labs = labelsOf(attr);
+      if (!labs.length || document.querySelector(`.team-ctl[data-attr="${attr}"]`)) return;
+      labs[labs.length - 1].insertAdjacentHTML('afterend', `<div class="team-ctl" data-attr="${attr}">
+        <button type="button" class="ghost tc-add" onclick="TeamCtl.add('${attr}')">＋ Thêm nhóm</button>
+        <button type="button" class="ghost tc-del" onclick="TeamCtl.del('${attr}')">－ Bớt nhóm</button>
+        <span class="note tc-n"></span></div>`);
+      sync(attr);
+    });
+    // keep the buttons right under the last name box after adding or removing
+    Object.keys(GROUPS).forEach(attr => {
+      const ctl = document.querySelector(`.team-ctl[data-attr="${attr}"]`), labs = labelsOf(attr);
+      if (ctl && labs.length && labs[labs.length - 1].nextElementSibling !== ctl) labs[labs.length - 1].after(ctl);
+    });
+  }
+  new MutationObserver(attach).observe(document.body, { childList:true, subtree:true });
+  attach();
+  return { add, del };
 })();
 </script>
 
