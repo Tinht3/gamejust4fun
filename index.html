@@ -502,6 +502,20 @@ body{min-height:100%;background-attachment:fixed}
 .pb-genrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px}
 .pb-genrow label{width:96px}
 /* ===== multiple choice tiles + paste importer ===== */
+.passage{max-height:min(38vh,340px);overflow:auto;padding:12px 16px;border-radius:12px;background:rgba(0,0,0,.045);border-left:5px solid #f2a63a;font-size:clamp(1rem,1.9vw,1.25rem);line-height:1.6;text-align:left}
+.passage p{margin:0 0 .5em}
+.passage p:last-child{margin-bottom:0}
+.passage mark{background:#ffe08a;color:#2a1d10;border-radius:4px;padding:0 4px;font-weight:800;box-shadow:0 0 0 2px #f2a63a}
+
+.mc.thinking{opacity:.75}
+.mc-verdict{display:flex;flex-direction:column;gap:4px;margin-top:8px;padding:10px 14px;border-radius:12px;background:rgba(0,0,0,.05);font-weight:700;font-size:clamp(1rem,2vw,1.25rem)}
+.mc-verdict.ok{background:#d8f3e6;color:#0d3b26}
+.mc-verdict.bad{background:#fde1e5;color:#5c0d1a}
+.mc-why{font-weight:500;font-size:.9em}
+.mc-auto{font-weight:500;font-size:.8em;opacity:.8}
+.mc-auto .linkbtn{color:inherit}
+.ans-why{font-size:1rem;opacity:.85;margin-top:2px}
+
 .mc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:4px}
 @media (max-width:560px){.mc{grid-template-columns:1fr}}
 .mc-opt{font:inherit;display:flex;align-items:center;gap:12px;text-align:left;padding:12px 14px;border-radius:14px;border:2px solid rgba(0,0,0,.14);background:rgba(0,0,0,.035);color:inherit;cursor:pointer;font-size:clamp(1.05rem,2.2vw,1.45rem);font-weight:600;line-height:1.25;transition:transform .12s}
@@ -928,9 +942,7 @@ const A = {
     S.turnsPerRound = Math.max(1, num('turns') || names.length);
     S.start = Number.isFinite(num('start')) ? num('start') : 0;
     S.qText = document.getElementById('qtext').value;
-    S.questions = S.qText.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
-      const [q, ...a] = l.split('|'); return { q:q.trim(), a:a.join('|').trim() };
-    });
+    S.questions = parseQLines(S.qText, false);
     S.teams = names.map(name => ({ name, score:S.start }));
     S.round = 1; S.qi = 0; S.events = [];
     S.phase = 'deal';
@@ -1057,7 +1069,7 @@ function viewSetup(){
       </div>
       <div class="panel">
         <h3>Câu hỏi</h3>
-        <label for="qtext">Mỗi dòng: câu hỏi | đáp án. Để trống nếu cô chiếu câu hỏi bằng slide Canva.
+        <label for="qtext">Mỗi dòng: câu hỏi | đáp án. Dòng bắt đầu bằng &gt;&gt; là đoạn văn đi kèm các câu bên dưới. Để trống nếu cô chiếu câu hỏi bằng slide Canva.
           <textarea id="qtext" spellcheck="false">${esc(S.qText)}</textarea></label>
         <p class="note">Đây là câu hỏi mẫu, cô thay bằng câu của bài đang học nhé.</p>
       </div>
@@ -1092,7 +1104,7 @@ function viewQuestion(){
   const card = q ? `<div class="qcard" data-a="${esc(q.a || '')}">
       <div class="kicker">Câu hỏi cho ${nm(t)}</div>
       ${qHTML(q, S.showAns)}
-      ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="A.showAns()">Hiện đáp án</button>`) : ''}
+      ${ansBlock(q, S.showAns, 'A')}
     </div>` : `<div class="qcard"><div class="kicker">Câu hỏi cho ${nm(t)}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   return `<div class="stage">
     ${card}
@@ -1304,9 +1316,7 @@ const B = (() => {
       S.turns = Math.max(1, num('b-turns') || 15);
       S.start = Number.isFinite(num('b-start')) ? num('b-start') : 100;
       S.qText = document.getElementById('b-qtext').value;
-      S.questions = S.qText.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
-        const [q, ...a] = l.split('|'); return { q:q.trim(), a:a.join('|').trim() };
-      });
+      S.questions = parseQLines(S.qText, false);
       S.teams = names.map(name => ({ name, score:S.start }));
       S.turn = 0; S.qi = 0; S.deck = []; S.log = []; S.lines = []; undo = [];
       S.phase = 'ask'; render();
@@ -1400,7 +1410,7 @@ const B = (() => {
   const qCard = (title) => {
     const q = S.curQ;
     return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div>${qHTML(q, S.showAns)}
-      ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="B.showAns()">Hiện đáp án</button>`) : ''}</div>`
+      ${ansBlock(q, S.showAns, 'B')}</div>`
       : `<div class="qcard"><div class="kicker">${title}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
   const teamPicks = (fn, sel, exclude) => `<div class="grid-pick">${S.teams.map((x, i) =>
@@ -1425,7 +1435,7 @@ const B = (() => {
         </div>
         <div class="panel">
           <h3>Câu hỏi</h3>
-          <label for="b-qtext">Mỗi dòng: câu hỏi | đáp án. Để trống nếu chiếu câu hỏi bằng slide Canva.
+          <label for="b-qtext">Mỗi dòng: câu hỏi | đáp án. Dòng bắt đầu bằng &gt;&gt; là đoạn văn đi kèm các câu bên dưới. Để trống nếu chiếu câu hỏi bằng slide Canva.
             <textarea id="b-qtext" spellcheck="false">${esc(S.qText)}</textarea></label>
         </div>
         <div class="panel span2">
@@ -1591,9 +1601,7 @@ const D = (() => {
       S.rounds = Math.max(1, num('d-rounds') || 3);
       S.qPer = Math.max(1, num('d-qper') || 1);
       S.qText = document.getElementById('d-qtext').value;
-      S.questions = S.qText.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
-        const [q, ...a] = l.split('|'); return { q:q.trim(), a:a.join('|').trim() };
-      });
+      S.questions = parseQLines(S.qText, false);
       S.teams = names.map(name => ({ name, start:null, money:0, last:'Chưa có giao dịch' }));
       S.box = { ...BOX }; S.k = 0; S.round = 1; S.t = 0; S.qi = 0; S.log = []; S.swaps = []; undo = [];
       S.phase = 'draw'; render();
@@ -1710,7 +1718,7 @@ const D = (() => {
   const qCard = title => {
     const q = S.curQ;
     return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div>${qHTML(q, S.showAns)}
-      ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="D.showAns()">Hiện đáp án</button>`) : ''}</div>`
+      ${ansBlock(q, S.showAns, 'D')}</div>`
       : `<div class="qcard"><div class="kicker">${title}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
 
@@ -1731,7 +1739,7 @@ const D = (() => {
         </div>
         <div class="panel">
           <h3>Câu hỏi</h3>
-          <label for="d-qtext">Mỗi dòng: câu hỏi | đáp án. Để trống nếu chiếu câu hỏi bằng slide Canva.
+          <label for="d-qtext">Mỗi dòng: câu hỏi | đáp án. Dòng bắt đầu bằng &gt;&gt; là đoạn văn đi kèm các câu bên dưới. Để trống nếu chiếu câu hỏi bằng slide Canva.
             <textarea id="d-qtext" spellcheck="false">${esc(S.qText)}</textarea></label>
         </div>
         <div class="panel span2">
@@ -1944,9 +1952,7 @@ Tiến 3`;
       S.wheelText = document.getElementById('h-wheel').value;
       S.segs = segs;
       S.qText = document.getElementById('h-qtext').value;
-      S.questions = S.qText.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
-        const [q, ...a] = l.split('|'); return { q:q.trim(), a:a.join('|').trim() };
-      });
+      S.questions = parseQLines(S.qText, false);
       S.teams = names.map((name, i) => ({ name, pos:0, icon:ICONS[i % ICONS.length] }));
       S.turn = 0; S.qi = 0; S.rot = 0; S.lines = []; undo = [];
       nextQ(); S.phase = 'question'; render();
@@ -2015,7 +2021,7 @@ Tiến 3`;
   const qCard = title => {
     const q = S.curQ;
     return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div>${qHTML(q, S.showAns)}
-      ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="H.showAns()">Hiện đáp án</button>`) : ''}</div>`
+      ${ansBlock(q, S.showAns, 'H')}</div>`
       : `<div class="qcard"><div class="kicker">${title}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
   const lineList = () => S.lines.length ? `<div class="verdict">${S.lines.map(l => {
@@ -2040,7 +2046,7 @@ Tiến 3`;
         </div>
         <div class="panel span2">
           <h3>Câu hỏi</h3>
-          <label for="h-qtext">Mỗi dòng: câu hỏi | đáp án. Chuẩn bị càng nhiều càng tốt, hết thì máy quay lại câu đầu. Để trống nếu chiếu bằng slide Canva.
+          <label for="h-qtext">Mỗi dòng: câu hỏi | đáp án. Dòng bắt đầu bằng &gt;&gt; là đoạn văn đi kèm các câu bên dưới. Chuẩn bị càng nhiều càng tốt, hết thì máy quay lại câu đầu. Để trống nếu chiếu bằng slide Canva.
             <textarea id="h-qtext" spellcheck="false">${esc(S.qText)}</textarea></label>
           <ul class="rules">
             <li><b>Trả lời đúng:</b> quay vòng quay.</li>
@@ -2238,19 +2244,32 @@ const P = (() => {
   function endTurn(){ S.phase = 'turnEnd'; }
 
   const act = {
-    start(){
+    async classify(){
+      const ta = document.getElementById('p-qtext'), msg = document.getElementById('p-lvmsg');
+      if (!ta) return 0;
+      if (!aiOK()) { if (msg) msg.textContent = 'Cần AI để phân cấp độ. Cô ghi tay 1, 3 hoặc 5 ở đầu dòng nha.'; return 0; }
+      const n = PLevel.unlevelled(ta);
+      if (!n) { if (msg) msg.textContent = 'Câu nào cũng đã có mức điểm rồi 👍'; return 0; }
+      if (window.__AI.needsPass()) { if (msg) msg.textContent = 'Nhập mã dùng AI ở khung đọc ảnh trước nha.'; return 0; }
+      if (msg) msg.textContent = `✨ AI đang chia ${n} câu thành dễ / trung bình / khó…`;
+      try { const d = await PLevel.classify(ta); if (msg) msg.textContent = `AI đã chấm mức cho ${d} câu (1 = dễ, 3 = trung bình, 5 = khó). Cô sửa số đầu dòng nếu muốn.`; SFX.coin(); return d; }
+      catch (e) { if (msg) msg.textContent = `AI chưa phân cấp được (${AIERR[e && e.code] || 'lỗi'}). Câu chưa có mức sẽ tính là Dễ.`; return 0; }
+    },
+    async start(){
+      const ta = document.getElementById('p-qtext');
+      if (ta && aiOK() && !window.__AI.needsPass() && PLevel.unlevelled(ta) && !act._busy) {
+        act._busy = true; await act.classify(); act._busy = false;
+      }
+      act._start();
+    },
+    _start(){
       const names = [...document.querySelectorAll('[data-pname]')].map(el => el.value.trim()).filter(Boolean);
       if (names.length < 2) { document.getElementById('p-err').textContent = 'Cần ít nhất 2 đội.'; return; }
       S.names = names;
       S.turns = Math.max(1, parseInt(document.getElementById('p-turns').value, 10) || 10);
       S.wrongMinus = document.getElementById('p-wm').checked;
       S.qText = document.getElementById('p-qtext').value;
-      S.questions = S.qText.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
-        const parts = l.split('|').map(x => x.trim());
-        let lv = null;
-        if (['1','3','5'].includes(parts[0]) && parts.length > 1) lv = +parts.shift();
-        return { lv, q:parts[0], a:parts.slice(1).join(' | ') };
-      });
+      S.questions = parseQLines(S.qText, true);
       S.teams = names.map(name => ({ name, score:0, cards:{ steal:true, attack:true, dbl:true, shield:true } }));
       S.turn = 0; S.qi = 0; S.log = []; undo = [];
       act.beginTurn(); render();
@@ -2336,7 +2355,7 @@ const P = (() => {
   const qCard = title => {
     const q = S.curQ;
     return q ? `<div class="qcard"><div class="kicker">${title} · ${LV[S.lvl]} ${S.lvl}đ</div>${qHTML(q, S.showAns)}
-      ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="P.showAns()">Hiện đáp án</button>`) : ''}</div>`
+      ${ansBlock(q, S.showAns, 'P')}</div>`
       : `<div class="qcard"><div class="kicker">${title} · ${LV[S.lvl]} ${S.lvl}đ</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
   const secretBadge = () => S.secret ? `<div class="pcards"><span class="pcard back">🂠<small>Đã dùng lá bí mật</small></span></div>` : '';
@@ -2360,8 +2379,9 @@ const P = (() => {
         </div>
         <div class="panel">
           <h3>Câu hỏi</h3>
-          <label for="p-qtext">Mỗi dòng: mức điểm | câu hỏi | đáp án. Mức 1 = dễ, 3 = trung bình, 5 = khó. Câu khó nên khó hẳn để lá bài phát huy nha.
+          <label for="p-qtext">Mỗi dòng: mức điểm | câu hỏi | đáp án. Mức 1 = dễ, 3 = trung bình, 5 = khó. Câu không ghi mức thì AI tự chấm khi bấm Chia bài.
             <textarea id="p-qtext" spellcheck="false">${esc(S.qText)}</textarea></label>
+          <div class="row" style="justify-content:flex-start"><button type="button" class="ghost" onclick="P.classify()">✨ AI phân cấp độ ngay</button><span class="note" id="p-lvmsg"></span></div>
         </div>
         <div class="panel span2">
           <h3>4 lá bài</h3>
@@ -2554,9 +2574,7 @@ const T = (() => {
       S.maxB = Math.max(1, parseInt(document.getElementById('t-maxb').value, 10) || 3);
       S.theme = document.querySelector('input[name="t-theme"]:checked').value;
       S.qText = document.getElementById('t-qtext').value;
-      S.questions = S.qText.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
-        const [q, ...a] = l.split('|'); return { q:q.trim(), a:a.join('|').trim() };
-      });
+      S.questions = parseQLines(S.qText, false);
       S.qi = 0; S.victims = {}; S.seen = []; S.passes = 0; S.holder = null;
       nextQ(); S.phase = 'warm'; render();
     },
@@ -2625,7 +2643,7 @@ const T = (() => {
   const qCard = title => {
     const q = S.curQ;
     return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div>${qHTML(q, S.showAns)}
-      ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="T.showAns()">Hiện đáp án</button>`) : ''}</div>`
+      ${ansBlock(q, S.showAns, 'T')}</div>`
       : `<div class="qcard"><div class="kicker">${title}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
 
@@ -2660,7 +2678,7 @@ const T = (() => {
         </div>
         <div class="panel span2">
           <h3>Câu hỏi</h3>
-          <label for="t-qtext">Mỗi dòng: câu hỏi | đáp án. Nên có vài câu khó để ít nhất một người dính phạt 😈
+          <label for="t-qtext">Mỗi dòng: câu hỏi | đáp án. Dòng bắt đầu bằng &gt;&gt; là đoạn văn đi kèm các câu bên dưới. Nên có vài câu khó để ít nhất một người dính phạt 😈
             <textarea id="t-qtext" spellcheck="false">${esc(S.qText)}</textarea></label>
         </div>
       </div>
@@ -2893,9 +2911,7 @@ Hôm qua qua nói qua mà qua không qua`;
       if (S.source === 'youtube' && !ytOk(S.yt)) { document.getElementById('m-err').textContent = 'Link YouTube chưa đúng. Dán link dạng youtube.com/watch?v=… hoặc youtu.be/…'; return; }
       if (S.source === 'file' && !Music.fileName()) { document.getElementById('m-err').textContent = 'Chọn file nhạc trước, hoặc dùng nhạc có sẵn.'; return; }
       if (S.mode === 'letter' && !lettersArr().length) { document.getElementById('m-err').textContent = 'Nhập ít nhất một chữ cái.'; return; }
-      S.questions = S.qText.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
-        const [q, ...a2] = l.split('|'); return { q:q.trim(), a:a2.join('|').trim() };
-      });
+      S.questions = parseQLines(S.qText, false);
       if (S.source !== 'file') Music.setStyle(S.source);
       S.qi = 0; S.round = 0; S.right = 0; S.wrong = 0; S.log = []; S.next = '';
       S.phase = 'idle'; render();
@@ -2964,7 +2980,7 @@ Hôm qua qua nói qua mà qua không qua`;
   const qCard = title => {
     const q = S.curQ;
     return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div>${qHTML(q, S.showAns)}
-      ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="M.showAns()">Hiện đáp án</button>`) : ''}</div>`
+      ${ansBlock(q, S.showAns, 'M')}</div>`
       : `<div class="qcard"><div class="kicker">${title}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
   function vSetup(){
@@ -3002,7 +3018,7 @@ Hôm qua qua nói qua mà qua không qua`;
         </div>
         <div class="panel span2">
           <h3>Câu hỏi</h3>
-          <label for="m-qtext">Mỗi dòng: câu hỏi | đáp án. Để trống nếu chiếu bằng slide Canva.
+          <label for="m-qtext">Mỗi dòng: câu hỏi | đáp án. Dòng bắt đầu bằng &gt;&gt; là đoạn văn đi kèm các câu bên dưới. Để trống nếu chiếu bằng slide Canva.
             <textarea id="m-qtext" spellcheck="false">${esc(S.qText)}</textarea></label>
         </div>
       </div>
@@ -3117,9 +3133,7 @@ Lộc vua ban | một viên kẹo | 4`;
       S.giftText = document.getElementById('k-gifts').value;
       S.qText = document.getElementById('k-qtext').value;
       S.pool = parseGifts(S.giftText);
-      S.questions = S.qText.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
-        const [q, ...a] = l.split('|'); return { q:q.trim(), a:a.join('|').trim() };
-      });
+      S.questions = parseQLines(S.qText, false);
       S.rosterText = document.getElementById('k-roster').value;
       S.roster = [...new Set(S.rosterText.split('\n').map(x => x.trim()).filter(Boolean))];
       S.qi = 0; S.scholars = []; S.eunuchs = []; S.step = 0; S.king = null; S.scores = {};
@@ -3275,7 +3289,7 @@ Lộc vua ban | một viên kẹo | 4`;
         </div>
         <div class="panel">
           <h3>Đề thi của Trẫm</h3>
-          <label for="k-qtext">Mỗi dòng: câu hỏi | đáp án. Để trống nếu chiếu bằng slide Canva.
+          <label for="k-qtext">Mỗi dòng: câu hỏi | đáp án. Dòng bắt đầu bằng &gt;&gt; là đoạn văn đi kèm các câu bên dưới. Để trống nếu chiếu bằng slide Canva.
             <textarea id="k-qtext" spellcheck="false">${esc(S.qText)}</textarea></label>
         </div>
         <div class="panel span2">
@@ -3311,7 +3325,7 @@ Lộc vua ban | một viên kẹo | 4`;
     <button class="btn btn-gold" onclick="K.begin()">Trẫm ra đề thứ nhất</button>`;
   function vQuestion(){
     const q = S.curQ;
-    const body = q ? `<div data-a="${esc(q.a || '')}">${qHTML(q, S.showAns)}</div>${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="K.showAns()">Hiện đáp án</button>`) : ''}`
+    const body = q ? `<div data-a="${esc(q.a || '')}">${qHTML(q, S.showAns)}</div>${ansBlock(q, S.showAns, 'K')}`
       : `<p class="qtext">Mời các ái khanh xem đề trên slide Canva.</p>`;
     return `${kingMode() ? `<div class="kicker">Đức vua ${esc(S.king)} chọn</div><h2>Ái khanh <span class="team-name">${esc(S.who)}</span> trả lời</h2>` : ''}${scroll(`Đề thi số ${S.qi}`, body)}
       ${kingMode() ? '' : '<div class="row heir"><label for="k-who">Tên ái khanh trả lời (không bắt buộc)<input id="k-who" placeholder="vd: Minh"></label></div>'}
@@ -3666,7 +3680,7 @@ Quality check`;
       S.names = names; S.stepsText = document.getElementById('c-steps').value; S.extraText = document.getElementById('c-extra').value;
       S.secs = Math.max(5, parseInt(document.getElementById('c-secs').value, 10) || 30);
       S.qText = document.getElementById('c-qtext').value;
-      S.questions = lines(S.qText).map(l => { const [q, ...a] = l.split('|'); return { q:q.trim(), a:a.join('|').trim() }; });
+      S.questions = parseQLines(S.qText, false);
       S.teams = names.map(name => ({ name, steps:steps.map(x => ({ n:x, extra:false })), pos:0, wrong:0, secs:S.secs, fired:false, done:false, belts:0 }));
       S.qi = 0; S.turn = 0; S.active = 0; S.winner = null; undo = [];
       S.phase = 'ready'; SFX.click(); render();
@@ -3771,7 +3785,7 @@ Quality check`;
   const qCard = title => {
     const q = S.curQ;
     return q ? `<div class="qcard" data-a="${esc(q.a || '')}"><div class="kicker">${title}</div>${qHTML(q, S.showAns)}
-      ${q.a ? (S.showAns ? `<div class="ans">Đáp án: ${esc(q.a)}</div>` : `<button class="linkbtn" onclick="C.showAns()">Hiện đáp án</button>`) : ''}</div>`
+      ${ansBlock(q, S.showAns, 'C')}</div>`
       : `<div class="qcard"><div class="kicker">${title}</div><p class="qtext">Chuyển sang slide Canva để chiếu câu hỏi.</p></div>`;
   };
   function vSetup(){
@@ -3796,7 +3810,7 @@ Quality check`;
         </div>
         <div class="panel span2">
           <h3>Câu hỏi</h3>
-          <label for="c-qtext">Mỗi dòng: câu hỏi | đáp án. Để trống nếu chiếu bằng slide Canva.
+          <label for="c-qtext">Mỗi dòng: câu hỏi | đáp án. Dòng bắt đầu bằng &gt;&gt; là đoạn văn đi kèm các câu bên dưới. Để trống nếu chiếu bằng slide Canva.
             <textarea id="c-qtext" spellcheck="false">${esc(S.qText)}</textarea></label>
           <ul class="rules">
             <li><b>Đúng:</b> sản phẩm chạy qua 1 công đoạn. Qua hết là xuất xưởng 🚚</li>
@@ -4124,8 +4138,10 @@ const AI = (() => {
   function parse(text){
     try { return JSON.parse(text); } catch(e) {}
     const f = text.match(/```(?:json)?\s*([\s\S]*?)```/); if (f) { try { return JSON.parse(f[1]); } catch(e) {} }
-    const a = text.indexOf('['), b = text.lastIndexOf(']');
-    if (a >= 0 && b > a) { try { return JSON.parse(text.slice(a, b + 1)); } catch(e) {} }
+    for (const [o, c] of [['[', ']'], ['{', '}']]) {
+      const a = text.indexOf(o), b = text.lastIndexOf(c);
+      if (a >= 0 && b > a) { try { return JSON.parse(text.slice(a, b + 1)); } catch(e) {} }
+    }
     throw { code:'invalid_json' };
   }
   // downsize a photo to about 1600px JPEG before upload (keeps requests small and fast)
@@ -4169,6 +4185,7 @@ const AI = (() => {
   const needsPass = () => onWeb() && serverNeedsPass === true && !pass();
   return { ask, inClaude, onWeb, available:() => inClaude() || onWeb(), pass, setPass, needsPass, auto:() => onWeb() && !needsPass() };
 })();
+window.__AI = AI;
 
 /* ---------- Khung dưới mỗi ô câu hỏi: nhặt từ ảnh + soạn thêm câu tương tự ---------- */
 const Photo = (() => {
@@ -4177,7 +4194,7 @@ const Photo = (() => {
   const files = {}, undoText = {}, ctl = {};
   const val = (id, d) => { const el = document.getElementById(id); const n = el ? parseInt(el.value, 10) : NaN; return Number.isFinite(n) && n > 0 ? n : d; };
   const filled = sel => [...document.querySelectorAll(sel)].filter(x => x.value.trim()).length;
-  const nonEmpty = id => { const el = document.getElementById(id); return el ? el.value.split('\n').filter(l => l.trim()).length : 0; };
+  const nonEmpty = id => { const el = document.getElementById(id); return el ? el.value.split('\n').filter(l => l.trim() && !isPassageLine(l)).length : 0; };
   // rough number of questions each game uses, so the teacher knows how many to prepare
   function needFor(id){
     switch (id) {
@@ -4200,6 +4217,8 @@ Extract every item that can be asked to students as a question. For each item gi
 - "q": the question as written, in the original language. Put multiple-choice options inline, e.g. "She ___ to school. (A. go  B. goes  C. going)". If an item needs a short sentence of context from the page, include it. Skip items that cannot work without a picture or a long reading passage.
 - "a": the correct answer, short. Use the answer key if one is visible; otherwise work out the correct answer yourself. For multiple choice give the letter and the word, e.g. "B. goes".
 ${withLevel ? '- "level": 1 for easy, 3 for medium, 5 for hard.\n' : ''}
+- "p": only if the item belongs to a reading passage or a cloze text (gap-fill paragraph): the FULL passage text, copied exactly, with "\n" between paragraphs and blanks kept as "(47) ____". Give the same "p" on every item of that passage. Omit "p" for standalone items.
+For a cloze text, each numbered blank is one item: "q" is "Question 47" (plus its options), "a" is the correct option.
 Skip titles, section headings and instruction lines that are not questions themselves. Never invent items that are not in the image.
 Reply with only a JSON array, for example [{"q":"Plural of \\"child\\"?","a":"children"${withLevel ? ',"level":1' : ''}}]. Reply [] if there are no questions.`;
 
@@ -4263,12 +4282,12 @@ Reply with only a JSON array, for example [{"q":"Plural of \\"child\\"?","a":"ch
   function append(id, items, withLevel){
     const ta = document.getElementById(id); if (!ta) return 0;
     const have = new Set(ta.value.split('\n').map(l => l.split('|')[withLevel ? 1 : 0]).map(x => (x || '').trim().toLowerCase()).filter(Boolean));
-    const lines = [];
+    const keep = [];
     items.forEach(it => {
-      const q = cleanQ(it && it.q); if (!q || have.has(q.toLowerCase())) return; have.add(q.toLowerCase());
-      const lv = [1, 3, 5].includes(+it.level) ? +it.level : 1;
-      lines.push((withLevel ? lv + ' | ' : '') + q + ' | ' + cleanQ(it.a));
+      const q = cleanQ(it && it.q); if (!q || (!it.p && have.has(q.toLowerCase()))) return; have.add(q.toLowerCase());
+      keep.push({ q, a:cleanQ(it.a), p:it.p || '', lv:[1, 3, 5].includes(+it.level) ? +it.level : 1 });
     });
+    const lines = keep.length ? withPassages(keep, it => (withLevel ? it.lv + ' | ' : '') + it.q + ' | ' + it.a) : [];
     if (!lines.length) return 0;
     undoText[id] = ta.value;
     const prev = ta.value.trim();
@@ -4307,7 +4326,7 @@ Reply with only a JSON array, for example [{"q":"Plural of \\"child\\"?","a":"ch
   async function gen(id){
     const ta = document.getElementById(id); if (!ta) return;
     const withLevel = TARGETS[id];
-    const lines = ta.value.split('\n').map(l => l.trim()).filter(Boolean);
+    const lines = ta.value.split('\n').map(l => l.trim()).filter(l => l && !isPassageLine(l));
     if (lines.length < 2) { msg(id, 'Cần ít nhất 2 câu mẫu để AI bắt chước. Dán vài câu hoặc nhặt từ ảnh trước nha.'); return; }
     if (AI.needsPass()) { msg(id, 'Nhập mã dùng AI rồi bấm Lưu mã trước nha.'); return; }
     let want = Math.max(1, Math.min(60, parseInt($(id, '.pb-n').value, 10) || 10));
@@ -4420,6 +4439,54 @@ const Refill = (() => {
   return { run, toast };
 })();
 
+/* ================= Đoạn văn / bài đọc đi kèm câu hỏi =================
+   Trong ô câu hỏi, một dòng bắt đầu bằng ">>" là đoạn văn; các câu bên dưới đều kèm đoạn văn đó
+   cho tới dòng ">>" tiếp theo (dòng ">>" trống = hết đoạn văn). Xuống đoạn ghi bằng " ¶ ". */
+function encP(p){ return String(p || '').replace(/\r/g, '').split(/\n+/).map(x => x.trim()).filter(Boolean).join(' ¶ ').replace(/\|/g, '/'); }
+function decP(p){ return String(p || '').split(' ¶ ').join('\n'); }
+function parseQLines(text, withLevel){
+  let p = ''; const out = [];
+  String(text || '').split('\n').forEach(raw => {
+    const l = raw.trim(); if (!l) return;
+    if (l.startsWith('>>')) { p = l.slice(2).trim(); return; }
+    const parts = l.split('|').map(x => x.trim());
+    let lv = null;
+    if (withLevel && ['1', '3', '5'].includes(parts[0]) && parts.length > 1) lv = +parts.shift();
+    const q = { q:parts[0], a:parts.slice(1).join(' | ') };
+    if (withLevel) q.lv = lv;
+    if (p) q.p = p;
+    out.push(q);
+  });
+  return out;
+}
+// lines for the question box, adding ">>" markers whenever the passage changes
+function withPassages(items, toLine){
+  const out = []; let cur = '';
+  items.forEach(it => {
+    const p = encP(it.p || '');
+    if (p !== cur) { out.push(p ? '>> ' + p : '>>'); cur = p; }
+    out.push(toLine(it));
+  });
+  if (cur) out.push('>>');
+  return out;
+}
+const isPassageLine = l => /^\s*>>/.test(l);
+// the passage shown above the question, with the blank being asked highlighted
+function passageHTML(q){
+  if (!q || !q.p) return '';
+  const mc = mcParse(q.q), m = /(\d{1,3})/.exec(mc ? mc.stem : q.q);
+  let html = q.p.split(' ¶ ').map(par => `<p>${esc(par)}</p>`).join('');
+  if (m) html = html.replace(new RegExp(`\\(${m[1]}\\)\\s*[_…\\.]*`, 'g'), x => `<mark>${x}</mark>`);
+  return `<div class="passage" aria-label="Đoạn văn">${html}</div>`;
+}
+// keep the highlighted blank in view inside a long passage
+new MutationObserver(() => {
+  document.querySelectorAll('.passage').forEach(box => {
+    const mk = box.querySelector('mark');
+    if (mk && !box.dataset.scrolled) { box.dataset.scrolled = '1'; box.scrollTop = Math.max(0, mk.offsetTop - box.offsetTop - box.clientHeight / 3); }
+  });
+}).observe(document.body, { childList:true, subtree:true });
+
 /* ================= Trắc nghiệm A/B/C/D =================
    Câu lưu dạng: "Câu hỏi (A. ...  B. ...  C. ...  D. ...) | B. đáp án".
    Khi chiếu, phần lựa chọn được tách thành các ô bấm được. */
@@ -4456,7 +4523,8 @@ function mcKey(a, opts){
   return hit ? hit.L : '';
 }
 // what every game's question card shows
-function qHTML(q, show){
+function qHTML(q, show){ return passageHTML(q) + qHTMLcore(q, show); }
+function qHTMLcore(q, show){
   const mc = mcParse(q && q.q);
   if (!mc) return `<p class="qtext">${esc(q.q)}</p>`;
   const key = mcKey(q.a, mc.opts), picked = MCPICK && MCPICK.q === q.q ? MCPICK.L : '';
@@ -4466,20 +4534,6 @@ function qHTML(q, show){
       return `<button type="button" class="mc-opt ${cls}" data-l="${o.L}" onclick="mcPick(this)"><b>${o.L}</b><span>${esc(o.t)}</span></button>`;
     }).join('')}</div>`;
 }
-// người dẫn bấm ô học sinh chọn: đánh dấu lựa chọn, chưa lộ đáp án; bấm lần nữa để chấm luôn
-function mcPick(btn){
-  const box = btn.closest('.mc'), key = box.dataset.key, L = btn.dataset.l;
-  const again = btn.classList.contains('picked');
-  MCPICK = { q:box.dataset.q, L };
-  box.querySelectorAll('.mc-opt').forEach(b => b.classList.remove('picked', 'right', 'wrong'));
-  btn.classList.add('picked');
-  if (again && key) {
-    box.querySelector(`[data-l="${key}"]`).classList.add('right');
-    if (L !== key) btn.classList.add('wrong');
-    L === key ? SFX.coin() : SFX.bonk();
-  } else SFX.click();
-}
-
 /* ---------- Ô dán câu trắc nghiệm dưới mỗi ô câu hỏi ---------- */
 const MCImport = (() => {
   const TARGETS = { 'qtext':false, 'b-qtext':false, 'd-qtext':false, 'h-qtext':false, 'p-qtext':true, 't-qtext':false, 'm-qtext':false, 'k-qtext':false, 'c-qtext':false };
@@ -4502,40 +4556,59 @@ Answer: B
     text = text.replace(/^[ \t]*(?:đáp án|dap an|answer key|answers?|key|đa)[ \t]*[:：]?[ \t]*((?:\d+[ \t]*[\.\-:)]?[ \t]*[A-Fa-f]\b[ \t,;]*){1,})$/gim, (m, body) => {
       body.replace(/(\d+)\s*[\.\-:)]?\s*([A-Fa-f])\b/g, (x, n, l) => { keyMap[+n] = l.toUpperCase(); }); return '';
     });
-    const startRe = /^\s*(?:câu|cau|question|q)?\s*(\d+)\s*[\.\):]\s*(.*)$/i;
+    const startRe = /^\s*(?:câu|cau|question|q)?\s*(\d+)\s*(?:[\.\):]\s*(.*))?$/i;
     const optRe = /^\s*\*?\s*([A-Fa-f])\s*[\.\):]\s+\S/;
     const ansRe = /^\s*(?:answer|ans|đáp án|dap an|key|đa)\s*[:：\-]?\s*\(?([A-Fa-f])\b/i;
-    const blocks = []; let cur = null;
+    const rangeRe = /^\s*(?:questions?|câu)\s*(\d+)\s*[-–—]\s*(\d+)\s*[:.]?\s*$/i;
+    const HEAD = [rangeRe, /^\s*(đoạn văn|bài đọc|passage|reading( passage| text)?|text)\s*[:.]?\s*$/i,
+      /^\s*(read|đọc|choose|chọn|mark)\b.*(passage|đoạn văn|bài đọc|A, B, C|correct answer|đáp án đúng|blank)/i];
+    const isHead = l => l.split(/\s+/).length < 40 && HEAD.some(r => r.test(l));
+    let passage = '', range = null, buf = [], cur = null;
+    const blocks = [];
     const close = () => { if (cur) blocks.push(cur); cur = null; };
+    const flushBuf = () => {
+      if (!buf.length) return;
+      const r = buf.map(l => rangeRe.exec(l)).find(Boolean);
+      const body = buf.filter(l => !isHead(l));
+      if (body.length) { passage = body.join('\n'); range = r ? [+r[1], +r[2]] : null; }
+      else if (r) range = [+r[1], +r[2]];
+      buf = [];
+    };
     const takeInline = b => { const r = mcSplit(b.stem, 'A'); if (r) { b.stem = r.stem; b.opts.push(...r.opts); } };
+    const newQ = (n, stem) => {
+      const keep = passage && (!range || n == null || (n >= range[0] && n <= range[1]));
+      return { n, stem, opts:[], ans:null, p:keep ? passage : '' };
+    };
     for (const ln of text.split('\n')) {
-      if (!ln.trim()) { if (cur && cur.opts.length) close(); continue; }
+      const t = ln.trim();
+      if (!t) { if (cur && cur.opts.length) close(); continue; }
       let m;
       if (cur && (m = ansRe.exec(ln))) { cur.ans = m[1].toUpperCase(); continue; }
-      if (!optRe.test(ln) && (m = startRe.exec(ln))) { close(); cur = { n:+m[1], stem:m[2].trim(), opts:[], ans:null }; takeInline(cur); continue; }
+      if (!optRe.test(ln) && (m = startRe.exec(ln))) { close(); flushBuf(); cur = newQ(+m[1], (m[2] || '').trim()); takeInline(cur); continue; }
       if (optRe.test(ln)) {
-        if (!cur) cur = { n:null, stem:'', opts:[], ans:null };
+        if (!cur) { const stem = buf.pop() || ''; flushBuf(); cur = newQ(null, stem); }
         const next = cur.opts.length ? String.fromCharCode(cur.opts[cur.opts.length - 1].L.charCodeAt(0) + 1) : null;
         const r = mcSplit(ln, next);
         if (r) cur.opts.push(...r.opts); else { const one = /^\s*(\*?)\s*([A-Fa-f])\s*[\.\):]\s+(.*)$/.exec(ln); cur.opts.push({ L:one[2].toUpperCase(), t:one[3].trim(), star:!!one[1] }); }
         continue;
       }
-      if (!cur) cur = { n:null, stem:'', opts:[], ans:null };
-      if (cur.opts.length) cur.opts[cur.opts.length - 1].t += ' ' + ln.trim();
-      else { cur.stem += (cur.stem ? ' ' : '') + ln.trim(); if (!cur.opts.length) takeInline(cur); }
+      if (cur && !cur.opts.length && !isHead(t)) { cur.stem += (cur.stem ? ' ' : '') + t; takeInline(cur); continue; }
+      if (cur && cur.opts.length && t.split(/\s+/).length <= 8 && !isHead(t)) { cur.opts[cur.opts.length - 1].t += ' ' + t; continue; }
+      close(); buf.push(t);
     }
     close();
-    return blocks.filter(b => b.stem && b.opts.length >= 2).map(b => {
+    return blocks.filter(b => b.opts.length >= 2 && (b.stem || b.p)).map(b => {
       const mark = /\s*(\(\s*(đúng|dung|correct)\s*\)|[✓✔]|\*)\s*$/i;
       b.opts.forEach(o => { if (mark.test(o.t)) { o.star = true; o.t = o.t.replace(mark, ''); } o.t = o.t.replace(/^\*\s*/, '').trim(); });
       const starred = b.opts.find(o => o.star);
       const L = b.ans || (starred && starred.L) || (b.n != null ? keyMap[b.n] : null) || '';
-      return { stem:cleanQ(b.stem), opts:b.opts.map(o => ({ L:o.L, t:cleanQ(o.t) })), ans:L };
+      const stem = b.stem || `Câu ${b.n != null ? b.n : ''}`.trim();
+      return { stem:cleanQ(stem), opts:b.opts.map(o => ({ L:o.L, t:cleanQ(o.t) })), ans:L, p:b.p };
     });
   }
   const lineOf = (it, withLevel, lv) => {
     const o = it.opts.find(x => x.L === it.ans);
-    return (withLevel ? (lv || 1) + ' | ' : '') + `${it.stem} (${it.opts.map(x => `${x.L}. ${x.t}`).join('  ')}) | ${o ? `${o.L}. ${o.t}` : ''}`;
+    return (withLevel && lv ? lv + ' | ' : '') + `${it.stem} (${it.opts.map(x => `${x.L}. ${x.t}`).join('  ')}) | ${o ? `${o.L}. ${o.t}` : ''}`;
   };
 
   function boxHTML(id){
@@ -4544,7 +4617,7 @@ Answer: B
       <div class="mi-panel" hidden>
         <label>Dán nguyên văn từ Word, Google Docs, đề thi… Mỗi câu có các lựa chọn A, B, C, D. Đáp án ghi kiểu “Answer: B”, đánh dấu * cạnh lựa chọn đúng, hoặc gom cuối bài “Đáp án: 1B 2C 3A”.
           <textarea class="mi-src" spellcheck="false" style="min-height:170px" placeholder="${esc(EXAMPLE)}"></textarea></label>
-        ${TARGETS[id] ? `<div class="row mi-lv" style="justify-content:flex-start"><span class="note">Mức điểm cho các câu này:</span>${[1, 3, 5].map(v => `<button type="button" class="chip mi-lvb ${v === 1 ? 'sel' : ''}" data-v="${v}">${v}đ</button>`).join('')}</div>` : ''}
+        ${TARGETS[id] ? `<div class="row mi-lv" style="justify-content:flex-start"><span class="note">Mức điểm cho các câu này:</span>${[[0, '✨ AI tự chấm'], [1, '1đ'], [3, '3đ'], [5, '5đ']].map(([v, l]) => `<button type="button" class="chip mi-lvb ${v === 0 ? 'sel' : ''}" data-v="${v}">${l}</button>`).join('')}</div>` : ''}
         <div class="mi-prev"></div>
         <div class="row" style="justify-content:flex-start">
           <button type="button" class="btn btn-gold mi-add" disabled>Thêm vào danh sách</button>
@@ -4558,8 +4631,8 @@ Answer: B
   function preview(id){
     const box = document.getElementById('mi-' + id), list = parsed[id] || [];
     const missing = list.filter(x => !x.ans).length;
-    box.querySelector('.mi-prev').innerHTML = list.length ? `<p class="note">Nhận được <b>${list.length}</b> câu${missing ? `, <b class="neg">${missing}</b> câu chưa có đáp án` : ', đủ đáp án 👍'}.</p>
-      <ol class="mi-list">${list.slice(0, 6).map(it => `<li><span>${esc(it.stem)}</span><span class="mi-opts">${it.opts.map(o => `<i class="${o.L === it.ans ? 'ok' : ''}">${o.L}. ${esc(o.t)}</i>`).join('')}</span></li>`).join('')}${list.length > 6 ? `<li class="note">… và ${list.length - 6} câu nữa</li>` : ''}</ol>`
+    box.querySelector('.mi-prev').innerHTML = list.length ? `<p class="note">Nhận được <b>${list.length}</b> câu${missing ? `, <b class="neg">${missing}</b> câu chưa có đáp án` : ', đủ đáp án 👍'}.${list.some(x => x.p) ? ` <b>${list.filter(x => x.p).length}</b> câu có kèm đoạn văn 📄.` : ''}</p>
+      <ol class="mi-list">${list.slice(0, 6).map(it => `<li><span>${it.p ? '📄 ' : ''}${esc(it.stem)}</span><span class="mi-opts">${it.opts.map(o => `<i class="${o.L === it.ans ? 'ok' : ''}">${o.L}. ${esc(o.t)}</i>`).join('')}</span></li>`).join('')}${list.length > 6 ? `<li class="note">… và ${list.length - 6} câu nữa</li>` : ''}</ol>`
       : `<p class="note">Chưa nhận được câu nào. Mỗi câu cần ít nhất 2 lựa chọn A, B.</p>`;
     box.querySelector('.mi-add').disabled = !list.length;
     box.querySelector('.mi-ai').hidden = !(missing && typeof AI !== 'undefined' && AI.available());
@@ -4572,7 +4645,7 @@ Answer: B
     const btn = box.querySelector('.mi-ai'); btn.disabled = true;
     box.querySelector('.mi-msg').textContent = `AI đang giải ${miss.length} câu…`;
     const prompt = `Choose the correct option for each multiple-choice question below (English-learning exercises for Vietnamese students).
-${miss.map(x => `#${x.i}: ${x.it.stem}\n${x.it.opts.map(o => `${o.L}. ${o.t}`).join('\n')}`).join('\n\n')}
+${miss.map(x => `${x.it.p ? `Passage for #${x.i}:\n${x.it.p}\n` : ''}#${x.i}: ${x.it.stem}\n${x.it.opts.map(o => `${o.L}. ${o.t}`).join('\n')}`).join('\n\n')}
 
 Reply with only a JSON array like [{"i":0,"a":"B"}], one object per question, using the # numbers above.`;
     try {
@@ -4585,7 +4658,7 @@ Reply with only a JSON array like [{"i":0,"a":"B"}], one object per question, us
   }
   function wire(id){
     const box = document.getElementById('mi-' + id), panel = box.querySelector('.mi-panel'), src = box.querySelector('.mi-src');
-    level[id] = 1;
+    level[id] = 0;
     box.querySelector('.mi-open').addEventListener('click', () => { panel.hidden = !panel.hidden; if (!panel.hidden) { src.focus(); preview(id); } });
     box.querySelector('.mi-close').addEventListener('click', () => { panel.hidden = true; });
     src.addEventListener('input', () => { parsed[id] = parse(src.value); box.querySelector('.mi-msg').textContent = ''; preview(id); });
@@ -4597,12 +4670,13 @@ Reply with only a JSON array like [{"i":0,"a":"B"}], one object per question, us
       const list = parsed[id] || []; if (!list.length) return;
       const ta = document.getElementById(id); if (!ta) return;
       const prev = ta.value.trim();
-      ta.value = (prev ? prev + '\n' : '') + list.map(it => lineOf(it, TARGETS[id], level[id])).join('\n');
+      ta.value = (prev ? prev + '\n' : '') + withPassages(list, it => lineOf(it, TARGETS[id], level[id])).join('\n');
       ta.scrollTop = ta.scrollHeight;
       ta.dispatchEvent(new Event('input', { bubbles:true }));
       const miss = list.filter(x => !x.ans).length;
       box.querySelector('.mi-msg').textContent = `Đã thêm ${list.length} câu trắc nghiệm vào danh sách${miss ? `, ${miss} câu chưa có đáp án (cô điền sau dấu | nha)` : ''}.`;
       src.value = ''; parsed[id] = []; preview(id); SFX.coin();
+      if (TARGETS[id] && !level[id] && typeof P !== 'undefined') P.classify();
     });
   }
   function attach(){
@@ -4616,6 +4690,134 @@ Reply with only a JSON array like [{"i":0,"a":"B"}], one object per question, us
   new MutationObserver(attach).observe(document.body, { childList:true, subtree:true });
   attach();
   return { parse };
+})();
+/* ================= Chấm tự động & AI giải đáp án ================= */
+var QREF = {};             // câu đang chiếu: chữ câu hỏi -> đối tượng câu (để AI ghi đáp án vào)
+function aiOK(){ return !!(window.__AI && window.__AI.available()); }
+function nsObj(ns){ return ({ A, B, D, H, P, T, M, K, C })[ns]; }
+
+// phần đáp án dưới mỗi câu hỏi, dùng chung cho mọi trò
+function ansBlock(q, show, ns){
+  QREF[q.q] = q;
+  const qs = esc(q.q);
+  if (q.a && show) return `<div class="ans">Đáp án: ${esc(q.a)}${q.byAI ? ' <span class="tag">AI giải</span>' : ''}</div>` +
+    (q.why ? `<div class="ans-why">💡 ${esc(q.why)}</div>` : aiOK() ? `<button class="linkbtn" data-q="${qs}" data-ns="${ns}" onclick="AIAns.explain(this)">💡 Vì sao?</button>` : '');
+  if (q.a) return `<button class="linkbtn" onclick="${ns}.showAns()">Hiện đáp án</button>`;
+  return aiOK() ? `<button class="linkbtn" data-q="${qs}" data-ns="${ns}" onclick="AIAns.solve(this)">✨ Hiện đáp án (AI giải)</button>` : '';
+}
+
+const AIAns = (() => {
+  const busy = {};
+  async function fill(q){
+    if (q.a) return q;
+    if (busy[q.q]) return busy[q.q];
+    const mc = mcParse(q.q);
+    const prompt = `You help a Vietnamese English teacher during a classroom quiz. Answer this question for her students.
+${q.p ? `Passage (the question refers to it; a number like (47) marks a blank):\n${decP(q.p)}\n` : ''}Question: ${mc ? mc.stem : q.q}
+${mc ? 'Options:\n' + mc.opts.map(o => `${o.L}. ${o.t}`).join('\n') + '\n' : ''}
+Reply with only JSON: {"answer":"${mc ? 'the letter and option text, e.g. B. goes' : 'the short correct answer'}","why":"one short sentence in Vietnamese explaining why this is correct"}`;
+    busy[q.q] = window.__AI.ask(prompt, []).then(r => {
+      const ans = cleanQ(r && r.answer);
+      if (!ans) throw { code:'empty_completion' };
+      q.a = ans; q.why = cleanQ(r.why); q.byAI = true; return q;
+    }).finally(() => { delete busy[q.q]; });
+    return busy[q.q];
+  }
+  async function solve(btn){
+    const q = QREF[btn.dataset.q]; if (!q) return;
+    btn.disabled = true; btn.textContent = '✨ AI đang giải…';
+    try { await fill(q); SFX.flip(); const g = nsObj(btn.dataset.ns); g && g.showAns(); }
+    catch (e) { btn.disabled = false; btn.textContent = `Chưa giải được: ${AIERR[e && e.code] || 'thử lại nha'}`; }
+  }
+  async function explain(btn){
+    const q = QREF[btn.dataset.q]; if (!q || !q.a) return;
+    btn.disabled = true; btn.textContent = '💡 AI đang giải thích…';
+    const mc = mcParse(q.q);
+    const prompt = `${q.p ? `Passage:\n${decP(q.p)}\n\n` : ''}Explain in ONE short Vietnamese sentence why "${q.a}" is the correct answer to this English quiz question${mc ? ' (multiple choice)' : ''}: ${q.q}
+Reply with only JSON: {"why":"..."}`;
+    try { const r = await window.__AI.ask(prompt, []); q.why = cleanQ(r && r.why); const g = nsObj(btn.dataset.ns); g && g.showAns(); }
+    catch (e) { btn.disabled = false; btn.textContent = `Chưa giải thích được: ${AIERR[e && e.code] || 'thử lại nha'}`; }
+  }
+  return { fill, solve, explain };
+})();
+
+// bấm ô học sinh chọn: chấm ngay, rồi tự bấm Đúng/Sai của trò sau 2 giây (huỷ được)
+async function mcPick(btn){
+  const box = btn.closest('.mc');
+  if (!box || box.dataset.done || box.classList.contains('thinking')) return;
+  const L = btn.dataset.l;
+  MCPICK = { q:box.dataset.q, L };
+  box.querySelectorAll('.mc-opt').forEach(b => b.classList.remove('picked', 'right', 'wrong'));
+  btn.classList.add('picked');
+  let key = box.dataset.key;
+  const q = QREF[box.dataset.q];
+  if (!key) {
+    if (!q || !aiOK()) { SFX.click(); mcVerdict(box, null, 'Câu này chưa có đáp án. Cô bấm Đúng hoặc Sai giúp nha.'); return; }
+    box.classList.add('thinking'); mcVerdict(box, null, '✨ AI đang chấm…'); SFX.click();
+    try { await AIAns.fill(q); key = mcKey(q.a, mcParse(q.q).opts); box.dataset.key = key; }
+    catch (e) { box.classList.remove('thinking'); mcVerdict(box, null, `AI chưa chấm được (${AIERR[e && e.code] || 'lỗi'}). Cô bấm Đúng hoặc Sai giúp nha.`); return; }
+    box.classList.remove('thinking');
+    if (!key) { mcVerdict(box, null, `AI trả lời: ${q.a}. Cô bấm Đúng hoặc Sai giúp nha.`); return; }
+  }
+  box.dataset.done = '1';
+  const right = L === key, keyBtn = box.querySelector(`[data-l="${key}"]`);
+  keyBtn.classList.add('right'); if (!right) btn.classList.add('wrong');
+  right ? SFX.coin() : SFX.bonk();
+  const keyText = keyBtn.querySelector('span').textContent;
+  mcVerdict(box, right, (right ? '✅ ĐÚNG RỒI!' : `❌ SAI RỒI! Đáp án đúng: ${key}. ${keyText}`) + (q && q.why ? `<span class="mc-why">💡 ${esc(q.why)}</span>` : ''), true);
+  box._t = setTimeout(() => mcAutoJudge(box, right), 2200);
+}
+function mcVerdict(box, right, html, withCancel){
+  let v = box.nextElementSibling;
+  if (!v || !v.classList.contains('mc-verdict')) { v = document.createElement('div'); v.className = 'mc-verdict'; box.after(v); }
+  v.className = 'mc-verdict ' + (right === true ? 'ok' : right === false ? 'bad' : '');
+  v.innerHTML = `<span>${html}</span>` + (withCancel ? `<span class="mc-auto">Tự ghi kết quả sau 2 giây… <button type="button" class="linkbtn" onclick="mcCancel(this)">Để cô tự bấm</button></span>` : '');
+}
+function mcCancel(link){
+  const box = link.closest('.mc-verdict').previousElementSibling;
+  if (box && box._t) { clearTimeout(box._t); box._t = null; }
+  link.parentElement.textContent = 'Cô tự bấm Đúng hoặc Sai bên dưới nha.';
+}
+function mcAutoJudge(box, right){
+  if (!document.body.contains(box)) return;
+  const scope = box.closest('.stage') || document;
+  const row = [...scope.querySelectorAll('.row')].find(r => r.querySelector('.btn-ok') && r.querySelector('.btn-no'));
+  if (!row) return;
+  MCPICK = null;
+  (right ? row.querySelector('.btn-ok') : row.querySelector('.btn-no')).click();
+}
+
+/* ---------- Lá bài quyền năng: AI chia câu dễ / trung bình / khó ---------- */
+const PLevel = (() => {
+  const LV = /^\s*[135]\s*\|/;
+  async function classify(ta){
+    const lines = ta.value.split('\n'), idx = [];
+    lines.forEach((l, i) => { if (l.trim() && !LV.test(l) && !isPassageLine(l)) idx.push(i); });
+    if (!idx.length) return 0;
+    let done = 0;
+    for (let k = 0; k < idx.length; k += 40) {
+      const part = idx.slice(k, k + 40);
+      const prompt = `Rate the difficulty of each quiz question for Vietnamese secondary-school learners of English.
+1 = easy: basic vocabulary, recall, very common patterns.
+3 = medium: applying a grammar rule, common collocations, short transformations.
+5 = hard: tricky distractors, less common vocabulary, multi-step reasoning or full-sentence rewriting.
+Spread the levels honestly; do not rate everything the same.
+Questions (format "question | answer"):
+${part.map(i => `#${i}: ${lines[i].trim()}`).join('\n')}
+
+Reply with only a JSON array like [{"i":${part[0]},"level":3}], one object per question, using the # numbers above.`;
+      const arr = await window.__AI.ask(prompt, []);
+      (Array.isArray(arr) ? arr : []).forEach(r => {
+        const i = +r.i, lv = +r.level;
+        if (part.includes(i) && [1, 3, 5].includes(lv) && !LV.test(lines[i])) { lines[i] = `${lv} | ${lines[i].trim()}`; done++; }
+      });
+    }
+    ta.value = lines.join('\n');
+    ta.dispatchEvent(new Event('input', { bubbles:true }));
+    return done;
+  }
+  const unlevelled = ta => ta.value.split('\n').filter(l => l.trim() && !LV.test(l) && !isPassageLine(l)).length;
+  return { classify, unlevelled };
 })();
 </script>
 
