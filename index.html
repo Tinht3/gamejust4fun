@@ -537,6 +537,7 @@ body{min-height:100%;background-attachment:fixed}
 .mi-opts i.ok{color:var(--mint);font-weight:700}
 .team-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .team-ctl .ghost:disabled{opacity:.4}
+.rescue{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:24px;border-radius:18px;background:rgba(0,0,0,.25);max-width:640px}
 /* ===== shared reward / penalty deck ===== */
 .deck-btn{white-space:nowrap}
 .deck-veil .box{align-items:center;text-align:center;max-width:640px}
@@ -737,6 +738,25 @@ body{min-height:100%;background-attachment:fixed}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
+/* Cứu trang: nếu một trò bị lỗi khi vẽ (thường do dữ liệu ván cũ), hiện nút xoá ván đó thay vì để trang trắng */
+var RESCUE_KEYS = { joker:'jokers-call-v1', banh:'an-hay-khong-an-v2', daugia:'dau-gia-v1', haitrinh:'dai-hai-trinh-v1', quyennang:'la-bai-quyen-nang-v1', bom:'truyen-bom-v1', hopnhac:'hop-nhac-v1', ducvua:'duc-vua-v1', bangchuyen:'bang-chuyen-v1' };
+var RESCUE_STAGE = { joker:'stage', banh:'b-stage', daugia:'d-stage', haitrinh:'h-stage', quyennang:'p-stage', bom:'t-stage', hopnhac:'m-stage', ducvua:'k-stage', bangchuyen:'c-stage' };
+function rescueCheck(){
+  var g = document.documentElement.dataset.game, id = RESCUE_STAGE[g];
+  var st = id && document.getElementById(id);
+  if (!st || st.innerHTML.trim() || document.getElementById('rescue')) return;
+  st.innerHTML = '<div id="rescue" class="rescue"><h2>Trò này chưa mở được</h2>' +
+    '<p class="lead">Dữ liệu ván chơi trước đang lưu trên máy không khớp với bản mới. Xoá ván đó là chơi lại được, câu hỏi cô đã nhập ở các trò khác vẫn giữ nguyên.</p>' +
+    '<button class="btn btn-eat" onclick="rescueReset(\'' + g + '\')">Xoá ván cũ và mở lại</button></div>';
+}
+function rescueReset(g){
+  try { localStorage.removeItem(RESCUE_KEYS[g]); localStorage.setItem('tro-choi-current', g); } catch(e) {}
+  location.reload();
+}
+window.addEventListener('error', function(){ setTimeout(rescueCheck, 50); });
+window.addEventListener('load', function(){ setTimeout(rescueCheck, 300); });
+</script>
+<script>
 const KEY = 'jokers-call-v1';
 const SAMPLE_Q = `She ___ to school every day. (go / goes) | goes
 What is the past form of "eat"? | ate
@@ -765,7 +785,7 @@ function fresh(){
 }
 let S = null;
 try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
-if (!S || !S.phase) S = fresh();
+if (!S || !S.phase) S = fresh(); else S = Object.assign(fresh(), S);
 let peek = false;
 let revealing = false;
 let muted = false;
@@ -1254,7 +1274,7 @@ function go(){
 
 function boot(data){ if (data && data.phase) S = data; go(); }
 window.claude?.hot?.snapshot?.(() => S);
-window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data);
+try { window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data); } catch(e) { console.error(e); }
 /* ================= ĂN HAY KHÔNG ĂN? ================= */
 const B = (() => {
   const KEYB = 'an-hay-khong-an-v2';
@@ -1279,7 +1299,7 @@ const B = (() => {
   }
   let S = null;
   try { S = JSON.parse(localStorage.getItem(KEYB)); } catch(e) {}
-  if (!S || !S.phase) S = fresh();
+  if (!S || !S.phase) S = fresh(); else S = Object.assign(fresh(), S);
   let undo = [], showLog = false, editing = false;
 
   const save = () => { try { localStorage.setItem(KEYB, JSON.stringify(S)); } catch(e) {} };
@@ -1578,7 +1598,7 @@ const D = (() => {
   }
   let S = null;
   try { S = JSON.parse(localStorage.getItem(KEYD)); } catch(e) {}
-  if (!S || !S.phase) S = fresh();
+  if (!S || !S.phase) S = fresh(); else S = Object.assign(fresh(), S);
   let undo = [], showBook = false;
 
   const save = () => { try { localStorage.setItem(KEYD, JSON.stringify(S)); } catch(e) {} };
@@ -1923,7 +1943,7 @@ Tiến 3`;
   }
   let S = null;
   try { S = JSON.parse(localStorage.getItem(KEYH)); } catch(e) {}
-  if (!S || !S.phase) S = fresh();
+  if (!S || !S.phase) S = fresh(); else S = Object.assign(fresh(), S);
   if (S.phase === 'spinning') S.phase = 'spin';
   let undo = [], editing = false;
 
@@ -2225,7 +2245,7 @@ const P = (() => {
   }
   let S = null;
   try { S = JSON.parse(localStorage.getItem(KEYP)); } catch(e) {}
-  if (!S || !S.phase) S = fresh();
+  if (!S || !S.phase) S = fresh(); else S = Object.assign(fresh(), S);
   let undo = [], hostPick = false, showLog = false, editing = false;
 
   const save = () => { try { localStorage.setItem(KEYP, JSON.stringify(S)); } catch(e) {} };
@@ -2514,7 +2534,7 @@ const T = (() => {
   }
   let S = null;
   try { S = JSON.parse(localStorage.getItem(KEYT)); } catch(e) {}
-  if (!S || !S.phase) S = fresh();
+  if (!S || !S.phase) S = fresh(); else S = Object.assign(fresh(), S);
   if (S.phase === 'tick' && S.running) { S.running = false; S.remaining = Math.max(1000, S.remaining || S.secs * 1000); }
   let lastSec = null, editing = false, railKeys = [];
 
@@ -2874,7 +2894,7 @@ Hôm qua qua nói qua mà qua không qua`;
   }
   let S = null;
   try { S = JSON.parse(localStorage.getItem(KEYM)); } catch(e) {}
-  if (!S || !S.phase) S = fresh();
+  if (!S || !S.phase) S = fresh(); else S = Object.assign(fresh(), S);
   if (S.phase === 'playing') S.phase = 'idle';
   if (S.source === 'file') S.source = 'chill';
   let stopTimer = null, editing = false;
@@ -3115,7 +3135,7 @@ Lộc vua ban | một viên kẹo | 4`;
   }
   let S = null;
   try { S = JSON.parse(localStorage.getItem(KEYK)); } catch(e) {}
-  if (!S || !S.phase) S = fresh();
+  if (!S || !S.phase) S = fresh(); else S = Object.assign(fresh(), S);
 
   const save = () => { try { localStorage.setItem(KEYK, JSON.stringify(S)); } catch(e) {} };
   function nextQ(){ S.curQ = S.questions.length ? S.questions[S.qi % S.questions.length] : null; S.qi++; S.showAns = false; }
@@ -3635,7 +3655,7 @@ Quality check`;
   }
   let S = null;
   try { S = JSON.parse(localStorage.getItem(KEYC)); } catch(e) {}
-  if (!S || !S.phase) S = fresh();
+  if (!S || !S.phase) S = fresh(); else S = Object.assign(fresh(), S);
   if (S.phase === 'question' && S.running) { S.running = false; S.remaining = Math.max(1000, S.remaining || 10000); }
   let undo = [], lastSec = null, editing = false;
 
@@ -4077,6 +4097,7 @@ const deckBtn = (m, name) => `<button class="ghost deck-btn" data-n="${esc(Strin
 /* ================= router ================= */
 function openGame(g){
   document.documentElement.dataset.game = g;
+  setTimeout(rescueCheck, 100);
   document.getElementById('decor').hidden = g !== 'joker';
   ['home','joker','banh','daugia','haitrinh','quyennang','bom','hopnhac','ducvua','bangchuyen'].forEach(k => document.getElementById('app-' + k).hidden = k !== g);
   if (g !== 'joker' && peek) { peek = false; drawVeil(); }
@@ -4087,15 +4108,8 @@ function openGame(g){
   try { localStorage.setItem('tro-choi-current', g); } catch(e) {}
   window.scrollTo(0, 0);
 }
-document.getElementById('tile-cake').innerHTML = lavCake(false, 'lavcake');
-B.render();
-D.render();
-H.render();
-P.render();
-T.render();
-M.render();
-K.render();
-C.render();
+try { document.getElementById('tile-cake').innerHTML = lavCake(false, 'lavcake'); } catch(e) {}
+[B, D, H, P, T, M, K, C].forEach(g => { try { g.render(); } catch(e) { console.error(e); } });
 let lastGame = 'home';
 try { lastGame = localStorage.getItem('tro-choi-current') || 'home'; } catch(e) {}
 openGame(['home','joker','banh','daugia','haitrinh','quyennang','bom','hopnhac','ducvua','bangchuyen'].includes(lastGame) ? lastGame : 'home');
@@ -4694,12 +4708,13 @@ Reply with only a JSON array like [{"i":0,"a":"B"}], one object per question, us
   return { parse };
 })();
 /* ================= Chấm tự động & AI giải đáp án ================= */
-var QREF = {};             // câu đang chiếu: chữ câu hỏi -> đối tượng câu (để AI ghi đáp án vào)
+var QREF = QREF || {};             // câu đang chiếu: chữ câu hỏi -> đối tượng câu (để AI ghi đáp án vào)
 function aiOK(){ return !!(window.__AI && window.__AI.available()); }
 function nsObj(ns){ return ({ A, B, D, H, P, T, M, K, C })[ns]; }
 
 // phần đáp án dưới mỗi câu hỏi, dùng chung cho mọi trò
 function ansBlock(q, show, ns){
+  QREF = QREF || {};
   QREF[q.q] = q;
   const qs = esc(q.q);
   if (q.a && show) return `<div class="ans">Đáp án: ${esc(q.a)}${q.byAI ? ' <span class="tag">AI giải</span>' : ''}</div>` +
