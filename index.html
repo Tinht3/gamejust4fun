@@ -1148,8 +1148,12 @@ body{min-height:100%;background-attachment:fixed}
 .dk-side.ok{animation:dkok .5s}.dk-side.bad{animation:rgshake .4s}
 @keyframes dkok{50%{transform:scale(1.03)}}
 .dk-q{padding:14px;border-radius:14px;background:rgba(255,255,255,.12);min-height:150px;display:flex;flex-direction:column;justify-content:center}
-.dk-q .qtext{color:#fff;text-align:center;font-size:clamp(1.2rem,2.4vw,2rem);margin:0}
-.dk-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dk-q .qtext{color:#fff;text-align:center;font-size:clamp(1.1rem,1.9vw,1.75rem);line-height:1.25;margin:0}
+.dk-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.dk-opts.long{grid-template-columns:1fr}
+.dk-opts.long .dk-o{min-height:56px;font-size:clamp(.95rem,1.5vw,1.3rem)}
+.dk-side{min-width:0}
+.dk-q .qtext{overflow-wrap:break-word}
 .dk-o{font:inherit;min-height:84px;border:0;border-radius:14px;background:#f4f6fb;color:#1a1f33;font-size:clamp(1rem,1.9vw,1.9rem);font-weight:800;cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.25);transition:transform .1s;overflow-wrap:break-word;word-break:normal;hyphens:auto;padding:8px;line-height:1.15}
 .dk-o:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
 .dk-o.sel{outline:4px solid #ffd25a}
@@ -8075,7 +8079,7 @@ const DK = (() => {
     const key = c.o ? c.o.key : '';
     const body = c.pad ? `<div class="dk-typed ${t.flash || ''}">${esc(c.typed || '') || '&nbsp;'}</div>
         <div class="dk-pad">${['1','2','3','4','5','6','7','8','9','C','0','OK'].map(x => `<button type="button" class="${x === 'C' ? 'c' : x === 'OK' ? 'ok' : ''}" onclick="DK.key(${i},'${x}')">${x === 'OK' ? 'Đi' : x}</button>`).join('')}</div>`
-      : `<div class="dk-opts">${c.o.opts.map(o => { const st = t.flash ? (o.L === key ? 'right' : (o.L === c.pick || (t.flash === 'bad' && s.log[0] && s.log[0].said === o.L)) ? 'wrong' : '') : (o.L === c.pick ? 'sel' : '');
+      : `<div class="dk-opts ${c.o.opts.some(o => String(o.t).length > 14) ? 'long' : ''}">${c.o.opts.map(o => { const st = t.flash ? (o.L === key ? 'right' : (o.L === c.pick || (t.flash === 'bad' && s.log[0] && s.log[0].said === o.L)) ? 'wrong' : '') : (o.L === c.pick ? 'sel' : '');
           return `<button type="button" class="dk-o ${st}" onclick="DK.pick(${i},'${o.L}')">${esc(o.t)}</button>`; }).join('')}</div>`;
     return `<div class="dk-side s${i} ${t.flash || ''}"><div class="dk-q">${passageHTML(c.q)}${qStemHTML(c.o ? c.o.stem : c.q.q)}</div>${body}
       ${(!s.auto || !key) && !c.pad && c.pick && !t.flash ? `<div class="row"><button class="btn btn-ok" onclick="DK.judge(${i},true)">Đúng</button><button class="btn btn-no" onclick="DK.judge(${i},false)">Sai</button></div>` : ''}
@@ -8810,21 +8814,24 @@ var MCPICK = null; // lựa chọn học sinh vừa nói, để giữ khi màn h
 
 // tìm dãy "A. … B. … C. …" liên tiếp trong một đoạn chữ; first = chữ cái phải bắt đầu (null = bất kì)
 function mcSplit(text, first){
+  // tìm mọi nhãn A. B. C.; chọn chuỗi liên tiếp dài nhất (hoà thì lấy chuỗi nằm sau cùng),
+  // để lời thoại kiểu "A: …? B: …" trong đề không bị nhận nhầm là đáp án
   const re = /(^|[\s(\[;\/,])\*?([A-Fa-f])\s*[\.\):]\s+/g;
-  const hits = []; let m, want = first ? first.charCodeAt(0) : null, lower = null;
-  while ((m = re.exec(text))) {
-    const ch = m[2], up = ch.toUpperCase().charCodeAt(0), isLow = ch !== ch.toUpperCase();
-    if (want === null) { want = up; lower = isLow; }
-    if (up === want && (lower === null || lower === isLow)) {
-      if (lower === null) lower = isLow;
-      hits.push({ L:String.fromCharCode(up), at:m.index + m[1].length, start:m.index + m[0].length, star:/\*/.test(m[0]) });
-      want++;
-    }
-  }
+  const marks = []; let m;
+  while ((m = re.exec(text))) { const ch = m[2]; marks.push({ up:ch.toUpperCase().charCodeAt(0), low:ch !== ch.toUpperCase(), at:m.index + m[1].length, start:m.index + m[0].length, star:/\*/.test(m[0]) }); }
+  const startCode = first ? first.toUpperCase().charCodeAt(0) : null;
+  let hits = [];
+  marks.forEach((s0, i) => {
+    if (startCode !== null ? s0.up !== startCode : (i && marks[i - 1].up === s0.up - 1 && marks[i - 1].low === s0.low)) return;
+    const seq = [s0]; let want = s0.up + 1;
+    for (let j = i + 1; j < marks.length; j++) if (marks[j].up === want && marks[j].low === s0.low) { seq.push(marks[j]); want++; }
+    if (seq.length >= hits.length) hits = seq;
+  });
+  hits = hits.map(h => ({ L:String.fromCharCode(h.up), at:h.at, start:h.start, star:h.star }));
   if (hits.length < 2) return null;
   const opts = hits.map((h, i) => {
     let t = text.slice(h.start, i + 1 < hits.length ? hits[i + 1].at : text.length).trim();
-    if (i === hits.length - 1) t = t.replace(/[\)\]]\s*[\.?!]?\s*$/, '');
+    if (i === hits.length - 1 && (t.match(/[\)\]]/g) || []).length > (t.match(/[\(\[]/g) || []).length) t = t.replace(/[\)\]]\s*[\.?!]?\s*$/, '');
     t = t.replace(/[;\/,]\s*$/, '').trim();
     return { L:h.L, t, star:h.star };
   });
@@ -8895,29 +8902,30 @@ Answer: B
       else if (r) range = [+r[1], +r[2]];
       buf = [];
     };
-    const takeInline = b => { const r = mcSplit(b.stem, 'A'); if (r) { b.stem = r.stem; b.opts.push(...r.opts); } };
+    // gom cả câu (hội thoại A:/B: và dòng lựa chọn) rồi mới tách đáp án một lần,
+    // để nhãn người nói không bị nhận nhầm là lựa chọn
+    const split = b => mcSplit(b.lines.join(' '), 'A');
+    const hasOpts = b => { const r = split(b); return !!(r && r.opts.length >= 2); };
     const newQ = (n, stem) => {
       const keep = passage && (!range || n == null || (n >= range[0] && n <= range[1]));
-      return { n, stem, opts:[], ans:null, p:keep ? passage : '' };
+      return { n, lines:stem ? [stem] : [], ans:null, p:keep ? passage : '' };
     };
     for (const ln of text.split('\n')) {
       const t = ln.trim();
-      if (!t) { if (cur && cur.opts.length) close(); continue; }
+      if (!t) { if (cur && hasOpts(cur)) close(); continue; }
       let m;
       if (cur && (m = ansRe.exec(ln))) { cur.ans = m[1].toUpperCase(); continue; }
-      if (!optRe.test(ln) && (m = startRe.exec(ln))) { close(); flushBuf(); cur = newQ(+m[1], (m[2] || '').trim()); takeInline(cur); continue; }
+      if (!optRe.test(ln) && (m = startRe.exec(ln))) { close(); flushBuf(); cur = newQ(+m[1], (m[2] || '').trim()); continue; }
       if (optRe.test(ln)) {
         if (!cur) { const stem = buf.pop() || ''; flushBuf(); cur = newQ(null, stem); }
-        const next = cur.opts.length ? String.fromCharCode(cur.opts[cur.opts.length - 1].L.charCodeAt(0) + 1) : null;
-        const r = mcSplit(ln, next);
-        if (r) cur.opts.push(...r.opts); else { const one = /^\s*(\*?)\s*([A-Fa-f])\s*[\.\):]\s+(.*)$/.exec(ln); cur.opts.push({ L:one[2].toUpperCase(), t:one[3].trim(), star:!!one[1] }); }
-        continue;
+        cur.lines.push(t); continue;
       }
-      if (cur && !cur.opts.length && !isHead(t)) { cur.stem += (cur.stem ? ' ' : '') + t; takeInline(cur); continue; }
-      if (cur && cur.opts.length && t.split(/\s+/).length <= 8 && !isHead(t)) { cur.opts[cur.opts.length - 1].t += ' ' + t; continue; }
+      if (cur && !hasOpts(cur) && !isHead(t)) { cur.lines.push(t); continue; }
+      if (cur && hasOpts(cur) && t.split(/\s+/).length <= 8 && !isHead(t)) { cur.lines.push(t); continue; }
       close(); buf.push(t);
     }
     close();
+    blocks.forEach(b => { const r = split(b); b.stem = r ? r.stem : b.lines.join(' '); b.opts = r ? r.opts : []; });
     return blocks.filter(b => b.opts.length >= 2 && (b.stem || b.p)).map(b => {
       const mark = /\s*(\(\s*(đúng|dung|correct)\s*\)|[✓✔]|\*)\s*$/i;
       b.opts.forEach(o => { if (mark.test(o.t)) { o.star = true; o.t = o.t.replace(mark, ''); } o.t = o.t.replace(/^\*\s*/, '').trim(); });
