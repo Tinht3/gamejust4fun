@@ -8315,14 +8315,16 @@ const NS = (() => {
 const TD = (() => {
   const POSES = [
     { ic:'🙆', t:'Hai tay chụm trên đầu' },
-    { ic:'🤸', t:'Dang hai tay chữ T' },
-    { ic:'🙇', t:'Cúi người chạm gối' },
-    { ic:'🧎', t:'Ngồi xổm' }
+    { ic:'🙋', t:'Giơ một tay lên cao' },
+    { ic:'🧍', t:'Đứng nghiêm, hai tay xuôi' },
+    { ic:"<svg viewBox='0 0 64 64' width='1em' height='1em' aria-hidden='true'><rect x='14' y='34' width='26' height='5' rx='2' fill='#c98a4a'/><rect x='14' y='14' width='5' height='25' rx='2' fill='#b0703a'/><path d='M16 39 L16 58 M38 39 L38 58' stroke='#8a5a2a' stroke-width='4' stroke-linecap='round'/><circle cx='30' cy='12' r='7' fill='#f6c79a'/><path d='M23 10 Q24 3 31 4 Q38 4 37 11 Q33 7 30 8 Q26 8 23 10Z' fill='#5a3a1e'/><rect x='23' y='19' width='13' height='16' rx='5' fill='#f08a24'/><path d='M27 33 L46 33 L46 56' stroke='#4a5a8a' stroke-width='7' fill='none' stroke-linecap='round' stroke-linejoin='round'/><ellipse cx='48' cy='57' rx='6' ry='3' fill='#333'/><path d='M34 24 L42 31' stroke='#f6c79a' stroke-width='5' stroke-linecap='round'/></svg>", t:'Ngồi xuống ghế' }
   ];
+  const OLD_POSES = ['Dang hai tay chữ T', 'Cúi người chạm gối', 'Ngồi xổm'];
   const k = GameKit({ ns:'TD', key:'the-duc-abc-v1', pre:'td', keep:['poses', 'pts'],
     fresh:() => ({ phase:'setup', names:['Tổ 1','Tổ 2','Tổ 3','Tổ 4'], poses:POSES.map(p => p.t), pts:10, secs:0, qText:SAMPLE_Q, questions:[], qi:0, curQ:null, showAns:false,
       teams:[], turn:0, opts:null, got:{}, armReset:false }) });
   const S = () => k.S;
+  S().poses = (S().poses || []).map((p, i) => OLD_POSES.includes(p) ? POSES[i].t : p);
   let cd = 0;
   const act = Object.assign(k.acts, {
     start(){
@@ -8331,7 +8333,7 @@ const TD = (() => {
       k.readQs(); s.teams = s.names.map(name => ({ name, score:0 })); s.turn = 0; k.undo = []; s.phase = 'ready'; SFX.click(); k.render();
     },
     go(){ const s = S(), q = k.nextQ(); s.opts = q ? kitOptions(q, s.questions, 4) : null; s.got = {}; k.startT(); s.phase = 'question'; SFX.flip(); k.render(); },
-    count(){ clearInterval(cd); let n = 3; const tick = () => { const e = document.getElementById('td-cd'); if (e) { e.textContent = n > 0 ? n : 'TẠO DÁNG! 🤸'; e.className = 'ns-cd show'; } n > 0 ? SFX.beep(880) : SFX.fanfare(); if (n-- <= 0) clearInterval(cd); }; tick(); cd = setInterval(tick, 900); },
+    count(){ clearInterval(cd); let n = 3; const tick = () => { const e = document.getElementById('td-cd'); if (e) { e.textContent = n > 0 ? n : 'TẠO DÁNG! 🙆'; e.className = 'ns-cd show'; } n > 0 ? SFX.beep(880) : SFX.fanfare(); if (n-- <= 0) clearInterval(cd); }; tick(); cd = setInterval(tick, 900); },
     reveal(){ const s = S(); if (s.phase !== 'question') return; k.stopT(); s.showAns = true; s.phase = 'reveal'; SFX.coin(); k.render(); },
     toggle(i){ const s = S(); s.got[i] = !s.got[i]; SFX.click(); k.render(); },
     award(){ const s = S(); k.snap(); s.teams.forEach((t, i) => { if (s.got[i]) t.score += s.pts; }); s.got = {}; s.turn++; s.phase = 'ready'; SFX.coin(); k.render(); },
@@ -8346,14 +8348,14 @@ const TD = (() => {
   }
   const teamsRow = () => S().teams.length ? `<div class="row">${S().teams.map((t, i) => `<button class="chip ${S().got[i] ? 'sel' : ''}" onclick="TD.toggle(${i})">${S().got[i] ? '✅ ' : ''}${esc(t.name)} · ${t.score}</button>`).join('')}</div>` : '';
   const V = {
-    setup:() => `<div class="td-hero" aria-hidden="true">🙆🤸🙇🧎</div><div class="kicker">Trò chơi ôn tập · Vừa học vừa vận động</div><h1>Thể dục ABC</h1>
+    setup:() => `<div class="td-hero" aria-hidden="true">🙆🙋🧍</div><div class="kicker">Trò chơi ôn tập · Vừa học vừa vận động</div><h1>Thể dục ABC</h1>
       <div class="setup"><div class="panel"><h3>Động tác cho từng đáp án</h3>${POSES.map((p, i) => `<label for="td-p${i}">${p.ic} Đáp án ${'ABCD'[i]}<input id="td-p${i}" value="${esc(S().poses[i] || p.t)}"></label>`).join('')}</div>
         <div class="panel"><h3>Tổ / nhóm (không bắt buộc)</h3>${S().names.map((v, i) => `<label for="td-nm${i}">Tổ ${i + 1}<input id="td-nm${i}" data-tdname value="${esc(v)}" placeholder="Bỏ trống nếu chơi cả lớp"></label>`).join('')}
           <div class="two">${k.num('Điểm mỗi câu đúng', 'pts', S().pts, 0)}${k.num('Giây mỗi câu (0 = không đếm giờ)', 'secs', S().secs, 0)}</div></div>
         ${k.qPanel(`<li>Cả lớp đứng dậy. Đếm 3-2-1, mỗi bạn làm động tác ứng với đáp án mình chọn.</li><li>Cô hiện đáp án, tổ nào làm đúng động tác được cộng điểm.</li>`)}</div>${k.startBtn('Khởi động nào 🤸')}`,
     ready:() => `<div class="kicker">Câu ${S().turn + 1}</div><h1>Cả lớp đứng dậy! 🧍</h1>${teamsRow()}<button class="btn btn-eat" onclick="TD.go()">Ra câu hỏi</button>`,
     question:() => `${k.timebar()}${k.timeup('')}${opts(false)}<div id="td-cd" class="ns-cd" aria-live="assertive"></div>
-      <div class="row"><button class="btn btn-gold" onclick="TD.count()">3-2-1 Tạo dáng! 🤸</button><button class="btn btn-ok" onclick="TD.reveal()">Hiện đáp án</button></div>${k.ctrl('')}`,
+      <div class="row"><button class="btn btn-gold" onclick="TD.count()">3-2-1 Tạo dáng! 🙆</button><button class="btn btn-ok" onclick="TD.reveal()">Hiện đáp án</button></div>${k.ctrl('')}`,
     reveal:() => `${opts(true)}${S().teams.length ? `<p class="lead">Tổ nào làm đúng động tác? Chạm để chọn rồi ghi điểm.</p>${teamsRow()}<div class="row"><button class="btn btn-gold" onclick="TD.award()">Ghi điểm & câu tiếp →</button></div>` : '<button class="btn btn-gold" onclick="TD.next()">Câu tiếp →</button>'}`,
     end:() => { const s = S(), order = s.teams.slice().sort((a, b) => b.score - a.score); return `<div class="kicker">Tổng kết</div><h1>${order[0] ? `🏆 <span class="team-name">${esc(order[0].name)}</span>` : 'Cả lớp khoẻ re! 💪'}</h1>
       ${order.length ? k.endTable([['Hạng'], ['Tổ'], ['Điểm', 1]], order.map((t, i) => [i + 1, `<b>${esc(t.name)}</b>`, t.score])) : ''}${k.resetBtn()}`; }
