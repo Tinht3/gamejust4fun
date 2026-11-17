@@ -9,6 +9,362 @@
 body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 img{max-width:100%}
 [hidden]{display:none!important}
+/* ---------- khung chung trò tiến bước ---------- */
+.tg-hero{font-size:clamp(3rem,9vw,5rem);line-height:1}
+.tg-board{width:100%;border-radius:20px;overflow:hidden;box-shadow:0 14px 34px rgba(0,0,0,.2)}
+.tg-board b{font-weight:800}
+/* Đua xe tải */
+:root[data-game="duaxe"]{--felt:#3a2a1a; --felt-deep:#22180e; --felt-hi:#5a4028; --felt-line:rgba(255,220,150,.25)}
+:root[data-game="duaxe"] body{background:#2a1f12;background-image:linear-gradient(180deg,#1f4a8a 0,#3a7bd5 130px,#6a4a2a 130px,#3a2a1a 100%)}
+.dx-track{position:relative;display:flex;flex-direction:column;gap:6px;padding:14px 10px;background:repeating-linear-gradient(90deg,#c9915a 0 40px,#bd8650 40px 80px);border-top:16px solid;border-bottom:16px solid;border-image:repeating-linear-gradient(90deg,#e2242c 0 20px,#2f7ae0 20px 40px,#ffd25a 40px 60px,#1f9d6b 60px 80px) 16}
+.dx-lane{position:relative;height:clamp(60px,9vh,86px);border-bottom:3px dashed rgba(255,255,255,.55)}
+.dx-lane.now{background:rgba(255,230,120,.22)}
+.dx-nm{position:absolute;left:6px;top:4px;font-weight:800;color:#fff;text-shadow:0 1px 3px #000;z-index:2;font-size:.9rem}
+.dx-car{position:absolute;bottom:2px;width:clamp(80px,11vw,130px);transition:left .9s cubic-bezier(.3,1.3,.5,1)}
+.dx-truck{width:100%;height:auto;display:block;filter:drop-shadow(0 5px 3px rgba(0,0,0,.35))}
+.dx-lane.now .dx-truck{animation:rgshake .4s infinite}
+.dx-fin{position:absolute;top:0;bottom:0;right:4%;width:22px;background:repeating-conic-gradient(#111 0 25%,#fff 0 50%) 0 0/11px 11px}
+.tile[onclick*="'duaxe'"]{background:linear-gradient(170deg,#c9915a,#6a4a2a);color:#fff8ec;border-top:6px solid #e2242c}
+/* Robot */
+:root[data-game="robot"]{--tint:40,40,60; --felt:#f7f1e3; --felt-deep:#e8dcc2; --felt-hi:#fff; --felt-line:rgba(80,70,50,.2); --ivory:#2a2a3a; --ink:#fff; --muted:#6a6050; --gold:#e8692c; color-scheme:light}
+:root[data-game="robot"] body{background:#efe6d2;background-image:radial-gradient(circle at 20px 20px,#c9b98a 3px,transparent 4px);background-size:60px 60px;color:#2a2a3a}
+:root[data-game="robot"] .panel,:root[data-game="robot"] .qcard{background:#fff;color:#2a2a3a}
+:root[data-game="robot"] input,:root[data-game="robot"] textarea{background:#fff;color:#2a2a3a}
+.rb-floor{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;padding:16px;background:linear-gradient(180deg,#f2dfb8 0 72%,#8a8a96 72%);border-top:10px solid #6aa0d8}
+.rb-bay{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px;border-radius:14px}
+.rb-bay.now{background:rgba(255,255,255,.55);box-shadow:0 0 0 3px #e8692c}
+.rb-svg{width:min(130px,100%);height:auto}
+.tile[onclick*="'robot'"]{background:linear-gradient(170deg,#f7f1e3,#e8dcc2);color:#2a2a3a;border-top:6px solid #2f7ae0}
+.tile[onclick*="'robot'"] .tile-d{color:#5a5040}
+/* Rau củ */
+:root[data-game="raucu"]{--tint:40,60,40; --felt:#fff8ea; --felt-deep:#ffe9c4; --felt-hi:#fff; --felt-line:rgba(120,90,30,.2); --ivory:#2a3a1a; --ink:#fff; --muted:#6a6040; --gold:#e8692c; color-scheme:light}
+:root[data-game="raucu"] body{background:linear-gradient(180deg,#ffe9c4,#fff6e0);color:#2a3a1a}
+:root[data-game="raucu"] .panel,:root[data-game="raucu"] .qcard{background:#fff;color:#2a3a1a}
+:root[data-game="raucu"] input,:root[data-game="raucu"] textarea{background:#fff;color:#2a3a1a}
+.rc-shelf{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;padding:8px;background:#2f5a2a}
+.rc-shelf span{width:46px;height:46px;display:grid;place-items:center;background:#fff8ea;border-radius:8px;font-size:1.6rem}
+.rc-yard{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;padding:14px;background:linear-gradient(180deg,#fff2d6,#f6dcae)}
+.rc-slot{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px;border-radius:14px}
+.rc-slot.now{background:#fff;box-shadow:0 0 0 3px #e8692c}
+.rc-belt{width:100%;height:12px;border-radius:6px;background:repeating-linear-gradient(90deg,#555 0 10px,#777 10px 20px);animation:rcmove 1s linear infinite}
+@keyframes rcmove{to{background-position:20px 0}}
+.rc-car{position:relative;width:min(150px,100%)}
+.rc-car svg{width:100%;height:auto}
+.rc-load{position:absolute;left:4%;right:40%;bottom:62%;display:flex;flex-wrap:wrap-reverse;gap:0;font-size:1.1rem;line-height:1}
+.tile[onclick*="'raucu'"]{background:linear-gradient(170deg,#fff8ea,#ffe0a8);color:#2a3a1a;border-top:6px solid #1f9d6b}
+.tile[onclick*="'raucu'"] .tile-d{color:#5a5030}
+/* Tháp Halloween */
+:root[data-game="halloween"]{--felt:#241a4a; --felt-deep:#120c2a; --felt-hi:#3a2a6a; --felt-line:rgba(255,160,60,.25)}
+:root[data-game="halloween"] body{background:#140c2a;background-image:radial-gradient(circle at 85% 12%,#fff6c8 0 40px,transparent 41px),linear-gradient(180deg,#140c2a,#3a2a6a)}
+.th-row{display:flex;justify-content:space-around;align-items:flex-end;gap:10px;padding:20px 10px 10px;background:linear-gradient(180deg,rgba(40,20,80,.6),rgba(20,10,40,.9));min-height:340px}
+.th-col{position:relative;display:flex;flex-direction:column;align-items:center;min-width:90px;padding-top:30px}
+.th-col.now .th-base{background:#ffb020}
+.th-candy{position:absolute;font-size:2.2rem;animation:kbbob 2s ease-in-out infinite;left:50%}
+.th-stack{display:flex;flex-direction:column-reverse;align-items:center}
+.th-stack i{display:grid;place-items:center;width:78px;height:34px;border-radius:10px;font-style:normal;font-size:1.3rem;box-shadow:inset 0 -5px 0 rgba(0,0,0,.2);margin-top:-1px;animation:thdrop .5s cubic-bezier(.3,1.5,.5,1)}
+@keyframes thdrop{from{transform:translateY(-120px)}}
+.th-base{width:96px;height:16px;border-radius:6px;background:#6a5a8a}
+.th-col b{color:#fff;margin-top:4px}
+.tile[onclick*="'halloween'"]{background:linear-gradient(170deg,#3a2a6a,#140c2a);color:#ffe6c8;border-top:6px solid #ff8a1a}
+/* Cần cẩu */
+:root[data-game="cancau"]{--tint:40,60,90; --felt:#eaf6ff; --felt-deep:#cfe8fb; --felt-hi:#fff; --felt-line:rgba(40,90,160,.2); --ivory:#14304f; --ink:#fff; --muted:#5a7090; --gold:#e8902a; color-scheme:light}
+:root[data-game="cancau"] body{background:linear-gradient(180deg,#bfe6ff,#eaf6ff 60%,#8a6a4a 60%);color:#14304f}
+:root[data-game="cancau"] .panel,:root[data-game="cancau"] .qcard{background:#fff;color:#14304f}
+:root[data-game="cancau"] input,:root[data-game="cancau"] textarea{background:#fff;color:#14304f}
+.cc-site{display:flex;justify-content:space-around;align-items:flex-end;gap:10px;padding:14px;background:linear-gradient(180deg,#d8f0ff 0 80%,#8a6a4a 80%);min-height:320px}
+.cc-col b{background:#fff;padding:0 8px;border-radius:999px}.cc-col small{color:#fff}
+.cc-col{display:flex;flex-direction:column;align-items:center;min-width:110px;padding:6px;border-radius:12px}
+.cc-col.now{background:rgba(255,255,255,.6)}
+.cc-crane{width:120px;height:70px}
+.cc-stack{display:flex;flex-direction:column-reverse;align-items:center;min-height:20px}
+.cc-stack i{width:52px;height:34px;background:#c9884a;border:3px solid #7a4a1a;margin-top:-3px;background-image:linear-gradient(45deg,transparent 45%,#7a4a1a 45% 55%,transparent 55%),linear-gradient(-45deg,transparent 45%,#7a4a1a 45% 55%,transparent 55%);animation:thdrop .6s ease-out}
+.tile[onclick*="'cancau'"]{background:linear-gradient(170deg,#eaf6ff,#bfe6ff);color:#14304f;border-top:6px solid #e8b42a}
+.tile[onclick*="'cancau'"] .tile-d{color:#3a5a78}
+/* Thuốc phép */
+:root[data-game="thuocphep"]{--felt:#3a2050; --felt-deep:#1e1030; --felt-hi:#5a3478; --felt-line:rgba(200,160,255,.25)}
+:root[data-game="thuocphep"] body{background:linear-gradient(180deg,#5a3478,#2a1640)}
+.tp-row{display:flex;justify-content:space-around;flex-wrap:wrap;gap:10px;padding:20px 10px;background:linear-gradient(180deg,#8a5aa8 0 70%,#6a4220 70%)}
+.tp-col{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px;border-radius:14px;min-width:110px}
+.tp-col.now{background:rgba(255,255,255,.18);box-shadow:0 0 0 3px #c0f05a}
+.tp-anim{font-size:3rem;animation:kbbob 2.4s ease-in-out infinite}
+.tp-pot{position:relative;width:90px;height:66px;border-radius:10px 10px 45px 45px;background:#2a2a2a;box-shadow:inset 0 10px 0 #7ad04a}
+.tp-bub{position:absolute;top:-16px;left:0;right:0;text-align:center;font-size:1.3rem}
+.tp-col b{color:#fff}.tp-col small{color:#e8d8ff}
+.tile[onclick*="'thuocphep'"]{background:linear-gradient(170deg,#8a5aa8,#3a2050);color:#f6eaff;border-top:6px solid #7ad04a}
+/* Vòng quay */
+:root[data-game="vongquay"]{--felt:#1a2a6a; --felt-deep:#0c1640; --felt-hi:#2a3a8a; --felt-line:rgba(255,255,255,.18)}
+:root[data-game="vongquay"] body{background:#14205a}
+.vq-stage{display:grid;grid-template-columns:1fr minmax(260px,420px) 1fr;gap:14px;align-items:center;width:100%}
+.vq-boxes{display:contents}
+.vq-box{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px;border-radius:14px;background:#2a3a8a;border:3px solid #4a5ab0;color:#fff;min-width:110px}
+.vq-box span{display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#1f9d6b;font-weight:900}
+.vq-box em{font-style:normal;font-weight:800;color:#ffd25a}
+.vq-box.now{border-color:#ffb020;box-shadow:0 0 0 4px rgba(255,176,32,.4)}
+.vq-wrap{position:relative;grid-row:1/4;grid-column:2}
+.vq-svg{width:100%;height:auto;display:block}
+.vq-pin{position:absolute;left:50%;top:-6px;transform:translateX(-50%);font-size:2rem;color:#e2242c;z-index:2;text-shadow:0 2px 0 #fff}
+@media (max-width:760px){.vq-stage{grid-template-columns:1fr 1fr}.vq-wrap{grid-row:auto;grid-column:1/-1}}
+.tile[onclick*="'vongquay'"]{background:linear-gradient(170deg,#2a3a8a,#0c1640);color:#fff;border-top:6px solid #ffb020}
+/* Hải chiến */
+:root[data-game="haichien"]{--felt:#1a4a7a; --felt-deep:#0c2a4a; --felt-hi:#2a6aa8; --felt-line:rgba(255,255,255,.2)}
+:root[data-game="haichien"] body{background:linear-gradient(180deg,#0c2a5a,#14408a 40%,#2a7ad8)}
+.hc-sea{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:18px 10px 40px;width:100%;border-radius:20px;background:linear-gradient(180deg,#bfe6ff 0 35%,#3a9ae8 35%,#1a5aa8)}
+.hc-side{display:flex;flex-direction:column;align-items:center;gap:4px}
+.hc-side b{font-size:1.2rem;color:#14304f}
+.hc-side.now b{color:#e2242c}
+.hc-hp{display:flex;gap:4px}.hc-hp i{width:16px;height:12px;border-radius:3px;background:rgba(0,0,0,.2)}.hc-hp i.on{background:#3ad06a}
+.hc-boat{position:relative;width:min(280px,100%);animation:hcbob 3s ease-in-out infinite}
+.hc-boat.hit{animation:rgshake .4s 3}
+@keyframes hcbob{50%{transform:translateY(6px) rotate(1deg)}}
+.hc-ship{width:100%;height:auto;display:block}
+.hc-boom{position:absolute;left:40%;top:30%;font-size:3.4rem;font-style:normal;animation:kaboom .6s}
+.hc-ball{position:absolute;top:40%;width:16px;height:16px;border-radius:50%;background:#222;animation:hcfly .7s ease-out forwards}
+.hc-ball.r{left:85%}.hc-ball.l{right:85%;animation-name:hcflyl}
+@keyframes hcfly{to{transform:translate(260px,-40px);opacity:0}}
+@keyframes hcflyl{to{transform:translate(-260px,-40px);opacity:0}}
+.hc-waves{position:absolute;left:0;right:0;bottom:0;height:30px;background:radial-gradient(circle at 20px -6px,transparent 18px,#fff4 19px 22px,transparent 23px) 0 0/40px 30px}
+.tile[onclick*="'haichien'"]{background:linear-gradient(170deg,#2a7ad8,#14408a);color:#fff;border-top:6px solid #e2473a}
+
+/* Xây đường ray */
+:root[data-game="duongray"]{--tint:40,60,30; --felt:#fdf6dc; --felt-deep:#efe2b0; --felt-hi:#fff; --felt-line:rgba(80,70,30,.2); --ivory:#2a3a1a; --ink:#fff; --muted:#5a5a3a; --gold:#e8692c; color-scheme:light}
+:root[data-game="duongray"] body{background:#8fd06a;background-image:linear-gradient(180deg,#2f6a2a 0,#4f9a3a 120px,#8fd06a 120px);color:#2a3a1a}
+:root[data-game="duongray"] header{color:#fff}
+:root[data-game="duongray"] .panel,:root[data-game="duongray"] .qcard{background:#fffbea;color:#2a3a1a}
+:root[data-game="duongray"] input,:root[data-game="duongray"] textarea{background:#fff;color:#2a3a1a}
+.dr-scene{background:#8fd06a;border-radius:20px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.2);border:6px solid #5aa03a;width:100%}
+.dr-scene.night{background:#1a2050;border-color:#0c1030}
+.dr-svg{width:100%;height:auto;display:block;max-height:62vh}
+.dr-cell{fill:#a8de80;stroke:#8fcf66;stroke-width:2}
+.dr-cell.w{fill:#5ab4f0;stroke:#3a94d0}
+.dr-cell.can{fill:#fffbe0;stroke:#e8692c;stroke-width:3;stroke-dasharray:6 5;cursor:pointer;animation:drpulse 1s infinite alternate}
+@keyframes drpulse{to{fill:#ffe9a8}}
+.dr-no{font:700 13px system-ui;fill:#c8d0ff}
+.dr-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-top:10px}
+.dr-chip{background:#fff;color:#2a3a1a;border-radius:999px;padding:6px 12px;font-weight:700}
+#dr-cars{font-size:1.6rem}
+.dr-levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.dr-lv{display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:14px;background:#e8f7d8;border:3px solid transparent;cursor:pointer;color:#2a3a1a}
+.dr-lv.night{background:#2a3070;color:#fff}
+.dr-lv:has(input:checked){border-color:#e8692c}
+.dr-lv input{position:absolute;opacity:0}
+.tile[onclick*="'duongray'"]{background:linear-gradient(170deg,#8fd06a,#3a7a2a);color:#fff;border-top:6px solid #8a5a3a}
+
+/* Tô màu theo số */
+:root[data-game="tomau"]{--tint:60,40,80; --felt:#fff; --felt-deep:#f0eaff; --felt-hi:#fff; --felt-line:rgba(80,60,120,.2); --ivory:#2a2240; --ink:#fff; --muted:#6a5a80; --gold:#e8692c; color-scheme:light}
+:root[data-game="tomau"] body{background:#f7f0ff;background-image:linear-gradient(180deg,#6a3ac8 0,#8a5ae0 120px,#f7f0ff 120px);color:#2a2240}
+:root[data-game="tomau"] header{color:#fff}
+:root[data-game="tomau"] .panel,:root[data-game="tomau"] .qcard{background:#fff;color:#2a2240}
+:root[data-game="tomau"] input,:root[data-game="tomau"] textarea{background:#fff;color:#2a2240}
+.tm-wrap{display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:16px;width:100%;align-items:start}
+@media (max-width:760px){.tm-wrap{grid-template-columns:1fr}}
+.tm-sheet{background:#fff;padding:12px;border-radius:16px;box-shadow:0 10px 26px rgba(60,30,120,.18)}
+.tm-grid{display:grid;gap:0;border:2px solid #333;max-height:62vh;aspect-ratio:16/14;margin:auto}
+.tm-grid i{display:grid;place-items:center;font:700 clamp(8px,1.2vw,14px) system-ui;font-style:normal;color:#666;border:1px solid #ccc;aspect-ratio:1;transition:background .5s}
+.tm-grid i.on{border-color:transparent}
+.tm-pal{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#fff;padding:10px;border-radius:16px}
+.tm-sw{display:flex;flex-direction:column;align-items:center;padding:8px 4px;border-radius:12px;border:3px solid #eee;background:#fff;color:#2a2240;cursor:pointer;font:inherit}
+.tm-sw b{width:34px;height:34px;border-radius:50%;background:var(--c);display:grid;place-items:center;color:#fff;text-shadow:0 1px 2px #000;font-size:1.1rem}
+.tm-sw small{font-size:.75rem}
+.tm-sw:not(:disabled):hover{border-color:#8a5ae0;transform:translateY(-2px)}
+.tm-sw.used{opacity:.45}
+.tm-sw:disabled{cursor:default}
+.tm-prog{grid-column:1/-1;text-align:center;font-weight:800}
+.tm-pics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tm-pick{padding:14px;border-radius:14px;background:#f0eaff;border:3px solid transparent;cursor:pointer;color:#2a2240;text-align:center}
+.tm-pick:has(input:checked){border-color:#e8692c}
+.tm-pick input{position:absolute;opacity:0}
+.tile[onclick*="'tomau'"]{background:linear-gradient(170deg,#8a5ae0,#e2476b);color:#fff;border-top:6px solid #ffd23a}
+
+/* Thám hiểm đại dương */
+:root[data-game="daiduong"] body{background:linear-gradient(180deg,#05345a 0,#0a5a8a 40%,#0c7ab0)}
+.dd-sea{position:relative;width:100%;border-radius:22px;padding:14px;background:linear-gradient(180deg,#3ab4e8,#1a6ab0 70%,#0c3a7a);box-shadow:inset 0 0 40px rgba(0,0,0,.25),0 12px 30px rgba(0,0,0,.3);overflow:hidden}
+.dd-top{text-align:right;font-weight:800;font-size:1.3rem;color:#fff}
+.dd-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:820px;margin:auto}
+.dd-c{aspect-ratio:1.2;border-radius:18px;border:3px solid rgba(255,255,255,.5);background:radial-gradient(circle at 50% 40%,#fff,#d8f2ff);font-size:clamp(2rem,4.5vw,3.4rem);cursor:pointer;transition:transform .2s}
+.dd-c:not(:disabled):hover{transform:translateY(-4px) scale(1.05);border-color:#ffd23a}
+.dd-c span{display:inline-block;animation:ddbob 2.4s ease-in-out infinite}
+.dd-c:nth-child(2n) span{animation-delay:-1.2s}
+@keyframes ddbob{50%{transform:translateY(-6px)}}
+.dd-c.open{background:#fff8d6;border-color:#ffd23a}
+.dd-c.open.jelly{background:#ffd6e0}
+.dd-c.open.none{background:#bfe6ff}
+.dd-c:disabled{cursor:default}
+.dd-sand{margin:14px -14px -14px;padding:10px;background:#e8c87a;text-align:center}
+.dd-chest{font-size:3rem;display:inline-flex;flex-direction:column;align-items:center}
+.dd-chest i{font-size:1.2rem;font-style:normal}
+.dd-chest.open{animation:rgshake .5s 3}
+.tile[onclick*="'daiduong'"]{background:linear-gradient(170deg,#3ab4e8,#0c3a7a);color:#fff;border-top:6px solid #e8c87a}
+
+/* Gương vui nhộn */
+:root[data-game="guongvui"] body{background:radial-gradient(circle at 50% 30%,#8a3ac8,#3a1060 70%)}
+.gv-hall{width:100%;padding:16px;border-radius:22px;background:linear-gradient(180deg,#5a1a8a,#2a0a4a);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.gv-row{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+.gv-m{width:clamp(90px,13vw,140px);aspect-ratio:.62;border-radius:50% 50% 14px 14px/38% 38% 14px 14px;border:8px solid #ffd23a;background:linear-gradient(135deg,#d8f4ff,#9ad0f0 50%,#e8f8ff);font-size:clamp(2.4rem,5vw,4rem);cursor:pointer;position:relative;box-shadow:0 0 18px rgba(255,210,58,.5);transition:transform .2s}
+.gv-m small{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);background:#ffd23a;color:#3a1060;font-weight:900;border-radius:999px;padding:0 10px;font-size:.9rem}
+.gv-m:not(:disabled):hover{transform:translateY(-6px) rotate(-2deg)}
+.gv-m.open{background:#fff;animation:rgshake .5s 2;border-color:#ff7ab0}
+.gv-m:disabled:not(.open){opacity:.55}
+.gv-kid{text-align:center;font-size:clamp(3rem,7vw,5rem);margin-top:10px}
+.tile[onclick*="'guongvui'"]{background:linear-gradient(170deg,#8a3ac8,#3a1060);color:#fff;border-top:6px solid #ffd23a}
+
+/* Đánh vần cùng người ngoài hành tinh */
+:root[data-game="danhvan"] body{background:#0a0a2a;background-image:radial-gradient(2px 2px at 20% 30%,#fff,transparent),radial-gradient(2px 2px at 70% 20%,#fff,transparent),radial-gradient(1px 1px at 40% 70%,#fff,transparent),radial-gradient(2px 2px at 85% 60%,#fff,transparent),linear-gradient(180deg,#0a0a2a,#2a1a5a)}
+.dv-space{position:relative;width:100%;border-radius:22px;padding:18px;background:linear-gradient(180deg,#1a1050,#3a2a8a);box-shadow:0 12px 30px rgba(0,0,0,.4);text-align:center}
+.dv-pic{font-size:clamp(4rem,10vw,7rem);line-height:1.1}
+.dv-slots{display:flex;justify-content:center;gap:8px;margin:12px 0}
+.dv-slots i{width:clamp(44px,6vw,64px);height:clamp(54px,7vw,74px);border-bottom:5px solid #7cf07c;font:800 clamp(1.8rem,4vw,2.8rem)/1.6 system-ui;font-style:normal;color:#fff}
+.dv-slots i.on{color:#7cf07c;animation:dvpop .3s}
+.dv-aliens{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.dv-al{display:flex;flex-direction:column;align-items:center;background:none;border:0;cursor:pointer;color:#fff;transition:transform .2s}
+.dv-al b{background:#7cf07c;color:#10203a;border-radius:50%;width:48px;height:48px;display:grid;place-items:center;font-size:1.7rem;margin-bottom:-6px;z-index:1}
+.dv-al span{font-size:clamp(2.4rem,5vw,3.6rem)}
+.dv-al:not(:disabled):hover{transform:translateY(-6px)}
+.dv-al.used{opacity:.2}
+.dv-al.no{animation:rgshake .35s 2}
+.dv-al.no b{background:#ff5a6a}
+.dv-ufo{position:absolute;top:10px;right:16px;font-size:3rem;animation:ddbob 3s ease-in-out infinite}
+@keyframes dvpop{from{transform:scale(1.6)}}
+.tile[onclick*="'danhvan'"]{background:linear-gradient(170deg,#3a2a8a,#0a0a2a);color:#7cf07c;border-top:6px solid #7cf07c}
+
+/* Thẻ ghi nhớ */
+:root[data-game="theghinho"]{--tint:40,50,80; --felt:#fff; --felt-deep:#eef1ff; --felt-hi:#fff; --felt-line:rgba(60,70,120,.2); --ivory:#1f2a4a; --ink:#fff; --muted:#5a6280; --gold:#4255ff; color-scheme:light}
+:root[data-game="theghinho"] body{background:#f6f7fb;background-image:linear-gradient(180deg,#2e3a8a 0,#4255ff 120px,#f6f7fb 120px);color:#1f2a4a}
+:root[data-game="theghinho"] header{color:#fff}
+:root[data-game="theghinho"] .panel,:root[data-game="theghinho"] .qcard{background:#fff;color:#1f2a4a}
+:root[data-game="theghinho"] input,:root[data-game="theghinho"] textarea{background:#fff;color:#1f2a4a}
+.tg-prog{display:flex;align-items:center;gap:10px;width:100%;max-width:820px;font-weight:700}
+.tg-prog .lm-prog{flex:1;height:8px;background:#dde2ff;border-radius:999px;overflow:hidden;display:block}
+.tg-prog .lm-prog i{display:block;height:100%;background:#4255ff}
+.tg-card{width:100%;max-width:820px;height:clamp(260px,46vh,420px);perspective:1400px;cursor:pointer}
+.tg-in{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d}
+.tg-card.flip .tg-in{transform:rotateY(180deg)}
+.tg-f,.tg-b{position:absolute;inset:0;backface-visibility:hidden;border-radius:20px;background:#fff;box-shadow:0 10px 30px rgba(40,50,120,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;color:#1f2a4a;overflow:auto}
+.tg-f small{margin-top:14px;color:#8a90b0}
+.tg-b{transform:rotateY(180deg);background:#eef1ff}
+.tg-b .qtext{font-size:clamp(1.6rem,3.6vw,2.6rem);font-weight:800}
+.tg-still{background:#fff;color:#e8692c;border:3px solid #e8692c}
+.tg-knew{background:#fff;color:#1f9d6b;border:3px solid #1f9d6b}
+.tile[onclick*="'theghinho'"]{background:linear-gradient(170deg,#4255ff,#2e3a8a);color:#fff;border-top:6px solid #ffcd1f}
+
+/* Tung xúc xắc và đọc */
+:root[data-game="xucxacdoc"]{--tint:60,40,20; --felt:#fff; --felt-deep:#fff3e0; --felt-hi:#fff; --felt-line:rgba(120,80,30,.2); --ivory:#3a2a1a; --ink:#fff; --muted:#7a6040; --gold:#e8692c; color-scheme:light}
+:root[data-game="xucxacdoc"] body{background:#fff6e6;background-image:linear-gradient(180deg,#e8692c 0,#ffa040 120px,#fff6e6 120px);color:#3a2a1a}
+:root[data-game="xucxacdoc"] header{color:#fff}
+:root[data-game="xucxacdoc"] .panel,:root[data-game="xucxacdoc"] .qcard{background:#fff;color:#3a2a1a}
+:root[data-game="xucxacdoc"] input,:root[data-game="xucxacdoc"] textarea{background:#fff;color:#3a2a1a}
+.xd-wrap{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:16px;width:100%;align-items:start}
+@media (max-width:760px){.xd-wrap{grid-template-columns:1fr}}
+.xd-t{width:100%;border-collapse:separate;border-spacing:6px;background:#fff;border-radius:16px;padding:6px;box-shadow:0 10px 26px rgba(120,60,10,.15)}
+.xd-t th{width:56px}
+.xd-t td{background:#fff8ec;border:3px solid #f2d6a8;border-radius:12px;text-align:center;font:800 clamp(1.2rem,2.6vw,2rem) system-ui;color:#3a2a1a;padding:10px 4px;cursor:pointer;position:relative}
+.xd-t tr.hot td{background:#fff1a8;border-color:#e8692c}
+.xd-t td.x{color:#b8a890}
+.xd-t td.x::after{content:'';position:absolute;left:8%;right:8%;top:50%;height:5px;background:var(--c);border-radius:4px;transform:rotate(-8deg)}
+.xd-die{display:inline-grid;grid-template-columns:repeat(3,1fr);gap:2px;width:44px;height:44px;padding:5px;background:#fff;border:3px solid #3a2a1a;border-radius:9px;box-sizing:border-box}
+.xd-die i{border-radius:50%}
+.xd-die i.on{background:#3a2a1a}
+.xd-side{display:flex;flex-direction:column;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:14px}
+.xd-big .xd-die{width:110px;height:110px;gap:6px;padding:12px;border-width:5px;border-radius:20px}
+.xd-cnt{font-weight:800}
+.tile[onclick*="'xucxacdoc'"]{background:linear-gradient(170deg,#ffa040,#e8692c);color:#fff;border-top:6px solid #3a2a1a}
+:root[data-game="duongray"] header .ghost,:root[data-game="tomau"] header .ghost,:root[data-game="theghinho"] header .ghost,:root[data-game="xucxacdoc"] header .ghost{color:#fff;border-color:rgba(255,255,255,.55);opacity:1}
+:root[data-game="duongray"] header .ghost:disabled,:root[data-game="tomau"] header .ghost:disabled,:root[data-game="theghinho"] header .ghost:disabled,:root[data-game="xucxacdoc"] header .ghost:disabled{opacity:.55}
+:root[data-game="duongray"] .brand b,:root[data-game="tomau"] .brand b,:root[data-game="theghinho"] .brand b,:root[data-game="xucxacdoc"] .brand b{color:#ffe14a}
+:root[data-game="theghinho"] body,:root[data-game="xucxacdoc"] body,:root[data-game="tomau"] body{background-size:100% 100%}
+.dd-c:disabled,.tm-sw:disabled:not(.used),.dv-al:disabled:not(.used){opacity:1}
+
+/* Catch and Say */
+:root[data-game="catchsay"] body{background:radial-gradient(circle at 50% 20%,#ffb86b,#e8692c 45%,#8a2a1a)}
+.cs-stage{width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px;border-radius:24px;background:rgba(255,255,255,.12);box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.cs-bear{font-size:clamp(4rem,10vw,7rem);line-height:1;filter:drop-shadow(0 8px 6px rgba(0,0,0,.3))}
+.cs-bear.fly{animation:csfly .7s ease-in-out infinite}
+@keyframes csfly{0%{transform:translate(-120px,30px) rotate(-30deg)}50%{transform:translate(0,-50px) rotate(160deg)}100%{transform:translate(120px,30px) rotate(360deg)}}
+.cs-who{font-size:clamp(2rem,5vw,3.4rem);font-weight:900;color:#fff7d6;text-shadow:0 3px 0 #8a2a1a}
+.cs-frame{background:#fff;color:#2a1a10;border-radius:18px;padding:12px 22px;text-align:center;box-shadow:0 6px 0 #c24a1a}
+.cs-frame small{display:block;color:#a05a2a;font-weight:700}
+.cs-frame p{margin:4px 0 0;font-size:clamp(1.4rem,3.2vw,2.2rem);font-weight:800}
+.cs-gap{display:inline-block;min-width:3.4em;border-bottom:4px dashed #e8692c;color:transparent}
+.cs-nm{color:#2f7ae0}.cs-th{color:#1f9d6b}
+.cs-bank{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.cs-chip{border:0;border-radius:999px;padding:8px 14px;background:#fff7d6;color:#2a1a10;font:700 1.05rem system-ui;cursor:pointer}
+.cs-chip:hover{background:#ffe08a;transform:translateY(-2px)}
+.cs-type{display:inline-flex;gap:4px}.cs-type input{width:9em}
+.cs-said{font-size:1.4rem;font-weight:800;background:#fff;border-radius:14px;padding:8px 16px}
+.cs-kids{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:1000px}
+.cs-kid{border:3px solid rgba(255,255,255,.6);background:rgba(255,255,255,.18);color:#fff;border-radius:14px;padding:6px 12px;font:700 1rem system-ui;cursor:pointer}
+.cs-kid small{margin-left:6px;color:#ffe08a}
+.cs-kid.done{background:rgba(0,0,0,.18);opacity:.7}
+.cs-kid.on{background:#fff;color:#c24a1a;opacity:1;transform:scale(1.1)}
+.cs-log{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:1000px}
+.cs-log span{background:#fff;color:#2a1a10;border-radius:999px;padding:4px 12px}
+:root[data-game="catchsay"] .kicker{color:#fff7d6}
+.tile[onclick*="'catchsay'"]{background:linear-gradient(170deg,#ffb86b,#c24a1a);color:#fff;border-top:6px solid #fff7d6}
+
+/* Money, Money */
+:root[data-game="moneymoney"] body{background:#0f4a2a;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0 12px,transparent 12px 24px),linear-gradient(180deg,#0f4a2a,#1f7a3a)}
+.mm-rule{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.mm-bill{display:flex;align-items:center;gap:12px;padding:12px 20px;border-radius:12px;background:linear-gradient(135deg,#d8f0c8,#a8d890);color:#1a4a1a;border:4px double #3a7a3a;min-width:220px;box-shadow:0 6px 14px rgba(0,0,0,.3)}
+.mm-bill.b{background:linear-gradient(135deg,#fff3c8,#f0d890);border-color:#a07a1a}
+.mm-bill b{font-size:2.6rem;font-weight:900}
+.mm-bill span{font-size:1.2rem;font-weight:800}
+.mm-big{font-size:clamp(1.6rem,4vw,2.6rem);padding:20px 40px}
+.mm-shout{font-size:clamp(2.4rem,7vw,5rem);color:#ffe14a;animation:rgshake .4s infinite}
+.mm-need{display:flex;flex-direction:column;align-items:center;background:#fff;color:#1a4a1a;border-radius:24px;padding:10px 50px;box-shadow:0 10px 0 #a8d890;animation:dvpop .4s}
+.mm-need small{font-size:1.6rem;font-weight:800}
+.mm-need b{font-size:clamp(5rem,16vw,11rem);line-height:1;font-weight:900;color:#1f9d3a}
+.mm-need.small b{font-size:4rem}
+.mm-cd{font-size:3rem;font-weight:900;color:#fff;background:#e2476b;border-radius:50%;width:90px;height:90px;display:grid;place-items:center}
+.mm-pre{gap:6px;flex-wrap:wrap}
+.tile[onclick*="'moneymoney'"]{background:linear-gradient(170deg,#3aa85a,#0f4a2a);color:#fff;border-top:6px solid #ffe14a}
+
+/* Back to the Board */
+:root[data-game="backboard"] body{background:#1d3a2c;background-image:linear-gradient(180deg,#5a3a20 0,#7a5030 18px,#1d3a2c 18px)}
+.bb-turn{font-size:clamp(1.4rem,3vw,2rem);background:#fff;color:#1d3a2c;border-radius:16px;padding:12px 24px;font-weight:700}
+.bb-card{width:100%;max-width:860px;background:#2a5a40;border:14px solid #8a5a30;border-radius:12px;padding:20px;text-align:center;box-shadow:inset 0 0 40px rgba(0,0,0,.4),0 14px 30px rgba(0,0,0,.35);color:#fff}
+.bb-how{display:inline-flex;flex-direction:column;background:#ffe14a;color:#3a2a10;border-radius:14px;padding:6px 18px;font-weight:900;font-size:1.3rem}
+.bb-how.body{background:#ff9ac0}
+.bb-how small{font-weight:600;font-size:.85rem}
+.bb-pic{font-size:clamp(4rem,11vw,8rem);line-height:1.2}
+.bb-word{font:700 clamp(3rem,9vw,6.5rem)/1.1 "Comic Sans MS","Chalkboard SE",system-ui;color:#fffbe8;text-shadow:0 0 6px rgba(255,255,255,.4)}
+.bb-sum{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.bb-sum span{background:#fff;border-radius:999px;padding:6px 14px;font-weight:700}
+.tile[onclick*="'backboard'"]{background:linear-gradient(170deg,#2a5a40,#1d3a2c);color:#fffbe8;border-top:6px solid #8a5a30}
+
+/* Seven Up */
+:root[data-game="sevenup"] body{background:radial-gradient(circle at 50% 30%,#3a5ae8,#16206a 70%)}
+.su-big{font-size:clamp(7rem,24vw,15rem);font-weight:900;line-height:1;width:min(80vw,520px);text-align:center;border-radius:30px;padding:10px 0;background:#fff;color:#16206a;box-shadow:0 14px 0 #9aaaf0}
+.su-big.up{background:#ffe14a;color:#e2242c;animation:dvpop .4s}
+.su-big.hid{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 14px 0 rgba(255,255,255,.1)}
+.su-trail{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;min-height:44px}
+.su-trail span{background:rgba(255,255,255,.18);color:#fff;border-radius:10px;padding:4px 12px;font-weight:800;font-size:1.3rem}
+.su-trail span.up{background:#ffe14a;color:#e2242c}
+.tile[onclick*="'sevenup'"]{background:linear-gradient(170deg,#3a5ae8,#16206a);color:#ffe14a;border-top:6px solid #e2242c}
+
+/* Tic-Tac-Toe */
+:root[data-game="tictactoe"] body{background:#20123a;background-image:radial-gradient(circle at 20% 20%,rgba(226,36,44,.35),transparent 40%),radial-gradient(circle at 80% 80%,rgba(47,122,224,.4),transparent 40%)}
+.tt-board{display:grid;gap:8px;width:min(92vw,48vh,560px);aspect-ratio:1;padding:10px;background:#fff;border-radius:20px;box-shadow:0 14px 34px rgba(0,0,0,.4)}
+.tt-c{border:0;border-radius:12px;background:#f0ecf8;font-size:clamp(2.6rem,9vh,6rem);line-height:1;cursor:pointer;display:grid;place-items:center;transition:transform .15s}
+.tt-board.n5 .tt-c{font-size:clamp(1.8rem,6vh,3.6rem)}
+.tt-board.n7 .tt-c{font-size:clamp(1.2rem,4.2vh,2.6rem);border-radius:8px}
+.tt-c small{font-size:.9rem;color:#9a90b0;font-weight:700}
+.tt-c:not(:disabled):hover{background:#ffe9a8;transform:scale(1.05)}
+.tt-c.x{background:#ffe0e2}.tt-c.o{background:#dfeaff}
+.tt-c.sel{outline:5px solid #ffcd1f}
+.tt-c.win{background:#ffe14a;animation:rgshake .5s 3}
+.tt-c:disabled{cursor:default;opacity:1;color:inherit}
+.tt-c{min-height:0;min-width:0;overflow:hidden}
+.tt-teams{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.tt-team{display:flex;flex-direction:column;align-items:center;padding:8px 22px;border-radius:16px;background:rgba(255,255,255,.12);color:#fff;border:3px solid transparent;min-width:170px}
+.tt-team span{font-size:2rem}
+.tt-team.on.t0{border-color:#ff6a70;background:rgba(226,36,44,.3)}
+.tt-team.on.t1{border-color:#6aa8ff;background:rgba(47,122,224,.3)}
+.tt-sizes{display:flex;gap:10px}
+.tt-sz{flex:1;display:flex;flex-direction:column;align-items:center;padding:12px;border-radius:14px;background:rgba(255,255,255,.1);border:3px solid transparent;cursor:pointer}
+.tt-sz:has(input:checked){border-color:#ffcd1f}
+.tt-sz input{position:absolute;opacity:0}
+.tt-sz b{font-size:1.5rem}
+.tile[onclick*="'tictactoe'"]{background:linear-gradient(170deg,#e2242c,#20123a 55%,#2f7ae0);color:#fff;border-top:6px solid #ffcd1f}
+
 </style>
 </head>
 <body>
@@ -1471,6 +1827,31 @@ body{min-height:100%;background-attachment:fixed}
 .pv-card:disabled{filter:grayscale(1);opacity:.5;cursor:not-allowed}
 .pv-log{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 .pv-log span{padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.45);color:#fff;font-size:.9rem}
+/* ---------- Tìm điểm khác biệt ---------- */
+:root[data-game="khacbiet"]{--tint:30,60,90; --felt:#f2f8ff; --felt-deep:#dcebfb; --felt-hi:#fff; --felt-line:rgba(40,90,160,.18);
+  --ivory:#14304f; --ink:#fff; --ruby:#e2476b; --ruby-deep:#a8244a; --gold:#2f7ae0; --mint:#1f9d6b; --muted:#5a7090; color-scheme:light}
+:root[data-game="khacbiet"] body{background:#eef6ff;background-image:radial-gradient(circle,rgba(47,122,224,.08) 2px,transparent 3px);background-size:26px 26px;color:#14304f}
+:root[data-game="khacbiet"] .panel,:root[data-game="khacbiet"] .qcard{background:#fff;color:#14304f}
+:root[data-game="khacbiet"] input,:root[data-game="khacbiet"] textarea{background:#fff;color:#14304f}
+:root[data-game="khacbiet"] .brand b,:root[data-game="khacbiet"] .team-name{color:#e2476b}
+.kd-hero{font-size:clamp(3rem,9vw,5rem);line-height:1}
+.kd-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%}
+@media (max-width:760px){.kd-pair{grid-template-columns:1fr}}
+.kd-pic{position:relative;aspect-ratio:3/2;border-radius:14px;overflow:hidden;cursor:crosshair;box-shadow:0 10px 26px rgba(20,48,79,.2);border:4px solid #fff;user-select:none;background:#dde}
+.kd-pic img{width:100%;height:100%;display:block;object-fit:cover;pointer-events:none}
+.kd-ring{position:absolute;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:5px solid var(--c);box-shadow:0 0 0 3px #fff,0 0 14px var(--c);animation:kdpop .4s cubic-bezier(.2,1.6,.4,1);pointer-events:none}
+.kd-ring.miss{border-style:dashed}
+@keyframes kdpop{from{transform:translate(-50%,-50%) scale(.2);opacity:0}}
+.kd-x{position:absolute;transform:translate(-50%,-50%);color:#e2242c;font-size:2rem;font-style:normal;font-weight:900;text-shadow:0 0 4px #fff;animation:kdpop .3s;pointer-events:none}
+.kd-top{display:flex;align-items:center;justify-content:center;gap:16px;font-size:1.2rem}
+.kd-ft{padding:4px 16px;border-radius:999px;background:#14304f;color:#fff;font-weight:800}
+.kd-who{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+.kd-who .chip{display:inline-flex;align-items:center;gap:6px}
+.kd-who .chip.sel{background:var(--c);border-color:var(--c);color:#fff}
+.kd-dot{width:12px;height:12px;border-radius:50%;background:var(--c);display:inline-block;box-shadow:0 0 0 2px #fff}
+.tile[onclick*="'khacbiet'"]{background:linear-gradient(170deg,#ffffff,#d6e8ff);color:#14304f;border-top:6px solid #e2476b}
+.tile[onclick*="'khacbiet'"] .tile-d{color:#405a78}.tile[onclick*="'khacbiet'"] .tile-k{color:#e2476b}
+
 </style>
 
 <div id="decor" hidden aria-hidden="true">
@@ -1495,6 +1876,132 @@ body{min-height:100%;background-attachment:fixed}
     <p class="lead">Chọn một trò, mở máy chiếu, gọi các đội lên. Điểm được lưu trên máy này, đóng trang mở lại vẫn chơi tiếp được.</p>
     <div class="row"><button class="btn btn-gold" onclick="Deck.open('all')">🎴 Bộ thẻ quà & phạt</button><button class="btn btn-gold" onclick="Dice.open()">🎲 Xúc xắc</button><button class="btn btn-gold" onclick="Pick.open()">🎡 Quay tên / bốc thăm</button><button class="btn btn-gold" onclick="Clock.open()">⏱ Đồng hồ đếm ngược</button></div>
     <div class="tiles">
+      <button class="tile" onclick="openGame('tictactoe')">
+        <span class="tile-art" aria-hidden="true">❌</span>
+        <span class="tile-k">Mới · 2 đội · 3×3, 5×5, 7×7</span>
+        <span class="tile-t">Tic-Tac-Toe</span>
+        <span class="tile-d">Chọn ô, trả lời đúng thì đánh ❌ hoặc ⭕. Đủ hàng liền nhau là thắng, trả lời sai đội kia được cướp ô.</span>
+      </button>
+      <button class="tile" onclick="openGame('sevenup')">
+        <span class="tile-art" aria-hidden="true">7️⃣</span>
+        <span class="tile-k">Mới · Đếm số</span>
+        <span class="tile-t">Seven Up</span>
+        <span class="tile-d">Cả lớp đếm lần lượt, gặp số đuôi 7 phải hô “UP”. Ai nhầm trả lời câu hỏi. Đếm xuôi hoặc ngược.</span>
+      </button>
+      <button class="tile" onclick="openGame('backboard')">
+        <span class="tile-art" aria-hidden="true">🙈</span>
+        <span class="tile-k">Mới · Đoán từ</span>
+        <span class="tile-t">Back to the Board</span>
+        <span class="tile-d">Một bạn quay lưng vào bảng, cả đội mô tả bằng tiếng Anh hoặc hành động để bạn đoán từ.</span>
+      </button>
+      <button class="tile" onclick="openGame('moneymoney')">
+        <span class="tile-art" aria-hidden="true">💵</span>
+        <span class="tile-k">Mới · Vận động</span>
+        <span class="tile-t">Money, Money</span>
+        <span class="tile-d">Bạn nam $1, bạn nữ $2… Cô hô “I need $5!”, cả lớp ghép nhóm đủ tiền, bạn thừa trả lời câu hỏi.</span>
+      </button>
+      <button class="tile" onclick="openGame('catchsay')">
+        <span class="tile-art" aria-hidden="true">🧸</span>
+        <span class="tile-k">Mới · Warm up cả lớp</span>
+        <span class="tile-t">Catch and Say</span>
+        <span class="tile-d">Ném gấu bông, bạn nhận gấu nói tiếp mẫu câu “I like… What about you?” rồi nối câu “but Lan likes…”.</span>
+      </button>
+      <button class="tile" onclick="openGame('xucxacdoc')">
+        <span class="tile-art" aria-hidden="true">🎲</span>
+        <span class="tile-k">Mới · Luyện đọc</span>
+        <span class="tile-t">Tung xúc xắc và đọc</span>
+        <span class="tile-d">Tung xúc xắc ra hàng nào thì đọc một từ trong hàng đó, đọc đúng thì gạch đi.</span>
+      </button>
+      <button class="tile" onclick="openGame('theghinho')">
+        <span class="tile-art" aria-hidden="true">🗂️</span>
+        <span class="tile-k">Mới · Kiểu Quizlet</span>
+        <span class="tile-t">Thẻ ghi nhớ</span>
+        <span class="tile-d">Lật thẻ xem đáp án, đánh dấu Đã biết / Còn đang học, ôn lại thẻ chưa thuộc.</span>
+      </button>
+      <button class="tile" onclick="openGame('danhvan')">
+        <span class="tile-art" aria-hidden="true">👽</span>
+        <span class="tile-k">Mới · Đánh vần</span>
+        <span class="tile-t">Đánh vần cùng người ngoài hành tinh</span>
+        <span class="tile-d">Nhìn hình, chạm lần lượt các chữ cái trên người ngoài hành tinh để đánh vần đúng từ.</span>
+      </button>
+      <button class="tile" onclick="openGame('guongvui')">
+        <span class="tile-art" aria-hidden="true">🪞</span>
+        <span class="tile-k">Mới · Bất ngờ</span>
+        <span class="tile-t">Gương vui nhộn</span>
+        <span class="tile-d">Trả lời đúng để soi gương bí ẩn: biến thành sư tử, siêu nhân, ếch… kèm thưởng phạt vui.</span>
+      </button>
+      <button class="tile" onclick="openGame('daiduong')">
+        <span class="tile-art" aria-hidden="true">🤿</span>
+        <span class="tile-k">Mới · Tìm kho báu</span>
+        <span class="tile-t">Thám hiểm đại dương</span>
+        <span class="tile-d">Trả lời đúng để lặn xuống, lật sinh vật biển tìm chìa khoá, ngọc trai và mở rương.</span>
+      </button>
+      <button class="tile" onclick="openGame('tomau')">
+        <span class="tile-art" aria-hidden="true">🎨</span>
+        <span class="tile-k">Mới · 4 bức tranh</span>
+        <span class="tile-t">Tô màu theo số</span>
+        <span class="tile-d">Trả lời đúng để chọn màu tô cả bức tranh: gấu dã ngoại, khủng long, rương hải tặc, chú thỏ.</span>
+      </button>
+      <button class="tile" onclick="openGame('duongray')">
+        <span class="tile-art" aria-hidden="true">🚂</span>
+        <span class="tile-k">Mới · 6 màn chơi</span>
+        <span class="tile-t">Xây đường ray</span>
+        <span class="tile-d">Trả lời đúng để đặt ray, đón toa, bắc cầu qua sông và đưa tàu về ga.</span>
+      </button>
+      <button class="tile" onclick="openGame('haichien')">
+        <span class="tile-art" aria-hidden="true">🏴‍☠️</span>
+        <span class="tile-k">Mới · Hai đội</span>
+        <span class="tile-t">Hải chiến</span>
+        <span class="tile-d">Hai tàu cướp biển thay phiên trả lời. Đúng thì bắn đại bác, tàu nào chìm trước là thua.</span>
+      </button>
+      <button class="tile" onclick="openGame('thuocphep')">
+        <span class="tile-art" aria-hidden="true">🧪</span>
+        <span class="tile-k">Mới · Pha chế</span>
+        <span class="tile-t">Thuốc phép thuật</span>
+        <span class="tile-d">Trả lời đúng để thả nguyên liệu vào vạc. Đủ 3 nguyên liệu thì con vật biến hình!</span>
+      </button>
+      <button class="tile" onclick="openGame('cancau')">
+        <span class="tile-art" aria-hidden="true">🏗️</span>
+        <span class="tile-k">Mới · Xếp hộp</span>
+        <span class="tile-t">Trò chơi cần cẩu</span>
+        <span class="tile-d">Trả lời đúng để cần cẩu nâng thùng hàng xếp lên chồng hộp của đội.</span>
+      </button>
+      <button class="tile" onclick="openGame('halloween')">
+        <span class="tile-art" aria-hidden="true">🎃</span>
+        <span class="tile-k">Mới · Xếp tháp</span>
+        <span class="tile-t">Tháp Halloween</span>
+        <span class="tile-d">Trả lời đúng để thả quái vật lên tháp. Tháp chạm tới cây kẹo trước là thắng.</span>
+      </button>
+      <button class="tile" onclick="openGame('raucu')">
+        <span class="tile-art" aria-hidden="true">🥕</span>
+        <span class="tile-k">Mới · Băng chuyền</span>
+        <span class="tile-t">Nhà máy rau củ</span>
+        <span class="tile-d">Trả lời đúng để đưa rau củ theo băng chuyền lên xe chở hàng của đội.</span>
+      </button>
+      <button class="tile" onclick="openGame('robot')">
+        <span class="tile-art" aria-hidden="true">🤖</span>
+        <span class="tile-k">Mới · Lắp ráp</span>
+        <span class="tile-t">Nhà máy robot</span>
+        <span class="tile-d">Trả lời đúng để lắp từng bộ phận và sơn màu cho robot của đội.</span>
+      </button>
+      <button class="tile" onclick="openGame('vongquay')">
+        <span class="tile-art" aria-hidden="true">🎡</span>
+        <span class="tile-k">Mới · Tối đa 6 người</span>
+        <span class="tile-t">Vòng quay may mắn</span>
+        <span class="tile-d">Trả lời đúng để được quay: cộng điểm, nhân đôi, mất nửa, bom về 0 hay đổi điểm.</span>
+      </button>
+      <button class="tile" onclick="openGame('duaxe')">
+        <span class="tile-art" aria-hidden="true">🚚</span>
+        <span class="tile-k">Mới · Tối đa 6 đội</span>
+        <span class="tile-t">Đua xe tải</span>
+        <span class="tile-d">Mỗi đội một xe tải có tài xế động vật. Trả lời đúng thì xe chạy tới, về đích trước là thắng.</span>
+      </button>
+      <button class="tile" onclick="openGame('khacbiet')">
+        <span class="tile-art" aria-hidden="true">🔍</span>
+        <span class="tile-k">Bài đăng 10 · Trò chơi nhanh</span>
+        <span class="tile-t">Tìm điểm khác biệt</span>
+        <span class="tile-d">Dán một ảnh, máy tự tạo ảnh có điểm khác. Nhóm tìm được nhiều nhất được trả lời câu hỏi, rồi thuyết trình tiếp.</span>
+      </button>
       <button class="tile" onclick="openGame('doangia')">
         <span class="tile-art" aria-hidden="true">🏷️</span>
         <span class="tile-k">Bài đăng 09 · Siêu nhanh</span>
@@ -1861,13 +2368,160 @@ body{min-height:100%;background-attachment:fixed}
   </header>
   <main><div class="stage" id="dg-stage"></div></main>
 </div>
+<div class="app" id="app-khacbiet" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Tìm điểm <b>khác biệt</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="kd-status"></div>
+  </header>
+  <main><div class="stage" id="kd-stage"></div></main>
+</div>
+<div class="app" id="app-duaxe" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Đua <b>xe tải</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="dx-status"></div>
+  </header>
+  <main><div class="stage" id="dx-stage"></div></main>
+</div>
+<div class="app" id="app-vongquay" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Vòng quay <b>may mắn</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="vq-status"></div>
+  </header>
+  <main><div class="stage" id="vq-stage"></div></main>
+</div>
+<div class="app" id="app-robot" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Nhà máy <b>robot</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="rb-status"></div>
+  </header>
+  <main><div class="stage" id="rb-stage"></div></main>
+</div>
+<div class="app" id="app-raucu" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Nhà máy <b>rau củ</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="rc-status"></div>
+  </header>
+  <main><div class="stage" id="rc-stage"></div></main>
+</div>
+<div class="app" id="app-halloween" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Tháp <b>Halloween</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="th-status"></div>
+  </header>
+  <main><div class="stage" id="th-stage"></div></main>
+</div>
+<div class="app" id="app-cancau" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Trò chơi <b>cần cẩu</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="cc-status"></div>
+  </header>
+  <main><div class="stage" id="cc-stage"></div></main>
+</div>
+<div class="app" id="app-thuocphep" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Thuốc <b>phép thuật</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="tp-status"></div>
+  </header>
+  <main><div class="stage" id="tp-stage"></div></main>
+</div>
+<div class="app" id="app-haichien" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Hải <b>chiến</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="hc-status"></div>
+  </header>
+  <main><div class="stage" id="hc-stage"></div></main>
+</div>
+<div class="app" id="app-duongray" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Xây <b>đường ray</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="dr-status"></div>
+  </header>
+  <main><div class="stage" id="dr-stage"></div></main>
+</div>
+<div class="app" id="app-tomau" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Tô màu <b>theo số</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="tm-status"></div>
+  </header>
+  <main><div class="stage" id="tm-stage"></div></main>
+</div>
+<div class="app" id="app-daiduong" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Thám hiểm <b>đại dương</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="dd-status"></div>
+  </header>
+  <main><div class="stage" id="dd-stage"></div></main>
+</div>
+<div class="app" id="app-guongvui" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Gương <b>vui nhộn</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="gv-status"></div>
+  </header>
+  <main><div class="stage" id="gv-stage"></div></main>
+</div>
+<div class="app" id="app-danhvan" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Đánh vần cùng <b>người ngoài hành tinh</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="dv-status"></div>
+  </header>
+  <main><div class="stage" id="dv-stage"></div></main>
+</div>
+<div class="app" id="app-theghinho" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Thẻ <b>ghi nhớ</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="tg-status"></div>
+  </header>
+  <main><div class="stage" id="tg-stage"></div></main>
+</div>
+<div class="app" id="app-xucxacdoc" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Tung xúc xắc <b>và đọc</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="xd-status"></div>
+  </header>
+  <main><div class="stage" id="xd-stage"></div></main>
+</div>
+<div class="app" id="app-catchsay" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Catch <b>and Say</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="cs-status"></div>
+  </header>
+  <main><div class="stage" id="cs-stage"></div></main>
+</div>
+<div class="app" id="app-moneymoney" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Money, <b>Money</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="mm-status"></div>
+  </header>
+  <main><div class="stage" id="mm-stage"></div></main>
+</div>
+<div class="app" id="app-backboard" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Back to <b>the Board</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="bb-status"></div>
+  </header>
+  <main><div class="stage" id="bb-stage"></div></main>
+</div>
+<div class="app" id="app-sevenup" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Seven <b>Up</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="su-status"></div>
+  </header>
+  <main><div class="stage" id="su-stage"></div></main>
+</div>
+<div class="app" id="app-tictactoe" hidden>
+  <header>
+    <div class="hd-left"><button class="ghost" onclick="openGame('home')">← Trò khác</button><div class="brand">Tic-Tac-<b>Toe</b></div><button class="ghost deck-btn" onclick="Deck.open('all')">🎴 Thẻ quà / phạt</button><button class="ghost dice-btn" onclick="Dice.open()">🎲 Xúc xắc</button><button class="ghost pick-btn" onclick="Pick.open()">🎡 Quay tên</button><button class="ghost pick-btn" onclick="Clock.open()">⏱ Đồng hồ</button><button class="ghost pick-btn" onclick="ScoreFix.open()">✏️ Sửa điểm</button></div>
+    <div class="status" id="tt-status"></div>
+  </header>
+  <main><div class="stage" id="tt-stage"></div></main>
+</div>
 <div id="pick-veil"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
 /* Cứu trang: nếu một trò bị lỗi khi vẽ (thường do dữ liệu ván cũ), hiện nút xoá ván đó thay vì để trang trắng */
-var RESCUE_KEYS = { joker:'jokers-call-v1', banh:'an-hay-khong-an-v2', daugia:'dau-gia-v1', haitrinh:'dai-hai-trinh-v1', quyennang:'la-bai-quyen-nang-v1', bom:'truyen-bom-v1', hopnhac:'hop-nhac-v1', ducvua:'duc-vua-v1', bangchuyen:'bang-chuyen-v1', rcv:'rung-chuong-vang-v1', zombie:'chan-zombie-v3', xepkhoi:'xep-khoi-v1', theduc:'the-duc-abc-v1', ngoisao:'dua-ngoi-sao-v1', domin:'do-min-v2', rong:'danh-thuc-rong-v1', doikhang:'doi-khang-v2', lenmay:'len-may-v1', doantau:'doan-tau-v2', khobau:'san-kho-bau-v1', ochu:'o-chu-v1', latmanh:'lat-manh-ghep-v1', theoluot:'theo-luot-v1', baotang:'bao-tang-v1', chemqua:'chem-hoa-qua-v1', doangia:'doan-gia-v1' };
-var RESCUE_STAGE = { joker:'stage', banh:'b-stage', daugia:'d-stage', haitrinh:'h-stage', quyennang:'p-stage', bom:'t-stage', hopnhac:'m-stage', ducvua:'k-stage', bangchuyen:'c-stage', rcv:'r-stage', zombie:'z-stage', xepkhoi:'x-stage', theduc:'td-stage', ngoisao:'ns-stage', domin:'dm-stage', rong:'rg-stage', doikhang:'dk-stage', lenmay:'lm-stage', doantau:'tr-stage', khobau:'kb-stage', ochu:'oc-stage', latmanh:'lg-stage', theoluot:'gl-stage', baotang:'bt-stage', chemqua:'cq-stage', doangia:'dg-stage' };
+var RESCUE_KEYS = { joker:'jokers-call-v1', banh:'an-hay-khong-an-v2', daugia:'dau-gia-v1', haitrinh:'dai-hai-trinh-v1', quyennang:'la-bai-quyen-nang-v1', bom:'truyen-bom-v1', hopnhac:'hop-nhac-v1', ducvua:'duc-vua-v1', bangchuyen:'bang-chuyen-v1', rcv:'rung-chuong-vang-v1', zombie:'chan-zombie-v3', xepkhoi:'xep-khoi-v1', theduc:'the-duc-abc-v1', ngoisao:'dua-ngoi-sao-v1', domin:'do-min-v2', rong:'danh-thuc-rong-v1', doikhang:'doi-khang-v2', lenmay:'len-may-v1', doantau:'doan-tau-v2', khobau:'san-kho-bau-v1', ochu:'o-chu-v1', latmanh:'lat-manh-ghep-v1', theoluot:'theo-luot-v1', baotang:'bao-tang-v1', chemqua:'chem-hoa-qua-v1', doangia:'doan-gia-v1', khacbiet:'tim-khac-biet-v1', duaxe:'dua-xe-tai-v1', vongquay:'vong-quay-v1', robot:'nha-may-robot-v1', raucu:'nha-may-rau-cu-v1', halloween:'thap-halloween-v1', cancau:'can-cau-v1', thuocphep:'thuoc-phep-v1', haichien:'hai-chien-v1', duongray:'duong-ray-v1', tomau:'to-mau-v1', daiduong:'dai-duong-v1', guongvui:'guong-vui-v1', danhvan:'danh-van-v1', theghinho:'the-ghi-nho-v1', xucxacdoc:'xuc-xac-doc-v1', catchsay:'catch-say-v1', moneymoney:'money-money-v1', backboard:'back-board-v1', sevenup:'seven-up-v1', tictactoe:'tic-tac-toe-v1' };
+var RESCUE_STAGE = { joker:'stage', banh:'b-stage', daugia:'d-stage', haitrinh:'h-stage', quyennang:'p-stage', bom:'t-stage', hopnhac:'m-stage', ducvua:'k-stage', bangchuyen:'c-stage', rcv:'r-stage', zombie:'z-stage', xepkhoi:'x-stage', theduc:'td-stage', ngoisao:'ns-stage', domin:'dm-stage', rong:'rg-stage', doikhang:'dk-stage', lenmay:'lm-stage', doantau:'tr-stage', khobau:'kb-stage', ochu:'oc-stage', latmanh:'lg-stage', theoluot:'gl-stage', baotang:'bt-stage', chemqua:'cq-stage', doangia:'dg-stage', khacbiet:'kd-stage', duaxe:'dx-stage', vongquay:'vq-stage', robot:'rb-stage', raucu:'rc-stage', halloween:'th-stage', cancau:'cc-stage', thuocphep:'tp-stage', haichien:'hc-stage', duongray:'dr-stage', tomau:'tm-stage', daiduong:'dd-stage', guongvui:'gv-stage', danhvan:'dv-stage', theghinho:'tg-stage', xucxacdoc:'xd-stage', catchsay:'cs-stage', moneymoney:'mm-stage', backboard:'bb-stage', sevenup:'su-stage', tictactoe:'tt-stage' };
 function rescueCheck(){
   var g = document.documentElement.dataset.game, id = RESCUE_STAGE[g];
   var st = id && document.getElementById(id);
@@ -6558,6 +7212,1048 @@ const ScoreFix = (() => {
 })();
 
 var KITG = {}, KITNS = {};
+/* ================= CATCH AND SAY ================= */
+const CS = (() => {
+  const SAMPLE_KIDS = 'Lan\nNam\nMai\nMinh\nHoa\nTuấn\nLinh\nBảo';
+  const k = GameKit({ ns:'CS', key:'catch-say-v1', pre:'cs', keep:['kids', 'f1', 'f2', 'bank'],
+    fresh:() => ({ phase:'setup', names:[], kids:SAMPLE_KIDS, f1:'I like ___. What about you?', f2:'I like ___ but {name} likes {thing}. What about you?',
+      bank:'apples 🍎, oranges 🍊, bananas 🍌, grapes 🍇, mangoes 🥭, watermelon 🍉, strawberries 🍓, pineapples 🍍', secs:0, qText:'', questions:[], qi:0, curQ:null, showAns:false,
+      teams:[], holder:-1, round:1, caught:[], chain:[], said:null, turn:0, fly:false, armReset:false }) });
+  const S = () => k.S;
+  const bank = () => S().bank.split(/[,\n]+/).map(x => x.trim()).filter(Boolean).map(x => { const m = x.match(/^(.*?)\s*(\p{Extended_Pictographic}[️‍\p{Extended_Pictographic}]*)?$/u); return { w:(m && m[1] || x).trim(), e:m && m[2] || '' }; });
+  const prev = () => { const c = S().chain; return c.length ? c[c.length - 1] : null; };
+  const frame = (who) => {
+    const s = S(), p = prev();
+    let f = s.round > 1 && p ? s.f2 : s.f1;
+    f = esc(f).replace('{name}', `<b class="cs-nm">${esc(p ? p.who : '')}</b>`).replace('{thing}', `<b class="cs-th">${esc(p ? p.w : '___')}</b>`).replace('___', '<span class="cs-gap">…</span>');
+    return `<div class="cs-frame"><small>${who} nói:</small><p>${f}</p></div>`;
+  };
+  const act = Object.assign(k.acts, {
+    start(){ const s = S(); s.kids = document.getElementById('cs-kids').value; s.f1 = document.getElementById('cs-f1').value.trim() || s.f1; s.f2 = document.getElementById('cs-f2').value.trim() || s.f2; s.bank = document.getElementById('cs-bank').value;
+      const names = s.kids.split(/[\n,]+/).map(x => x.trim()).filter(Boolean); if (names.length < 2) { k.err('Nhập ít nhất 2 bạn.'); return; }
+      s.teams = names.map(name => ({ name, score:0, turns:0 })); s.holder = -1; s.round = 1; s.caught = []; s.chain = []; s.said = null; s.turn = 0; k.undo = []; s.phase = 'play'; SFX.click(); k.render(); },
+    throw(i){
+      const s = S(); if (s.phase !== 'play' && s.phase !== 'back') return;
+      let pool = s.teams.map((_, j) => j).filter(j => j !== s.holder && !s.caught.includes(j));
+      if (i == null && !pool.length) { act.home(); return; }
+      k.snap(); const to = i != null ? i : pool[Math.floor(Math.random() * pool.length)];
+      s.fly = true; s.phase = 'play'; k.render(); SFX.flip();
+      const st = document.getElementById('cs-who'); let n = 0;
+      const iv = setInterval(() => { const el = document.getElementById('cs-who'); if (el) el.textContent = s.teams[Math.floor(Math.random() * s.teams.length)].name; if (++n >= 8) { clearInterval(iv);
+        s.fly = false; s.holder = to; if (!s.caught.includes(to)) s.caught.push(to); s.teams[to].turns++; s.said = null; s.turn++; SFX.coin(); k.render(); } }, 90);
+    },
+    say(j){ const s = S(); if (s.holder < 0 || s.said) return; k.snap(); const b = bank()[j]; const w = b ? b.w : (document.getElementById('cs-word') || {}).value || '…';
+      s.said = { w, ok:true }; s.teams[s.holder].score++; s.chain.push({ who:s.teams[s.holder].name, w }); SFX.coin(); k.render(); },
+    typed(){ const el = document.getElementById('cs-word'); if (!el || !el.value.trim()) return; const s = S(); if (s.holder < 0 || s.said) return; k.snap();
+      s.said = { w:el.value.trim(), ok:true }; s.teams[s.holder].score++; s.chain.push({ who:s.teams[s.holder].name, w:s.said.w }); SFX.coin(); k.render(); },
+    help(){ const s = S(); if (s.holder < 0 || s.said) return; k.snap(); s.said = { ok:false }; SFX.bonk(); k.render(); },
+    home(){ const s = S(); k.snap(); s.holder = -1; s.phase = 'back'; SFX.fanfare(); k.render(); },
+    again(){ const s = S(); k.snap(); s.round++; s.caught = []; s.phase = 'play'; s.said = null; k.render(); },
+    answer(){}
+  });
+  act.fix = () => (S().teams || []).map((t, i) => ({ label:t.name, val:t.score, step:1, add:d => act.adj(i, d) }));
+  const kids = () => `<div class="cs-kids">${S().teams.map((t, i) => `<button type="button" class="cs-kid ${i === S().holder ? 'on' : ''} ${S().caught.includes(i) ? 'done' : ''}" onclick="CS.throw(${i})" title="Ném gấu cho ${esc(t.name)}">${esc(t.name)}${t.score ? `<small>⭐${t.score}</small>` : ''}</button>`).join('')}</div>`;
+  const left = () => S().teams.length - S().caught.length;
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">🧸🗣️</div><div class="kicker">Warm up · Cả lớp</div><h1>Catch and Say</h1>
+      <div class="setup"><div class="panel"><h3>Danh sách lớp</h3><label for="cs-kids">Mỗi dòng một bạn<textarea id="cs-kids" spellcheck="false" style="min-height:180px">${esc(S().kids)}</textarea></label></div>
+        <div class="panel"><h3>Mẫu câu</h3><label for="cs-f1">Vòng 1 (dùng ___ cho chỗ trống)<input id="cs-f1" value="${esc(S().f1)}"></label>
+          <label for="cs-f2">Từ vòng 2 ({name} = bạn vừa nói, {thing} = món bạn ấy nói)<input id="cs-f2" value="${esc(S().f2)}"></label>
+          <label for="cs-bank">Gợi ý từ (cách nhau dấu phẩy, có thể kèm emoji)<textarea id="cs-bank" spellcheck="false">${esc(S().bank)}</textarea></label></div>
+        <div class="panel span2"><h3>Cách chơi</h3><ul class="rules"><li>Cô nói mẫu câu rồi ném gấu bông cho một bạn. Bạn nhận gấu nói tiếp câu của mình rồi ném cho bạn khác.</li><li>Bấm <b>🧸 Ném ngẫu nhiên</b> để máy chọn giúp bạn nhận gấu, hoặc chạm tên một bạn. Bạn nói xong, cô chạm món bạn ấy nói để ghi lại và cộng ⭐.</li><li>Khi gấu về tay cô, sang vòng mới: câu nối thêm “… but Lan likes oranges”.</li></ul></div></div>${k.startBtn('Bắt đầu 🧸')}`,
+    play:() => { const s = S(), h = s.holder, t = s.teams[h];
+      return `<div class="kicker">Vòng ${s.round} · còn ${left()} bạn chưa nhận gấu</div>
+      <div class="cs-stage"><div class="cs-bear ${s.fly ? 'fly' : ''}">🧸</div><div class="cs-who" id="cs-who">${h < 0 ? 'Cô giáo' : esc(t.name)}</div>
+        ${s.fly ? '' : frame(h < 0 ? 'Cô' : esc(t.name))}
+        ${h >= 0 && !s.fly ? (s.said ? `<p class="cs-said ${s.said.ok ? 'pos' : 'neg'}">${s.said.ok ? `✅ ${esc(t.name)} likes <b>${esc(s.said.w)}</b> · +1 ⭐` : '🤝 Cả lớp giúp bạn nói lại nhé'}</p>`
+          : `<div class="cs-bank">${bank().map((b, j) => `<button type="button" class="cs-chip" onclick="CS.say(${j})">${b.e} ${esc(b.w)}</button>`).join('')}<span class="cs-type"><input id="cs-word" placeholder="Món khác…" onkeydown="if(event.key==='Enter')CS.typed()"><button class="ghost" onclick="CS.typed()">Ghi</button></span><button class="ghost" onclick="CS.help()">🤝 Cần giúp</button></div>`) : ''}
+        <div class="row"><button class="btn btn-eat" onclick="CS.throw()" ${s.fly ? 'disabled' : ''}>🧸 Ném ngẫu nhiên</button><button class="btn btn-gold" onclick="CS.home()" ${s.fly ? 'disabled' : ''}>↩️ Gấu về tay cô</button></div></div>${kids()}`; },
+    back:() => { const s = S(), p = prev();
+      return `<div class="kicker">Hết vòng ${s.round}</div><div class="cs-stage"><div class="cs-bear">🧸</div><div class="cs-who">Gấu về tay cô!</div>
+        <div class="cs-frame"><small>Cô nói:</small><p>I like <span class="cs-gap">…</span>${p ? ` but <b class="cs-nm">${esc(p.who)}</b> likes <b class="cs-th">${esc(p.w)}</b>` : ''}.</p></div>
+        ${s.chain.length ? `<div class="cs-log">${s.chain.slice(-12).map(c => `<span>${esc(c.who)} likes <b>${esc(c.w)}</b></span>`).join('')}</div>` : ''}
+        <div class="row"><button class="btn btn-eat" onclick="CS.again()">Vòng ${s.round + 1}: nối câu “but … likes …” →</button><button class="btn btn-no" onclick="CS.end()">Tổng kết</button></div></div>${kids()}`; },
+    end:() => { const order = S().teams.slice().sort((a, b) => b.score - a.score); return `<div class="kicker">Tổng kết</div><h1>🧸 ${S().chain.length} câu đã nói</h1>
+      ${S().chain.length ? `<div class="cs-log">${S().chain.map(c => `<span>${esc(c.who)} likes <b>${esc(c.w)}</b></span>`).join('')}</div>` : ''}
+      ${k.endTable([['Bạn'], ['Lần nhận gấu', 1], ['⭐', 1]], order.map(t => [`<b>${esc(t.name)}</b>`, t.turns, t.score]))}${k.resetBtn()}`; }
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render });
+})();
+
+/* ================= MONEY, MONEY ================= */
+const MM = (() => {
+  const PRE = [['👦 Bạn nam', '👧 Bạn nữ'], ['🖤 Mặc áo đen', '🌈 Áo màu khác'], ['🎂 Sinh tháng 8', '📅 Sinh tháng khác'], ['👓 Đeo kính', '🙂 Không đeo kính']];
+  let iv = null;
+  const k = GameKit({ ns:'MM', key:'money-money-v1', pre:'mm', keep:['la', 'lb', 'va', 'vb', 'lo', 'hi', 'grp'],
+    fresh:() => ({ phase:'setup', names:[], la:PRE[0][0], lb:PRE[0][1], va:1, vb:2, lo:3, hi:8, grp:10, secs:0, qText:SAMPLE_Q, questions:[], qi:0, curQ:null, showAns:false,
+      teams:[], need:0, left:0, round:0, out:0, rights:0, turn:null, armReset:false }) });
+  const S = () => k.S;
+  const stopG = () => { if (iv) { clearInterval(iv); iv = null; } };
+  const act = Object.assign(k.acts, {
+    preset(i){ document.getElementById('mm-la').value = PRE[i][0]; document.getElementById('mm-lb').value = PRE[i][1]; },
+    start(){ const s = S(), v = id => document.getElementById('mm-' + id).value.trim();
+      s.la = v('la') || 'Nhóm A'; s.lb = v('lb') || 'Nhóm B'; s.va = k.readNum('va', 1, 1, 9); s.vb = k.readNum('vb', 2, 1, 9); s.lo = k.readNum('lo', 3, 1); s.hi = Math.max(s.lo, k.readNum('hi', 8, 1)); s.grp = k.readNum('grp', 10, 0); s.secs = k.readNum('secs', 0, 0); k.readQs();
+      s.round = 0; s.out = 0; s.rights = 0; k.undo = []; s.phase = 'chant'; SFX.click(); k.render(); },
+    need(){ const s = S(); s.phase = 'how'; k.render(); SFX.drumroll ? SFX.drumroll() : SFX.click();
+      setTimeout(() => { if (S().phase !== 'how') return; let n; do { n = s.lo + Math.floor(Math.random() * (s.hi - s.lo + 1)); } while (n === s.need && s.hi > s.lo); s.need = n; s.round++; s.left = s.grp; s.phase = 'need'; SFX.fanfare(); k.render();
+        stopG(); if (s.grp > 0) iv = setInterval(() => { const x = S(); if (x.phase !== 'need') return stopG(); x.left--; const el = document.getElementById('mm-cd'); if (el) el.textContent = x.left; if (x.left <= 3 && x.left > 0) SFX.beep(880);
+          if (x.left <= 0) { stopG(); SFX.gong ? SFX.gong() : SFX.beep(1320); x.phase = 'check'; k.render(); } }, 1000); }, 1600); },
+    stop(){ stopG(); S().phase = 'check'; k.render(); },
+    leftover(){ const s = S(); s.out++; k.nextQ(); k.startT(); s.phase = 'question'; SFX.flip(); k.render(); },
+    none(){ S().phase = 'chant'; SFX.coin(); k.render(); },
+    answer(right){ const s = S(); if (s.phase !== 'question') return; k.stopT(); if (right) { s.rights++; SFX.coin(); } else SFX.bonk(); s.phase = 'qdone'; s.lastRight = right; k.render(); },
+    end(){ stopG(); if (S().phase === 'setup') return; k.stopT(); S().phase = 'end'; k.render(); }
+  });
+  act.fix = () => [];
+  const rule = () => `<div class="mm-rule"><div class="mm-bill a"><b>$${S().va}</b><span>${esc(S().la)}</span></div><div class="mm-bill b"><b>$${S().vb}</b><span>${esc(S().lb)}</span></div></div>`;
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">💵💵</div><div class="kicker">Warm up · Vận động ghép nhóm</div><h1>Money, Money</h1>
+      <div class="setup"><div class="panel"><h3>Mỗi bạn “đáng giá” bao nhiêu?</h3><div class="row mm-pre">${PRE.map((p, i) => `<button type="button" class="ghost" onclick="MM.preset(${i})">${p[0]} / ${p[1].replace(/^\S+\s/, '')}</button>`).join('')}</div>
+          <div class="two"><label for="mm-la">Nhóm A<input id="mm-la" value="${esc(S().la)}"></label>${k.num('Giá trị nhóm A ($)', 'va', S().va, 1, 9)}<label for="mm-lb">Nhóm B<input id="mm-lb" value="${esc(S().lb)}"></label>${k.num('Giá trị nhóm B ($)', 'vb', S().vb, 1, 9)}</div></div>
+        <div class="panel"><h3>Luật</h3><div class="two">${k.num('Số tiền nhỏ nhất cô cần ($)', 'lo', S().lo, 1)}${k.num('Số tiền lớn nhất ($)', 'hi', S().hi, 1)}${k.num('Giây để ghép nhóm (0 = không đếm)', 'grp', S().grp, 0)}${k.num('Giây trả lời câu hỏi (0 = không đếm)', 'secs', S().secs, 0)}</div></div>
+        ${k.qPanel(`<li>Cô hô “I need, I need…”, cả lớp hô “How much? How much?”. Màn hình hiện số tiền, ví dụ $5.</li><li>Cả lớp chạy ghép nhóm sao cho cộng lại đúng $5 (bạn ${esc(S().la)} $${S().va}, bạn ${esc(S().lb)} $${S().vb}).</li><li>Bạn nào bị thừa ra thì trả lời một câu hỏi.</li>`, 'Câu hỏi cho bạn bị thừa. Mỗi dòng: câu hỏi | đáp án.')}</div>${k.startBtn('Bắt đầu 💵')}`,
+    chant:() => `<div class="kicker">Vòng ${S().round + 1}</div>${rule()}<button class="btn btn-eat mm-big" onclick="MM.need()">📢 I need, I need…</button><p class="note">Đã có ${S().out} lượt bạn bị thừa · ${S().rights} câu trả lời đúng</p>`,
+    how:() => `${rule()}<h1 class="mm-shout">How much? How much?</h1>`,
+    need:() => `${rule()}<div class="mm-need"><small>I need</small><b>$${S().need}</b></div>${S().grp > 0 ? `<div class="mm-cd" id="mm-cd">${S().left}</div>` : ''}<button class="btn btn-gold" onclick="MM.stop()">⏹ Dừng, kiểm tra nhóm</button>`,
+    check:() => `${rule()}<div class="mm-need small"><small>Mỗi nhóm phải đủ</small><b>$${S().need}</b></div><h2>Có bạn nào bị thừa ra không?</h2><div class="row"><button class="btn btn-no" onclick="MM.leftover()">🙋 Có bạn bị thừa → câu hỏi</button><button class="btn btn-ok" onclick="MM.none()">👏 Không ai thừa, vòng tiếp</button></div>`,
+    question:() => `${k.timebar()}${k.timeup('bạn bị thừa')}${k.qCard('Câu hỏi cho bạn bị thừa')}${k.okno('Giỏi quá', 'Cả lớp giúp bạn')}`,
+    qdone:() => `<h1 class="${S().lastRight ? 'pos' : 'neg'}">${S().lastRight ? 'Trả lời đúng! 👏' : 'Chưa đúng, cô giải thích nhé'}</h1><div class="row"><button class="btn btn-no" onclick="MM.leftover()">Còn bạn thừa khác → câu tiếp</button><button class="btn btn-gold" onclick="MM.none()">Vòng tiếp →</button></div>`,
+    end:() => `<div class="kicker">Tổng kết</div><h1>💵 ${S().round} vòng</h1><p class="lead">${S().out} lượt bạn bị thừa · ${S().rights} câu trả lời đúng.</p>${k.resetBtn()}`
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render });
+})();
+
+/* ================= BACK TO THE BOARD ================= */
+const BB = (() => {
+  const SAMPLE_W = 'elephant | 🐘\nbanana | 🍌\nteacher | 👩‍🏫\nswim | 🏊\numbrella | ☂️\nbirthday cake | 🎂\nrainbow | 🌈\nfootball | ⚽\nsleep | 😴\nrabbit | 🐰\ncook | 🍳\nhelicopter | 🚁';
+  const k = GameKit({ ns:'BB', key:'back-board-v1', pre:'bb', keep:['words', 'mode', 'max'],
+    fresh:() => ({ phase:'setup', names:['Đội 1','Đội 2'], words:SAMPLE_W, mode:'mix', secs:60, max:0, qText:'', questions:[], qi:0, curQ:null, showAns:false, teams:[], active:0, turn:0, deck:[], di:0, cur:null, how:'speak', got:[], skip:[], armReset:false }) });
+  const S = () => k.S;
+  k.o.onTimeUp = () => { const s = k.S; if (s.phase === 'question') s.phase = 'turnEnd'; };
+  const pick = () => { const s = S(); if (s.di >= s.deck.length) { for (let i = s.deck.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [s.deck[i], s.deck[j]] = [s.deck[j], s.deck[i]]; } s.di = 0; }
+    s.cur = s.deck[s.di++]; s.how = s.mode === 'mix' ? (Math.random() < .5 ? 'speak' : 'body') : s.mode; };
+  const act = Object.assign(k.acts, {
+    start(){ const s = S(); s.names = k.readNames(); if (s.names.length < 1) s.names = ['Cả lớp']; s.secs = k.readNum('secs', 60, 0); s.max = k.readNum('max', 0, 0); s.mode = document.getElementById('bb-mode').value; s.words = document.getElementById('bb-words').value;
+      const list = s.words.split('\n').map(l => l.split('|').map(x => x.trim())).filter(x => x[0]).map(([w, e]) => ({ w, e:e || '' })); if (!list.length) { k.err('Nhập ít nhất một từ.'); return; }
+      s.deck = list; s.di = list.length; s.teams = s.names.map(name => ({ name, score:0 })); s.active = 0; s.turn = 0; k.undo = []; s.phase = 'ready'; SFX.click(); k.render(); },
+    go(){ const s = S(); s.got = []; s.skip = []; pick(); k.startT(); s.phase = 'question'; SFX.flip(); k.render(); },
+    hit(){ const s = S(); if (s.phase !== 'question') return; k.snap(); s.teams[s.active].score++; s.got.push(s.cur.w); SFX.coin();
+      if (s.max && s.got.length + s.skip.length >= s.max) { k.stopT(); s.phase = 'turnEnd'; } else pick(); k.render(); },
+    pass(){ const s = S(); if (s.phase !== 'question') return; k.snap(); s.skip.push(s.cur.w); SFX.bonk(); if (s.max && s.got.length + s.skip.length >= s.max) { k.stopT(); s.phase = 'turnEnd'; } else pick(); k.render(); },
+    stopTurn(){ k.stopT(); S().phase = 'turnEnd'; k.render(); },
+    next(){ const s = S(); s.active = (s.active + 1) % s.teams.length; s.turn++; s.phase = 'ready'; k.render(); },
+    answer(r){ r ? act.hit() : act.pass(); }
+  });
+  act.fix = () => (S().teams || []).map((t, i) => ({ label:t.name, val:t.score, step:1, add:d => act.adj(i, d) }));
+  const scores = () => `<div class="row">${S().teams.map((t, i) => `<span class="pill ${i === S().active ? 'on' : ''}">${esc(t.name)} · ${t.score}</span>${k.editing ? k.adjScore(i, 1) : ''}`).join('')}</div>`;
+  const HOW = { speak:['🗣️', 'Mô tả bằng tiếng Anh', 'Không được nói đúng từ trên bảng!'], body:['🤸', 'Diễn tả bằng hành động', 'Không được nói, chỉ dùng tay chân và nét mặt!'] };
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">🙈📋</div><div class="kicker">Review · Đoán từ</div><h1>Back to the Board</h1>
+      <div class="setup"><div class="panel span2"><h3>Từ vựng</h3><label for="bb-words">Mỗi dòng: từ | hình (emoji, có thể bỏ trống)<textarea id="bb-words" spellcheck="false" style="min-height:170px">${esc(S().words)}</textarea></label></div>
+        ${k.namesPanel('Các đội', 'Đội', 'Mỗi đội cử một bạn quay lưng vào bảng để đoán.')}
+        <div class="panel"><h3>Luật</h3><label for="bb-mode">Cách gợi ý<select id="bb-mode"><option value="mix" ${S().mode === 'mix' ? 'selected' : ''}>Trộn: lúc nói, lúc diễn</option><option value="speak" ${S().mode === 'speak' ? 'selected' : ''}>Chỉ mô tả bằng tiếng Anh</option><option value="body" ${S().mode === 'body' ? 'selected' : ''}>Chỉ dùng body language</option></select></label>
+          <div class="two">${k.num('Giây mỗi lượt (0 = không đếm)', 'secs', S().secs, 0)}${k.num('Số từ mỗi lượt (0 = không giới hạn)', 'max', S().max, 0)}</div>
+          <ul class="rules"><li>Một bạn quay lưng vào bảng. Các bạn trong đội nhìn từ trên màn hình rồi mô tả bằng tiếng Anh hoặc diễn tả bằng hành động.</li><li>Đoán đúng thì bấm ✅ (+1), khó quá thì ⏭ bỏ qua.</li></ul></div></div>${k.startBtn('Bắt đầu 🙈')}`,
+    ready:() => `<div class="kicker">Lượt ${S().turn + 1}</div><h1><span class="team-name">${k.nm(S().active)}</span></h1><div class="bb-turn">🙈 Bạn đoán <b>quay lưng vào bảng</b>!</div><button class="btn btn-eat" onclick="BB.go()">Sẵn sàng, hiện từ!</button>${scores()}`,
+    question:() => { const s = S(), h = HOW[s.how]; return `${k.timebar()}<div class="bb-card"><div class="bb-how ${s.how}">${h[0]} ${h[1]}<small>${h[2]}</small></div>${s.cur.e ? `<div class="bb-pic">${esc(s.cur.e)}</div>` : ''}<div class="bb-word">${esc(s.cur.w)}</div></div>
+      <div class="row"><button class="btn btn-ok" onclick="BB.hit()">✅ Đoán đúng</button><button class="btn btn-no" onclick="BB.pass()">⏭ Bỏ qua</button></div>${k.ctrl(`<button class="ghost" onclick="BB.stopTurn()">Kết thúc lượt</button>`)}
+      <p class="note"><span class="team-name">${k.nm(s.active)}</span>: ✅ ${s.got.length} · ⏭ ${s.skip.length}</p>`; },
+    turnEnd:() => { const s = S(); return `<h2>${s.timeUp ? '⏰ Hết giờ! ' : ''}<span class="team-name">${k.nm(s.active)}</span> đoán đúng ${s.got.length} từ</h2>
+      <div class="bb-sum">${s.got.map(w => `<span class="pos">✅ ${esc(w)}</span>`).join('')}${s.skip.map(w => `<span class="neg">⏭ ${esc(w)}</span>`).join('')}</div>${scores()}<div class="row"><button class="btn btn-gold" onclick="BB.next()">Đội tiếp →</button></div>`; },
+    end:() => { const order = S().teams.slice().sort((a, b) => b.score - a.score); return `<div class="kicker">Tổng kết</div><h1>🏆 <span class="team-name">${order[0] ? esc(order[0].name) : ''}</span></h1>
+      ${k.endTable([['Hạng'], ['Đội'], ['Từ đoán đúng', 1]], order.map((t, i) => [i + 1, `<b>${esc(t.name)}</b>`, t.score]))}${k.resetBtn()}`; }
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render });
+})();
+
+/* ================= SEVEN UP ================= */
+const SU = (() => {
+  const k = GameKit({ ns:'SU', key:'seven-up-v1', pre:'su', keep:['from', 'to', 'rule', 'word', 'show', 'kids'],
+    fresh:() => ({ phase:'setup', names:[], from:1, to:50, rule:'end7', word:'UP', show:'hide', kids:'', secs:0, qText:SAMPLE_Q, questions:[], qi:0, curQ:null, showAns:false,
+      teams:[], n:1, open:false, trail:[], miss:0, best:0, who:0, list:[], rights:0, lastRight:null, turn:null, armReset:false }) });
+  const S = () => k.S;
+  const isUp = n => { const s = S(), a = Math.abs(n); return s.rule === 'end7' ? a % 10 === 7 : s.rule === 'has7' ? String(a).includes('7') : (a % 7 === 0 && a !== 0) || String(a).includes('7'); };
+  const say = n => isUp(n) ? S().word : String(n);
+  const step = () => S().to >= S().from ? 1 : -1;
+  const act = Object.assign(k.acts, {
+    start(){ const s = S(); s.from = k.readNum('from', 1); s.to = k.readNum('to', 50); s.rule = document.getElementById('su-rule').value; s.show = document.getElementById('su-show').value; s.word = document.getElementById('su-word').value.trim() || 'UP';
+      s.kids = document.getElementById('su-kids').value; s.list = s.kids.split(/[\n,]+/).map(x => x.trim()).filter(Boolean); s.secs = k.readNum('secs', 0, 0); k.readQs();
+      s.n = s.from; s.open = s.show === 'show'; s.trail = []; s.miss = 0; s.best = 0; s.rights = 0; s.who = 0; k.undo = []; s.phase = 'count'; SFX.click(); k.render(); },
+    reveal(){ const s = S(); if (s.phase !== 'count') return; s.open = true; isUp(s.n) ? SFX.fanfare() : SFX.click(); k.render(); },
+    ok(){ const s = S(); if (s.phase !== 'count') return; k.snap(); s.trail.push(s.n); s.trail = s.trail.slice(-8); s.best = Math.max(s.best, Math.abs(s.n - s.from) + 1);
+      if (s.n === s.to) { s.phase = 'win'; SFX.fanfare(); k.render(); return; }
+      s.n += step(); s.who = s.list.length ? (s.who + 1) % s.list.length : 0; s.open = s.show === 'show'; isUp(s.n) && s.open ? SFX.coin() : SFX.flip(); k.render(); },
+    oops(){ const s = S(); if (s.phase !== 'count') return; k.snap(); s.miss++; s.open = true; SFX.bonk(); k.nextQ(); k.startT(); s.phase = 'question'; k.render(); },
+    answer(right){ const s = S(); if (s.phase !== 'question') return; k.stopT(); s.lastRight = right; if (right) { s.rights++; SFX.coin(); } else SFX.bonk(); s.phase = 'after'; k.render(); },
+    restart(){ const s = S(); s.n = s.from; s.trail = []; s.open = s.show === 'show'; s.phase = 'count'; k.render(); },
+    keep(){ const s = S(); s.phase = 'count'; act.ok(); }
+  });
+  act.fix = () => [];
+  const RULE = { end7:'số có đuôi là 7 (7, 17, 27, 107…)', has7:'số có chữ số 7 (7, 17, 70, 71…)', mul7:'số có chữ số 7 hoặc chia hết cho 7 (7, 14, 17, 21…)' };
+  const big = () => { const s = S(), up = isUp(s.n); return `<div class="su-big ${s.open ? (up ? 'up' : 'num') : 'hid'}">${s.open ? esc(say(s.n)) : '?'}</div>`; };
+  const trail = () => `<div class="su-trail">${S().trail.map(n => `<span class="${isUp(n) ? 'up' : ''}">${esc(say(n))}</span>`).join('')}</div>`;
+  const who = () => S().list.length ? `<h2>Lượt: <span class="team-name">${esc(S().list[S().who % S().list.length])}</span></h2>` : '';
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">7️⃣⬆️</div><div class="kicker">Warm up · Đếm số</div><h1>Seven Up</h1>
+      <div class="setup"><div class="panel"><h3>Cách đếm</h3><div class="two">${k.num('Đếm từ', 'from', S().from)}${k.num('Đến (nhỏ hơn số đầu = đếm ngược)', 'to', S().to)}</div>
+          <label for="su-rule">Số phải đọc thành “${esc(S().word)}”<select id="su-rule">${Object.keys(RULE).map(r => `<option value="${r}" ${S().rule === r ? 'selected' : ''}>${RULE[r]}</option>`).join('')}</select></label>
+          <div class="two"><label for="su-word">Từ thay thế<input id="su-word" value="${esc(S().word)}"></label><label for="su-show">Màn hình<select id="su-show"><option value="hide" ${S().show === 'hide' ? 'selected' : ''}>Che số, cô lật để kiểm tra</option><option value="show" ${S().show === 'show' ? 'selected' : ''}>Hiện sẵn (luyện tập)</option></select></label></div></div>
+        <div class="panel"><h3>Thứ tự (không bắt buộc)</h3><label for="su-kids">Tên các bạn theo thứ tự ngồi, mỗi dòng một bạn<textarea id="su-kids" spellcheck="false">${esc(S().kids)}</textarea></label>${k.num('Giây trả lời câu hỏi (0 = không đếm)', 'secs', S().secs, 0)}</div>
+        ${k.qPanel(`<li>Cả lớp lần lượt đếm. Gặp số có 7 thì không đọc số mà hô “${esc(S().word)}”!</li><li>Bạn nói đúng thì cô bấm <b>Đúng, tiếp</b>. Bạn nào nhầm thì bấm <b>😵 Nhầm</b> và trả lời một câu hỏi.</li>`, 'Câu hỏi cho bạn bị nhầm. Mỗi dòng: câu hỏi | đáp án.')}</div>${k.startBtn('Bắt đầu đếm 7️⃣')}`,
+    count:() => `<div class="kicker">${RULE[S().rule]} → “${esc(S().word)}”</div>${who()}${trail()}${big()}
+      <div class="row">${S().open ? '' : '<button class="ghost" onclick="SU.reveal()">👀 Lật kiểm tra</button>'}<button class="btn btn-ok" onclick="SU.ok()">✔ Đúng, tiếp</button><button class="btn btn-no" onclick="SU.oops()">😵 Nhầm!</button></div>
+      <p class="note">Nhầm ${S().miss} lần · xa nhất ${S().best} số</p>`,
+    question:() => `${big()}${k.timebar()}${k.timeup('bạn bị nhầm')}${k.qCard('Câu hỏi cho bạn bị nhầm')}${k.okno('Giỏi', 'Cô giải thích')}`,
+    after:() => `<h1 class="${S().lastRight ? 'pos' : 'neg'}">${S().lastRight ? 'Trả lời đúng! 👏' : 'Chưa đúng rồi'}</h1><div class="row"><button class="btn btn-gold" onclick="SU.keep()">Đếm tiếp từ số sau</button><button class="btn btn-eat" onclick="SU.restart()">Đếm lại từ ${S().from}</button></div>`,
+    win:() => `<div class="kaboom" aria-hidden="true">🎉</div><h1>Cả lớp đếm tới ${S().to}!</h1>${trail()}<p class="lead">Nhầm ${S().miss} lần.</p><div class="row"><button class="btn btn-eat" onclick="SU.restart()">Chơi lại</button><button class="btn btn-no" onclick="SU.end()">Tổng kết</button></div>`,
+    end:() => `<div class="kicker">Tổng kết</div><h1>7️⃣ Xa nhất ${S().best} số</h1><p class="lead">Nhầm ${S().miss} lần · ${S().rights} câu hỏi trả lời đúng.</p>${k.resetBtn()}`
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render });
+})();
+
+/* ================= TIC-TAC-TOE ================= */
+const TT = (() => {
+  const k = GameKit({ ns:'TT', key:'tic-tac-toe-v1', pre:'tt', minTeams:2, keep:['size', 'need', 'steal'],
+    fresh:() => ({ phase:'setup', names:['Đội X','Đội O'], size:3, need:3, steal:1, secs:0, qText:SAMPLE_Q, questions:[], qi:0, curQ:null, showAns:false, teams:[], active:0, turn:0, board:[], cell:-1, stealing:false, line:[], game:1, armReset:false }) });
+  const S = () => k.S;
+  const MK = ['❌', '⭕'];
+  const newBoard = () => { const s = S(); s.board = Array(s.size * s.size).fill(-1); s.line = []; s.cell = -1; s.stealing = false; };
+  function win(p){
+    const s = S(), N = s.size, L = s.need;
+    for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) for (const [dr, dc] of [[0, 1], [1, 0], [1, 1], [1, -1]]) {
+      const cells = []; for (let i = 0; i < L; i++) { const rr = r + dr * i, cc = c + dc * i; if (rr < 0 || rr >= N || cc < 0 || cc >= N || s.board[rr * N + cc] !== p) break; cells.push(rr * N + cc); }
+      if (cells.length === L) return cells;
+    }
+    return null;
+  }
+  const act = Object.assign(k.acts, {
+    start(){ const s = S(); const nm = k.readNames(); s.names = [nm[0] || 'Đội X', nm[1] || 'Đội O']; s.size = +document.querySelector('input[name="tt-size"]:checked').value;
+      s.need = Math.min(s.size, k.readNum('need', s.size === 3 ? 3 : s.size === 5 ? 4 : 5, 3)); s.steal = +document.getElementById('tt-steal').value; s.secs = k.readNum('secs', 0, 0); k.readQs();
+      s.teams = s.names.map(name => ({ name, score:0, wins:0 })); s.active = 0; s.turn = 0; s.game = 1; k.undo = []; newBoard(); s.phase = 'pick'; SFX.click(); k.render(); },
+    size(n){ const el = document.getElementById('tt-need'); if (el) el.value = n === 3 ? 3 : n === 5 ? 4 : 5; },
+    pick(i){ const s = S(); if (s.phase !== 'pick' || s.board[i] !== -1) return; k.snap(); s.cell = i; s.stealing = false; k.nextQ(); k.startT(); s.phase = 'question'; SFX.flip(); k.render(); },
+    answer(right, timeout){ const s = S(); if (s.phase !== 'question') return; k.snap(); k.stopT();
+      if (right) { s.board[s.cell] = s.active; s.teams[s.active].score += 10; SFX.coin(); const w = win(s.active);
+        if (w) { s.line = w; s.teams[s.active].wins++; s.phase = 'won'; s.stealing = false; SFX.fanfare(); k.render(); return; }
+        if (!s.board.includes(-1)) { s.phase = 'draw'; k.render(); return; }
+        if (!s.stealing) s.active = 1 - s.active;
+      } else {
+        SFX.bonk();
+        if (s.steal && !s.stealing) { s.stealing = true; s.active = 1 - s.active; s.showAns = false; MCPICK = null; k.startT(); k.render(); return; }
+        if (!s.stealing) s.active = 1 - s.active;
+      }
+      s.stealing = false; s.cell = -1; s.turn++; s.phase = 'pick'; k.render(); },
+    again(){ const s = S(); k.snap(); s.game++; newBoard(); s.active = (s.game + 1) % 2; s.phase = 'pick'; k.render(); }
+  });
+  act.fix = () => (S().teams || []).map((t, i) => ({ label:t.name, val:t.score, step:10, add:d => act.adj(i, d) }));
+  function board(click){
+    const s = S(), N = s.size;
+    return `<div class="tt-board n${N}" style="grid-template-columns:repeat(${N},1fr);grid-template-rows:repeat(${N},1fr)">${s.board.map((v, i) => `<button type="button" class="tt-c ${v === 0 ? 'x' : v === 1 ? 'o' : ''} ${i === s.cell ? 'sel' : ''} ${s.line.includes(i) ? 'win' : ''}" ${click && v === -1 ? `onclick="TT.pick(${i})"` : 'disabled'}>${v >= 0 ? MK[v] : `<small>${i + 1}</small>`}</button>`).join('')}</div>`;
+  }
+  const scores = () => `<div class="tt-teams">${S().teams.map((t, i) => `<div class="tt-team ${i === S().active ? 'on' : ''} t${i}"><span>${MK[i]}</span><b>${esc(t.name)}</b><small>${t.score} điểm · thắng ${t.wins} ván</small>${k.editing ? k.adjScore(i) : ''}</div>`).join('')}</div>`;
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">❌⭕</div><div class="kicker">Review · 2 đội</div><h1>Tic-Tac-Toe</h1>
+      <div class="setup"><div class="panel"><h3>Bàn chơi</h3><div class="tt-sizes">${[3, 5, 7].map(n => `<label class="tt-sz"><input type="radio" name="tt-size" value="${n}" ${S().size === n ? 'checked' : ''} onchange="TT.size(${n})"><b>${n} × ${n}</b><small>${n === 3 ? '3 ô liền' : n === 5 ? '4 ô liền' : '5 ô liền'}</small></label>`).join('')}</div>
+          <div class="two">${k.num('Số ô liền để thắng', 'need', S().need, 3, 7)}${k.num('Giây mỗi câu (0 = không đếm)', 'secs', S().secs, 0)}</div>
+          <label for="tt-steal">Trả lời sai thì<select id="tt-steal"><option value="1" ${S().steal ? 'selected' : ''}>Đội kia được trả lời cướp ô</option><option value="0" ${S().steal ? '' : 'selected'}>Mất lượt, ô vẫn trống</option></select></label></div>
+        ${k.namesPanel('Hai đội', 'Đội', 'Đội 1 là ❌, đội 2 là ⭕.')}
+        ${k.qPanel(`<li>Đội đến lượt chọn một ô. Trả lời đúng thì ô đó thành ❌ hoặc ⭕ của đội.</li><li>Đủ hàng ngang, dọc hoặc chéo liền nhau là thắng ván.</li>`)}</div>${k.startBtn('Bắt đầu ❌⭕')}`,
+    pick:() => `<div class="kicker">Ván ${S().game}</div><h2><span class="team-name">${k.nm(S().active)}</span> ${MK[S().active]} chọn một ô</h2>${scores()}${board(true)}`,
+    question:() => `${k.timebar()}${k.timeup(k.nm(S().active))}${S().stealing ? `<p class="timeup-banner">🏴‍☠️ ${k.nm(S().active)} được trả lời cướp ô số ${S().cell + 1}!</p>` : ''}${k.qCard(`Ô số ${S().cell + 1} · câu hỏi cho ${k.nm(S().active)} ${MK[S().active]}`)}${k.okno('Đánh dấu ô', S().stealing ? 'Ô vẫn trống' : (S().steal ? 'Đội kia được cướp' : 'Mất lượt'))}`,
+    won:() => `<div class="kaboom" aria-hidden="true">${MK[S().active]}</div><h1><span class="team-name">${k.nm(S().active)}</span> thắng ván ${S().game}!</h1>${scores()}${board(false)}<div class="row"><button class="btn btn-gold" onclick="TT.again()">Ván mới →</button><button class="btn btn-no" onclick="TT.end()">Tổng kết</button></div>`,
+    draw:() => `<h1>Hoà! Kín bàn rồi 🤝</h1>${scores()}${board(false)}<div class="row"><button class="btn btn-gold" onclick="TT.again()">Ván mới →</button><button class="btn btn-no" onclick="TT.end()">Tổng kết</button></div>`,
+    end:() => { const order = S().teams.slice().sort((a, b) => b.wins - a.wins || b.score - a.score); return `<div class="kicker">Tổng kết</div><h1>🏆 <span class="team-name">${order[0] ? esc(order[0].name) : ''}</span></h1>
+      ${k.endTable([['Đội'], ['Ván thắng', 1], ['Điểm', 1]], order.map(t => [`<b>${esc(t.name)}</b>`, t.wins, t.score]))}${k.resetBtn()}`; }
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render });
+})();
+
+KITG.catchsay = CS; KITNS.CS = CS; CS.ns = 'CS'; CS.pre = 'cs';
+KITG.moneymoney = MM; KITNS.MM = MM; MM.ns = 'MM'; MM.pre = 'mm';
+KITG.backboard = BB; KITNS.BB = BB; BB.ns = 'BB'; BB.pre = 'bb';
+KITG.sevenup = SU; KITNS.SU = SU; SU.ns = 'SU'; SU.pre = 'su';
+KITG.tictactoe = TT; KITNS.TT = TT; TT.ns = 'TT'; TT.pre = 'tt';
+/* ================= XÂY ĐƯỜNG RAY ================= */
+const DR = (() => {
+  // . trống  R đá  T cây  W sông  C toa chờ  S ga  > đầu ray
+  const LV = [
+    { t:'Màn 1: Về ga', d:'Xây đường vòng qua đá và cây để đưa tàu vào ga.', m:['....T.....', '...R......', '>...R.....', '.........S', '..........'] },
+    { t:'Màn 2: Đón toa', d:'Đón toa đang chờ rồi mới đưa tàu vào ga.', m:['.......T.S', '...R..T...', '>.....T...', '.....C..T.', '...R......'] },
+    { t:'Màn 3: Đón hai toa', d:'Đón đủ cả hai toa, thứ tự nào cũng được.', m:['......T.R.', '...C......', '>.R...C...', '.....T....', '...R.....S'] },
+    { t:'Màn 4: Qua cầu', d:'Bắc cầu qua sông rồi đưa tàu vào ga.', m:['......WR..', '...R..W..R', '>...T.W..S', '....T.W.T.', '......W...'] },
+    { t:'Màn 5: Cầu và toa', d:'Qua cầu, đón hai toa rồi vào ga trên cao.', m:['......WR.S', '..R...W.R.', '>.....W.T.', '...T..W...', '..C...W.C.'] },
+    { t:'Màn 6: Chạy đêm', d:'Đèn tàu chỉ soi gần. Tìm đủ ba toa trong đêm rồi vào ga.', m:['..C..R....', '>....T..C.', '..R.....R.', '.T..C...T.', '....R....S'], night:true }
+  ];
+  const k = GameKit({ ns:'DR', key:'duong-ray-v1', pre:'dr', keep:['level', 'per'],
+    fresh:() => ({ phase:'setup', names:['Đội 1','Đội 2','Đội 3'], level:0, per:1, pts:10, secs:0, qText:SAMPLE_Q, questions:[], qi:0, curQ:null, showAns:false,
+      teams:[], active:0, turn:0, path:[], credit:0, last:null, ran:false, done:[], armReset:false }) });
+  const S = () => k.S;
+  const map = () => LV[S().level].m;
+  const at = (r, c) => (map()[r] || '')[c];
+  const startCell = () => { const m = map(); for (let r = 0; r < m.length; r++) { const c = m[r].indexOf('>'); if (c >= 0) return [r, c]; } return [2, 0]; };
+  const stationCell = () => { const m = map(); for (let r = 0; r < m.length; r++) { const c = m[r].indexOf('S'); if (c >= 0) return [r, c]; } };
+  const endCell = () => { const p = S().path; return p.length ? p[p.length - 1] : startCell(); };
+  const adj = (a, b) => Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) === 1;
+  const onPath = (r, c) => S().path.some(p => p[0] === r && p[1] === c) || (startCell()[0] === r && startCell()[1] === c);
+  const atStation = () => adj(endCell(), stationCell());
+  const carts = () => { const out = []; map().forEach((row, r) => [...row].forEach((ch, c) => { if (ch === 'C') out.push([r, c]); })); return out; };
+  const got = () => carts().filter(([r, c]) => onPath(r, c)).length;
+  const act = Object.assign(k.acts, {
+    start(){
+      const s = S(); s.names = k.readNames(); if (!s.names.length) s.names = ['Cả lớp'];
+      s.level = +document.querySelector('input[name="dr-lv"]:checked').value; s.per = k.readNum('per', 1, 1, 3); s.pts = k.readNum('pts', 10, 0); s.secs = k.readNum('secs', 0, 0); k.readQs();
+      s.teams = s.names.map(name => ({ name, score:0, laid:0 })); s.path = []; s.credit = 0; s.ran = false; s.active = 0; s.turn = 0; k.undo = [];
+      s.phase = 'ready'; SFX.click(); k.render();
+    },
+    go(){ k.nextQ(); k.startT(); S().phase = 'question'; SFX.flip(); k.render(); },
+    answer(right, timeout){
+      const s = S(); if (s.phase !== 'question') return; k.snap(); k.stopT();
+      if (right) { s.credit = s.per; s.teams[s.active].score += s.pts; s.last = { right:true }; s.phase = 'build'; SFX.coin(); }
+      else { s.last = { right:false, timeout:!!timeout }; s.phase = 'result'; SFX.bonk(); }
+      k.render();
+    },
+    lay(r, c){
+      const s = S(); if (s.phase !== 'build' || s.credit <= 0) return;
+      const ch = at(r, c); if (!ch || 'RTS>'.includes(ch) || onPath(r, c) || !adj(endCell(), [r, c])) { SFX.bonk(); return; }
+      k.snap(); s.path.push([r, c]); s.credit--; s.teams[s.active].laid++; SFX.flip();
+      if (s.credit <= 0 || atStation()) s.phase = 'built';
+      k.render();
+    },
+    pop(){ const s = S(); if (!s.path.length) return; k.snap(); s.path.pop(); k.render(); },
+    next(){ const s = S(); if (!s.teams.length) return; s.active = (s.active + 1) % s.teams.length; s.turn++; s.phase = 'ready'; k.render(); },
+    run(){
+      const s = S(); if (!atStation()) return;
+      const pts = [startCell()].concat(s.path, [stationCell()]);
+      if (got() < carts().length) { Refill.toast(`Còn ${carts().length - got()} toa chưa đón, đường ray phải đi qua các toa đang chờ nha!`); SFX.bonk(); return; }
+      s.phase = 'running'; k.render(); SFX.drumroll ? SFX.drumroll() : SFX.click();
+      let i = 0; const tr = document.getElementById('dr-train');
+      const step = () => { const el = document.getElementById('dr-train'); if (!el || S().phase !== 'running') return; const [r, c] = pts[i];
+        el.setAttribute('transform', `translate(${c * 60 + 30},${r * 60 + 30})`); const tc = document.getElementById('dr-cars'); if (tc) tc.textContent = '🚃'.repeat(carts().filter(([a, b]) => pts.slice(0, i + 1).some(p => p[0] === a && p[1] === b)).length);
+        if (++i < pts.length) setTimeout(step, 320); else { SFX.fanfare(); s.ran = true; if (!s.done.includes(s.level)) s.done.push(s.level); s.phase = 'arrived'; k.render(); } };
+      setTimeout(step, 100);
+    },
+    level(i){ const s = S(); s.level = i; s.path = []; s.credit = 0; s.ran = false; s.phase = 'ready'; k.render(); }
+  });
+  act.fix = () => (S().teams || []).map((t, i) => ({ label:t.name, val:t.score, step:10, add:d => act.adj(i, d) }));
+  // vẽ một ô ray: nối hai cạnh
+  const P = { L:[0, 30], R:[60, 30], U:[30, 0], D:[30, 60] };
+  function side(a, b){ if (!b) return null; if (b[0] < a[0]) return 'U'; if (b[0] > a[0]) return 'D'; if (b[1] < a[1]) return 'L'; return 'R'; }
+  function rail(r, c, s1, s2, bridge){
+    const a = P[s1 || 'L'], b = P[s2 || 'R'];
+    const d = (s1 === 'L' && s2 === 'R') || (s1 === 'R' && s2 === 'L') || (s1 === 'U' && s2 === 'D') || (s1 === 'D' && s2 === 'U') ? `M${a} L${b}` : `M${a} Q30,30 ${b}`;
+    return `<g transform="translate(${c * 60},${r * 60})">${bridge ? '<rect x="2" y="2" width="56" height="56" rx="4" fill="#b8865a" stroke="#7a4a1a" stroke-width="3"/>' : '<rect x="2" y="2" width="56" height="56" rx="8" fill="#fff7d6"/>'}
+      <path d="${d}" fill="none" stroke="#8a5a3a" stroke-width="24" stroke-dasharray="4 7"/><path d="${d}" fill="none" stroke="#707070" stroke-width="16"/><path d="${d}" fill="none" stroke="${bridge ? '#b8865a' : '#fff7d6'}" stroke-width="10"/></g>`;
+  }
+  function board(clickable){
+    const s = S(), m = map(), R = m.length, C = m[0].length, lv = LV[s.level];
+    const st = startCell(), sta = stationCell(), path = [st].concat(s.path), last = endCell();
+    const lit = (r, c) => !lv.night || path.some(p => Math.abs(p[0] - r) + Math.abs(p[1] - c) <= 2);
+    let g = '';
+    for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+      const ch = m[r][c], can = clickable && s.phase === 'build' && !'RTS>'.includes(ch) && !onPath(r, c) && adj(last, [r, c]);
+      g += `<rect x="${c * 60 + 2}" y="${r * 60 + 2}" width="56" height="56" rx="8" class="dr-cell ${ch === 'W' ? 'w' : ''} ${can ? 'can' : ''}" ${can ? `onclick="DR.lay(${r},${c})"` : ''}/>`;
+      if (lv.night && ch === '.' && !onPath(r, c)) g += `<text x="${c * 60 + 30}" y="${r * 60 + 36}" text-anchor="middle" class="dr-no">${r * C + c + 1}</text>`;
+    }
+    path.forEach((p, i) => { const prev = i === 0 ? [p[0], p[1] - 1] : path[i - 1], next = path[i + 1] || (adj(p, sta) ? sta : null);
+      g += rail(p[0], p[1], side(p, prev), next ? side(p, next) : (i === 0 ? 'R' : side(p, prev) === 'L' ? 'R' : 'L'), at(p[0], p[1]) === 'W'); });
+    for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+      const ch = m[r][c], x = c * 60 + 30, y = r * 60 + 38;
+      if (ch === 'R') g += `<text x="${x}" y="${y}" text-anchor="middle" font-size="36">🪨</text>`;
+      if (ch === 'T') g += `<text x="${x}" y="${y}" text-anchor="middle" font-size="36">🌲</text>`;
+      if (ch === 'S') g += `<text x="${x}" y="${y}" text-anchor="middle" font-size="38">🏫</text>`;
+      if (ch === 'C' && lit(r, c) && !(s.phase === 'arrived')) g += `<text x="${x}" y="${y - 2}" text-anchor="middle" font-size="30">🚃</text>`;
+    }
+    if (lv.night) for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) if (!lit(r, c)) g += `<rect x="${c * 60}" y="${r * 60}" width="60" height="60" fill="rgba(10,14,40,.82)"/>`;
+    const tr = s.phase === 'running' || s.phase === 'arrived' ? (s.phase === 'arrived' ? sta : st) : st;
+    g += `<g id="dr-train" transform="translate(${tr[1] * 60 + 30},${tr[0] * 60 + 30})" style="transition:transform .3s linear"><text y="10" text-anchor="middle" font-size="34">🚂</text></g>`;
+    g += `<rect x="-62" y="${st[0] * 60 + 14}" width="62" height="32" rx="6" fill="#fff7d6"/><path d="M-62 ${st[0] * 60 + 30} H0" stroke="#707070" stroke-width="14"/><path d="M-62 ${st[0] * 60 + 30} H0" stroke="#fff7d6" stroke-width="8"/>`;
+    return `<div class="dr-scene ${lv.night ? 'night' : ''}"><svg viewBox="-70 -10 ${C * 60 + 80} ${R * 60 + 20}" class="dr-svg">${g}</svg>
+      <div class="dr-bar"><span class="dr-chip">🛤️ Ray thẳng</span><span class="dr-chip">↪️ Ray cong</span>${carts().length ? `<span class="dr-chip">🚃 ${got()}/${carts().length} toa</span>` : ''}
+        <button class="ghost" onclick="DR.pop()" ${s.path.length ? '' : 'disabled'}>🗑 Gỡ ray cuối</button><button class="btn ${atStation() ? 'btn-ok' : ''}" onclick="DR.run()" ${atStation() ? '' : 'disabled'}>${atStation() ? '🚂 GO' : '🔒 GO'}</button><span id="dr-cars"></span></div></div>`;
+  }
+  const scores = () => `<div class="row">${S().teams.map((t, i) => `<span class="pill ${i === S().active ? 'on' : ''}">${esc(t.name)} · ${t.score}</span>${k.editing ? k.adjScore(i) : ''}`).join('')}</div>`;
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">🚂🛤️🏫</div><div class="kicker">Trò chơi ôn tập · Cả lớp xây đường</div><h1>Xây đường ray</h1>
+      <div class="setup"><div class="panel span2"><h3>Chọn màn</h3><div class="dr-levels">${LV.map((l, i) => `<label class="dr-lv ${l.night ? 'night' : ''}"><input type="radio" name="dr-lv" value="${i}" ${S().level === i ? 'checked' : ''}><b>${l.t}</b><small>${l.d}</small></label>`).join('')}</div></div>
+        ${k.namesPanel('Các đội (thay phiên xây chung một đường)', 'Đội', '')}
+        <div class="panel"><h3>Luật</h3><div class="two">${k.num('Mỗi câu đúng được đặt mấy đoạn ray', 'per', S().per, 1, 3)}${k.num('Điểm mỗi câu đúng', 'pts', S().pts, 0)}${k.num('Giây mỗi câu (0 = không đếm giờ)', 'secs', S().secs, 0)}</div></div>
+        ${k.qPanel(`<li>Trả lời đúng thì được đặt đoạn ray tiếp theo: chạm vào ô sáng viền nét đứt nằm cạnh đầu ray. Ray thẳng hay cong tự khớp.</li><li>Đường ray đi qua toa đang chờ là đón được toa. Ray chạm ga thì bấm 🚂 GO cho tàu chạy.</li><li>Không đặt lên đá và cây; ô sông thì thành cầu gỗ.</li>`)}</div>${k.startBtn('Bắt đầu xây 🛤️')}`,
+    ready:() => `<div class="kicker">${LV[S().level].t} · lượt ${S().turn + 1}</div><h2><span class="team-name">${k.nm(S().active)}</span> trả lời để được đặt ray</h2><button class="btn btn-eat" onclick="DR.go()">Ra câu hỏi</button>${board(false)}${scores()}`,
+    question:() => `${k.timebar()}${k.timeup(k.nm(S().active))}${k.qCard(`Câu hỏi cho ${k.nm(S().active)}`)}${k.okno('Được đặt ray', 'Không được đặt')}`,
+    build:() => `<h2 class="pos">Đúng rồi! Đặt ${S().credit} đoạn ray: chạm ô sáng cạnh đầu ray</h2>${board(true)}`,
+    built:() => `<h2>${atStation() ? 'Ray đã chạm ga! Bấm 🚂 GO cho tàu chạy' : 'Đã đặt ray'}</h2>${board(false)}<div class="row"><button class="btn btn-gold" onclick="DR.next()">Đội tiếp →</button></div>${scores()}`,
+    result:() => `<h2 class="neg">${S().last.timeout ? 'Hết giờ' : 'Chưa đúng'}, chưa được đặt ray</h2>${board(false)}<div class="row">${deckBtn('pen', S().teams[S().active].name)}<button class="btn btn-gold" onclick="DR.next()">Đội tiếp →</button></div>`,
+    running:() => `<h2>Tàu đang chạy… 🚂💨</h2>${board(false)}`,
+    arrived:() => `<div class="kaboom" aria-hidden="true">🎉</div><h1>Tàu đã vào ga!</h1>${board(false)}${scores()}
+      <div class="row">${S().level + 1 < LV.length ? `<button class="btn btn-gold" onclick="DR.level(${S().level + 1})">Màn tiếp: ${LV[S().level + 1].t}</button>` : ''}<button class="btn btn-no" onclick="DR.end()">Tổng kết</button></div>`,
+    end:() => { const order = S().teams.slice().sort((a, b) => b.score - a.score); return `<div class="kicker">Tổng kết</div><h1>🏆 <span class="team-name">${order[0] ? esc(order[0].name) : ''}</span></h1>
+      ${k.endTable([['Hạng'], ['Đội'], ['Đoạn ray đã đặt', 1], ['Điểm', 1]], order.map((t, i) => [i + 1, `<b>${esc(t.name)}</b>`, t.laid, t.score]))}<p class="lead">Đã qua ${S().done.length}/${LV.length} màn.</p>${k.resetBtn()}`; }
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render });
+})();
+
+/* ================= TÔ MÀU THEO SỐ ================= */
+const TM = (() => {
+  const PICS = {
+    bear:{ t:'Buổi dã ngoại của gấu', pal:['#9fd4ff', '#7cc35a', '#a0662f', '#e8c79a', '#333333', '#ffd23a', '#e2473a', '#2f8a3a'], names:['Trời', 'Cỏ', 'Nâu', 'Kem', 'Đen', 'Vàng', 'Đỏ', 'Xanh lá'],
+      m:['1111111111116661', '1133311133311661', '1133331333331111', '1113333333331111', '1113353335331111', '1113333443331111', '1111334554331111', '1111133443311111', '1113333333333111', '1133344444333311', '2233344444333322', '2227733333377222', '2277777777777722', '2222222222222222'] },
+    dino:{ t:'Khủng long', pal:['#9fd4ff', '#7cc35a', '#4fb84f', '#c8f0a0', '#222222', '#ff9a3a', '#ff7ab0', '#fff3a0'], names:['Trời', 'Cỏ', 'Xanh', 'Bụng', 'Mắt', 'Gai', 'Hồng', 'Vàng nhạt'],
+      m:['1111111111111111', '1111111166111111', '1111111633311111', '1111116333531111', '1111163333331111', '1111633333311111', '1116333443111111', '1163333444311111', '1633333444311111', '3333333444311111', '1133333333111711', '1113311331117871', '2223322332222722', '2222222222222222'] },
+    pirate:{ t:'Rương hải tặc', pal:['#9fd4ff', '#f2d79a', '#8a5a2a', '#ffd23a', '#222222', '#3a9a3a', '#e2242c', '#3a8ad8'], names:['Trời', 'Cát', 'Gỗ', 'Vàng', 'Khoá', 'Lá cọ', 'Vẹt đỏ', 'Biển'],
+      m:['1111611111111111', '1166661111111711', '1111611111117771', '1111611111111711', '1111611111111311', '8888688888888888', '2222322222222222', '2223333333333222', '2223444444443222', '2223333553333222', '2223333553333222', '2223333333333222', '2244222222224422', '2222222222222222'] },
+    bunny:{ t:'Chú thỏ', pal:['#9fd4ff', '#7cc35a', '#f2f2f2', '#ffb0c8', '#222222', '#ff8a1a', '#3aa83a', '#2f7a3a'], names:['Trời', 'Cỏ', 'Trắng', 'Hồng', 'Đen', 'Cam', 'Lá', 'Cây'],
+      m:['1111131113111111', '1111343134311111', '1111343134311111', '1111343134311111', '1111333333311111', '1111353335311111', '1111334443311111', '1111133333111111', '1111333333311711', '1113333333331611', '1113333333331611', '2222333333322622', '2222233333222222', '2222222222222222'] }
+  };
+  const k = GameKit({ ns:'TM', key:'to-mau-v1', pre:'tm', keep:['pic'],
+    fresh:() => ({ phase:'setup', names:['Đội 1','Đội 2','Đội 3'], pic:'bear', pts:10, secs:0, qText:SAMPLE_Q, questions:[], qi:0, curQ:null, showAns:false, teams:[], active:0, turn:0, painted:[], last:null, armReset:false }) });
+  const S = () => k.S;
+  const pic = () => PICS[S().pic] || PICS.bear;
+  const nums = () => [...new Set(pic().m.join(''))].sort();
+  const act = Object.assign(k.acts, {
+    start(){ const s = S(); s.names = k.readNames(); if (!s.names.length) s.names = ['Cả lớp']; s.pic = document.querySelector('input[name="tm-pic"]:checked').value; s.pts = k.readNum('pts', 10, 0); s.secs = k.readNum('secs', 0, 0); k.readQs();
+      s.teams = s.names.map(name => ({ name, score:0, colors:0 })); s.painted = []; s.active = 0; s.turn = 0; k.undo = []; s.phase = 'ready'; SFX.click(); k.render(); },
+    go(){ k.nextQ(); k.startT(); S().phase = 'question'; SFX.flip(); k.render(); },
+    answer(right, timeout){ const s = S(); if (s.phase !== 'question') return; k.snap(); k.stopT();
+      if (right) { s.teams[s.active].score += s.pts; s.phase = 'paint'; SFX.coin(); } else { s.last = { right:false, timeout:!!timeout }; s.phase = 'result'; SFX.bonk(); } k.render(); },
+    paint(n){ const s = S(); if (s.phase !== 'paint' || s.painted.includes(n)) return; k.snap(); s.painted.push(n); s.teams[s.active].colors++; s.last = { right:true, n }; SFX.flip();
+      s.phase = s.painted.length >= nums().length ? 'done' : 'result'; if (s.phase === 'done') SFX.fanfare(); k.render(); },
+    next(){ const s = S(); if (!s.teams.length) return; s.active = (s.active + 1) % s.teams.length; s.turn++; s.phase = 'ready'; k.render(); }
+  });
+  act.fix = () => (S().teams || []).map((t, i) => ({ label:t.name, val:t.score, step:10, add:d => act.adj(i, d) }));
+  function canvas(){
+    const p = pic(), s = S(), W = p.m[0].length;
+    return `<div class="tm-sheet"><div class="tm-grid" style="grid-template-columns:repeat(${W},1fr)">${p.m.join('').split('').map(ch => s.painted.includes(ch) ? `<i class="on" style="background:${p.pal[+ch - 1]}"></i>` : `<i>${ch}</i>`).join('')}</div></div>`;
+  }
+  function palette(click){
+    const p = pic(), s = S();
+    return `<div class="tm-pal">${nums().map(n => `<button type="button" class="tm-sw ${s.painted.includes(n) ? 'used' : ''}" style="--c:${p.pal[+n - 1]}" ${click && !s.painted.includes(n) ? `onclick="TM.paint('${n}')"` : 'disabled'}><b>${n}</b><small>${p.names[+n - 1]}</small></button>`).join('')}
+      <div class="tm-prog">${s.painted.length}/${nums().length} màu</div></div>`;
+  }
+  const scores = () => `<div class="row">${S().teams.map((t, i) => `<span class="pill ${i === S().active ? 'on' : ''}">${esc(t.name)} · ${t.score}</span>${k.editing ? k.adjScore(i) : ''}`).join('')}</div>`;
+  const wrap = click => `<div class="tm-wrap">${canvas()}${palette(click)}</div>`;
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">🎨🖍️</div><div class="kicker">Trò chơi ôn tập · Cả lớp tô chung</div><h1>Tô màu theo số</h1>
+      <div class="setup"><div class="panel span2"><h3>Chọn tranh</h3><div class="tm-pics">${Object.keys(PICS).map(key => `<label class="tm-pick"><input type="radio" name="tm-pic" value="${key}" ${S().pic === key ? 'checked' : ''}><b>${PICS[key].t}</b></label>`).join('')}</div></div>
+        ${k.namesPanel('Các đội', 'Đội', '')}<div class="panel"><h3>Luật</h3><div class="two">${k.num('Điểm mỗi câu đúng', 'pts', S().pts, 0)}${k.num('Giây mỗi câu (0 = không đếm giờ)', 'secs', S().secs, 0)}</div></div>
+        ${k.qPanel(`<li>Bức tranh chia ô có số. Trả lời đúng thì đội chọn một màu trong bảng: mọi ô cùng số được tô màu đó.</li><li>Tô kín cả tranh là cả lớp hoàn thành!</li>`)}</div>${k.startBtn('Bắt đầu tô 🎨')}`,
+    ready:() => `<h2><span class="team-name">${k.nm(S().active)}</span> trả lời để được tô</h2><button class="btn btn-eat" onclick="TM.go()">Ra câu hỏi</button>${wrap(false)}${scores()}`,
+    question:() => `${k.timebar()}${k.timeup(k.nm(S().active))}${k.qCard(`Câu hỏi cho ${k.nm(S().active)}`)}${k.okno('Được tô màu', 'Chưa được tô')}`,
+    paint:() => `<h2 class="pos">Đúng rồi! ${k.nm(S().active)} chọn một màu để tô</h2>${wrap(true)}`,
+    result:() => `<h2 class="${S().last.right ? 'pos' : 'neg'}">${S().last.right ? `Tô xong màu số ${S().last.n}! 🎨` : (S().last.timeout ? 'Hết giờ' : 'Chưa đúng')}</h2>${wrap(false)}<button class="btn btn-gold" onclick="TM.next()">Đội tiếp →</button>`,
+    done:() => `<div class="kaboom" aria-hidden="true">🖼️</div><h1>Hoàn thành bức tranh “${pic().t}”!</h1>${wrap(false)}${scores()}<button class="btn btn-no" onclick="TM.end()">Tổng kết</button>`,
+    end:() => { const order = S().teams.slice().sort((a, b) => b.score - a.score); return `<div class="kicker">Tổng kết</div><h1>🏆 <span class="team-name">${order[0] ? esc(order[0].name) : ''}</span></h1>
+      ${k.endTable([['Hạng'], ['Đội'], ['Màu đã tô', 1], ['Điểm', 1]], order.map((t, i) => [i + 1, `<b>${esc(t.name)}</b>`, t.colors, t.score]))}${k.resetBtn()}`; }
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render });
+})();
+
+/* ================= THÁM HIỂM ĐẠI DƯƠNG ================= */
+const DD = (() => {
+  const SEA = ['🦈', '🐋', '🐡', '🪼', '🦀', '🐢', '⭐', '🦑', '🐙', '🐬', '🐠', '🦐', '🐳', '🦞', '🐟'];
+  const k = GameKit({ ns:'DD', key:'dai-duong-v1', pre:'dd', keep:['keys'],
+    fresh:() => ({ phase:'setup', names:['Đội 1','Đội 2','Đội 3'], keys:3, pts:10, secs:0, qText:SAMPLE_Q, questions:[], qi:0, curQ:null, showAns:false, teams:[], active:0, turn:0, cards:[], last:null, armReset:false }) });
+  const S = () => k.S;
+  function deal(){ const s = S(), n = 15, items = Array(n).fill('none'); const put = (v, c) => { for (let j = 0; j < c; j++) { let i; do { i = Math.floor(Math.random() * n); } while (items[i] !== 'none'); items[i] = v; } };
+    put('key', s.keys); put('pearl', 3); put('jelly', 2); s.cards = items.map((v, i) => ({ a:SEA[i % SEA.length], v, open:false })); }
+  const act = Object.assign(k.acts, {
+    start(){ const s = S(); s.names = k.readNames(); if (!s.names.length) s.names = ['Cả lớp']; s.keys = k.readNum('keys', 3, 1, 6); s.pts = k.readNum('pts', 10, 0); s.secs = k.readNum('secs', 0, 0); k.readQs();
+      s.teams = s.names.map(name => ({ name, score:0, keys:0 })); deal(); s.active = 0; s.turn = 0; k.undo = []; s.phase = 'ready'; SFX.click(); k.render(); },
+    go(){ k.nextQ(); k.startT(); S().phase = 'question'; SFX.flip(); k.render(); },
+    answer(right, timeout){ const s = S(); if (s.phase !== 'question') return; k.snap(); k.stopT();
+      if (right) { s.teams[s.active].score += s.pts; s.phase = 'dive'; SFX.coin(); } else { s.last = { right:false, timeout:!!timeout }; s.phase = 'result'; SFX.bonk(); } k.render(); },
+    flip(i){ const s = S(), c = s.cards[i], t = s.teams[s.active]; if (s.phase !== 'dive' || !c || c.open) return; k.snap(); c.open = true;
+      if (c.v === 'key') { t.keys++; SFX.fanfare(); } else if (c.v === 'pearl') { t.score += 20; SFX.coin(); } else if (c.v === 'jelly') { t.score = Math.max(0, t.score - 5); SFX.bonk(); } else SFX.click();
+      s.last = { right:true, v:c.v }; const found = s.cards.filter(x => x.open && x.v === 'key').length; s.phase = found >= s.keys ? 'chest' : 'result'; if (s.phase === 'chest') SFX.fanfare(); k.render(); },
+    next(){ const s = S(); if (!s.teams.length) return; s.active = (s.active + 1) % s.teams.length; s.turn++; s.phase = 'ready'; k.render(); }
+  });
+  act.fix = () => (S().teams || []).map((t, i) => ({ label:t.name, val:t.score, step:10, add:d => act.adj(i, d) }));
+  const REV = { key:'🔑', pearl:'🦪', jelly:'⚡', none:'🫧' };
+  function sea(click){
+    const s = S(), found = s.cards.filter(x => x.open && x.v === 'key').length;
+    return `<div class="dd-sea"><div class="dd-top"><span>🔑 ${found}/${s.keys}</span></div><div class="dd-grid">${s.cards.map((c, i) => `<button type="button" class="dd-c ${c.open ? 'open ' + c.v : ''}" ${click && !c.open ? `onclick="DD.flip(${i})"` : 'disabled'}><span>${c.open ? REV[c.v] : c.a}</span></button>`).join('')}</div>
+      <div class="dd-sand"><span class="dd-chest ${found >= s.keys ? 'open' : ''}">${found >= s.keys ? '💰' : '🧰'}<i>${Array.from({ length:s.keys }, (_, j) => j < found ? '🔓' : '🔒').join('')}</i></span></div></div>`;
+  }
+  const scores = () => `<div class="row">${S().teams.map((t, i) => `<span class="pill ${i === S().active ? 'on' : ''}">${esc(t.name)} · ${t.score} · 🔑${t.keys}</span>${k.editing ? k.adjScore(i) : ''}`).join('')}</div>`;
+  const MSG = { key:'Tìm được chìa khoá! 🔑', pearl:'Ngọc trai quý! +20 điểm 🦪', jelly:'Sứa chích! −5 điểm ⚡', none:'Chỉ có bong bóng 🫧' };
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">🤿🐙🧰</div><div class="kicker">Trò chơi ôn tập · Lặn tìm kho báu</div><h1>Thám hiểm đại dương</h1>
+      <div class="setup"><div class="panel"><h3>Luật</h3><div class="two">${k.num('Số chìa khoá giấu dưới biển', 'keys', S().keys, 1, 6)}${k.num('Điểm mỗi câu đúng', 'pts', S().pts, 0)}${k.num('Giây mỗi câu (0 = không đếm giờ)', 'secs', S().secs, 0)}</div></div>
+        ${k.namesPanel('Các đội', 'Đội', '')}${k.qPanel(`<li>Trả lời đúng thì được lặn xuống, chọn một sinh vật biển để xem bên dưới có gì: 🔑 chìa khoá, 🦪 ngọc trai (+20), ⚡ sứa chích (−5) hoặc 🫧 bong bóng.</li><li>Tìm đủ chìa khoá thì mở được rương kho báu. Đội nhiều điểm nhất thắng.</li>`)}</div>${k.startBtn('Lặn thôi 🤿')}`,
+    ready:() => `<h2><span class="team-name">${k.nm(S().active)}</span> chuẩn bị lặn</h2><button class="btn btn-eat" onclick="DD.go()">Ra câu hỏi</button>${sea(false)}${scores()}`,
+    question:() => `${k.timebar()}${k.timeup(k.nm(S().active))}${k.qCard(`Câu hỏi cho ${k.nm(S().active)}`)}${k.okno('Được lặn', 'Ở trên thuyền')}`,
+    dive:() => `<h2 class="pos">Đúng rồi! Chọn một sinh vật biển</h2>${sea(true)}`,
+    result:() => `<h2 class="${S().last.right && S().last.v !== 'jelly' ? 'pos' : 'neg'}">${S().last.right ? MSG[S().last.v] : (S().last.timeout ? 'Hết giờ, chưa được lặn' : 'Chưa đúng, chưa được lặn')}</h2>${sea(false)}${scores()}<button class="btn btn-gold" onclick="DD.next()">Đội tiếp →</button>`,
+    chest:() => `<div class="kaboom" aria-hidden="true">💰</div><h1>Mở được rương kho báu!</h1>${sea(false)}${scores()}<button class="btn btn-no" onclick="DD.end()">Tổng kết</button>`,
+    end:() => { const order = S().teams.slice().sort((a, b) => b.score - a.score); return `<div class="kicker">Tổng kết</div><h1>🏆 <span class="team-name">${order[0] ? esc(order[0].name) : ''}</span></h1>
+      ${k.endTable([['Hạng'], ['Đội'], ['Chìa khoá', 1], ['Điểm', 1]], order.map((t, i) => [i + 1, `<b>${esc(t.name)}</b>`, t.keys, t.score]))}<div class="row">${order[0] ? deckBtn('gift', order[0].name) : ''}</div>${k.resetBtn()}`; }
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render });
+})();
+
+/* ================= GƯƠNG VUI NHỘN ================= */
+const GV = (() => {
+  const FX = [
+    { ic:'🦁', t:'Thành sư tử!', d:'+20 điểm', pts:20 }, { ic:'🦸', t:'Thành siêu nhân!', d:'+30 điểm', pts:30 }, { ic:'🐷', t:'Thành chú heo!', d:'Cả đội kêu “ụt ịt” 3 lần, +10', pts:10 },
+    { ic:'👽', t:'Thành người ngoài hành tinh!', d:'Nói câu trả lời bằng giọng robot, +10', pts:10 }, { ic:'🧓', t:'Già đi 60 tuổi!', d:'Đi khom lưng về chỗ, +5', pts:5 }, { ic:'🤡', t:'Thành chú hề!', d:'Làm mặt hề 5 giây, +10', pts:10 },
+    { ic:'👑', t:'Thành vua!', d:'Điểm nhân đôi!', x2:true }, { ic:'🪞', t:'Gương vỡ!', d:'−10 điểm', pts:-10 }, { ic:'🐸', t:'Thành ếch!', d:'Nhảy ếch 3 cái, +10', pts:10 }
+  ];
+  const k = GameKit({ ns:'GV', key:'guong-vui-v1', pre:'gv', keep:['mirrors'],
+    fresh:() => ({ phase:'setup', names:['Đội 1','Đội 2','Đội 3'], mirrors:5, pts:10, secs:0, qText:SAMPLE_Q, questions:[], qi:0, curQ:null, showAns:false, teams:[], active:0, turn:0, deal:[], pick:null, last:null, armReset:false }) });
+  const S = () => k.S;
+  const deal = () => { const s = S(), idx = FX.map((_, i) => i); for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; } s.deal = idx.slice(0, s.mirrors); s.pick = null; };
+  const act = Object.assign(k.acts, {
+    start(){ const s = S(); s.names = k.readNames(); if (!s.names.length) s.names = ['Cả lớp']; s.mirrors = k.readNum('mirrors', 5, 3, 7); s.pts = k.readNum('pts', 10, 0); s.secs = k.readNum('secs', 0, 0); k.readQs();
+      s.teams = s.names.map(name => ({ name, score:0, look:'🧒' })); s.active = 0; s.turn = 0; k.undo = []; s.phase = 'ready'; SFX.click(); k.render(); },
+    go(){ k.nextQ(); k.startT(); S().phase = 'question'; SFX.flip(); k.render(); },
+    answer(right, timeout){ const s = S(); if (s.phase !== 'question') return; k.snap(); k.stopT();
+      if (right) { s.teams[s.active].score += s.pts; deal(); s.phase = 'mirror'; SFX.coin(); } else { s.last = { right:false, timeout:!!timeout }; s.phase = 'result'; SFX.bonk(); } k.render(); },
+    pick(i){ const s = S(); if (s.phase !== 'mirror' || s.pick != null) return; k.snap(); s.pick = i; const f = FX[s.deal[i]], t = s.teams[s.active];
+      if (f.x2) t.score *= 2; else t.score = Math.max(0, t.score + f.pts); t.look = f.ic; s.last = { right:true, f:s.deal[i] }; (f.pts || 0) < 0 ? SFX.boom() : SFX.fanfare(); s.phase = 'reflect'; k.render(); },
+    next(){ const s = S(); if (!s.teams.length) return; s.active = (s.active + 1) % s.teams.length; s.turn++; s.phase = 'ready'; k.render(); }
+  });
+  act.fix = () => (S().teams || []).map((t, i) => ({ label:t.name, val:t.score, step:10, add:d => act.adj(i, d) }));
+  function hall(click){
+    const s = S();
+    return `<div class="gv-hall"><div class="gv-row">${s.deal.map((fi, i) => `<button type="button" class="gv-m ${s.pick === i ? 'open' : ''}" ${click && s.pick == null ? `onclick="GV.pick(${i})"` : 'disabled'}><span>${s.pick === i ? FX[fi].ic : '✨'}</span><small>${i + 1}</small></button>`).join('')}</div>
+      <div class="gv-kid">${s.teams[s.active] ? s.teams[s.active].look : '🧒'}</div></div>`;
+  }
+  const scores = () => `<div class="row">${S().teams.map((t, i) => `<span class="pill ${i === S().active ? 'on' : ''}">${t.look} ${esc(t.name)} · ${t.score}</span>${k.editing ? k.adjScore(i) : ''}`).join('')}</div>`;
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">🪞🧒🦁</div><div class="kicker">Trò chơi ôn tập · Bất ngờ</div><h1>Gương vui nhộn</h1>
+      <div class="setup"><div class="panel"><h3>Luật</h3><div class="two">${k.num('Số gương mỗi lượt', 'mirrors', S().mirrors, 3, 7)}${k.num('Điểm mỗi câu đúng', 'pts', S().pts, 0)}${k.num('Giây mỗi câu (0 = không đếm giờ)', 'secs', S().secs, 0)}</div></div>
+        ${k.namesPanel('Các đội', 'Đội', '')}${k.qPanel(`<li>Trả lời đúng thì được chọn một chiếc gương bí ẩn. Soi gương sẽ biến thành sư tử, siêu nhân, ếch, chú hề… kèm điểm thưởng hoặc thử thách vui.</li><li>Có gương vỡ bị trừ điểm và gương vua nhân đôi điểm!</li>`)}</div>${k.startBtn('Vào phòng gương 🪞')}`,
+    ready:() => `<h2><span class="team-name">${k.nm(S().active)}</span> trả lời để được soi gương</h2><button class="btn btn-eat" onclick="GV.go()">Ra câu hỏi</button>${scores()}`,
+    question:() => `${k.timebar()}${k.timeup(k.nm(S().active))}${k.qCard(`Câu hỏi cho ${k.nm(S().active)}`)}${k.okno('Được soi gương', 'Không được soi')}`,
+    mirror:() => `<h2 class="pos">Đúng rồi! Chọn một chiếc gương bí ẩn</h2>${hall(true)}`,
+    reflect:() => { const f = FX[S().last.f]; return `${hall(false)}<h1 class="${(f.pts || 0) < 0 ? 'neg' : 'pos'}">${f.ic} ${f.t}</h1><p class="lead">${f.d}</p>${scores()}<button class="btn btn-gold" onclick="GV.next()">Đội tiếp →</button>`; },
+    result:() => `<h2 class="neg">${S().last.timeout ? 'Hết giờ' : 'Chưa đúng'}, chưa được soi gương</h2><div class="row">${deckBtn('pen', S().teams[S().active].name)}</div>${scores()}<button class="btn btn-gold" onclick="GV.next()">Đội tiếp →</button>`,
+    end:() => { const order = S().teams.slice().sort((a, b) => b.score - a.score); return `<div class="kicker">Tổng kết</div><h1>🏆 ${order[0] ? order[0].look + ' <span class="team-name">' + esc(order[0].name) + '</span>' : ''}</h1>
+      ${k.endTable([['Hạng'], ['Đội'], ['Hình dạng'], ['Điểm', 1]], order.map((t, i) => [i + 1, `<b>${esc(t.name)}</b>`, t.look, t.score]))}${k.resetBtn()}`; }
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render });
+})();
+
+/* ================= ĐÁNH VẦN CÙNG NGƯỜI NGOÀI HÀNH TINH ================= */
+const DV = (() => {
+  const SAMPLE_W = 'sun | ☀️\ncat | 🐱\nfish | 🐟\napple | 🍎\nstar | ⭐\nduck | 🦆\nbook | 📖\ncake | 🎂';
+  const k = GameKit({ ns:'DV', key:'danh-van-v1', pre:'dv', keep:['words', 'extra'],
+    fresh:() => ({ phase:'setup', names:['Đội 1','Đội 2'], words:SAMPLE_W, extra:2, secs:0, qText:'', questions:[], qi:0, curQ:null, showAns:false, teams:[], active:0, turn:0, list:[], wi:0, w:null, letters:[], filled:0, miss:0, armReset:false }) });
+  const S = () => k.S;
+  const AZ = 'abcdefghijklmnopqrstuvwxyz';
+  function nextWord(){
+    const s = S(), it = s.list[s.wi % s.list.length]; s.wi++;
+    const w = it.w.toLowerCase().replace(/[^a-z]/g, '');
+    const L = [...w]; for (let j = 0; j < s.extra; j++) L.push(AZ[Math.floor(Math.random() * 26)]);
+    for (let i = L.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [L[i], L[j]] = [L[j], L[i]]; }
+    s.w = { w, pic:it.pic }; s.letters = L.map(ch => ({ ch, used:false })); s.filled = 0; s.miss = 0;
+  }
+  const act = Object.assign(k.acts, {
+    start(){ const s = S(); s.names = k.readNames(); if (!s.names.length) s.names = ['Cả lớp']; s.extra = k.readNum('extra', 2, 0, 6); s.secs = k.readNum('secs', 0, 0);
+      s.words = document.getElementById('dv-words').value;
+      s.list = s.words.split('\n').map(l => l.split('|').map(x => x.trim())).filter(x => x[0] && /[a-z]/i.test(x[0])).map(([w, pic]) => ({ w, pic:pic || '❓' }));
+      if (!s.list.length) { k.err('Nhập ít nhất một từ.'); return; }
+      s.teams = s.names.map(name => ({ name, score:0, words:0 })); s.wi = 0; s.active = 0; s.turn = 0; k.undo = []; nextWord(); k.startT(); s.phase = 'question'; SFX.click(); k.render(); },
+    tap(i){ const s = S(), L = s.letters[i]; if (s.phase !== 'question' || !L || L.used) return;
+      if (L.ch === s.w.w[s.filled]) { L.used = true; s.filled++; SFX.coin(); if (s.filled >= s.w.w.length) { k.stopT(); const t = s.teams[s.active], p = Math.max(2, 10 - s.miss * 2); t.score += p; t.words++; s.last = { right:true, p }; s.phase = 'result'; SFX.fanfare(); } }
+      else { s.miss++; SFX.bonk(); const el = document.querySelector(`.dv-al[data-i="${i}"]`); if (el) { el.classList.remove('no'); void el.offsetWidth; el.classList.add('no'); return; } }
+      k.render(); },
+    answer(right){ const s = S(); if (s.phase !== 'question') return; k.stopT(); if (!right) { s.last = { right:false }; s.phase = 'result'; SFX.bonk(); k.render(); } },
+    next(){ const s = S(); if (!s.teams.length) return; s.active = (s.active + 1) % s.teams.length; s.turn++; nextWord(); k.startT(); s.phase = 'question'; k.render(); }
+  });
+  act.fix = () => (S().teams || []).map((t, i) => ({ label:t.name, val:t.score, step:10, add:d => act.adj(i, d) }));
+  function stage(show){
+    const s = S(), w = s.w.w;
+    return `<div class="dv-space"><div class="dv-pic">${s.w.pic}</div>
+      <div class="dv-slots">${[...w].map((ch, i) => `<i class="${i < s.filled || show ? 'on' : ''}">${i < s.filled || show ? ch : ''}</i>`).join('')}</div>
+      <div class="dv-aliens">${s.letters.map((L, i) => `<button type="button" class="dv-al ${L.used ? 'used' : ''}" data-i="${i}" onclick="DV.tap(${i})" ${L.used || s.phase !== 'question' ? 'disabled' : ''}><b>${L.ch}</b><span>👽</span></button>`).join('')}</div><span class="dv-ufo">🛸</span></div>`;
+  }
+  const scores = () => `<div class="row">${S().teams.map((t, i) => `<span class="pill ${i === S().active ? 'on' : ''}">${esc(t.name)} · ${t.score}</span>${k.editing ? k.adjScore(i) : ''}`).join('')}</div>`;
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">🛸👽🔤</div><div class="kicker">Trò chơi ôn tập · Đánh vần</div><h1>Đánh vần cùng người ngoài hành tinh</h1>
+      <div class="setup"><div class="panel span2"><h3>Danh sách từ</h3><label for="dv-words">Mỗi dòng: từ tiếng Anh | hình (emoji) hoặc gợi ý<textarea id="dv-words" spellcheck="false" style="min-height:160px">${esc(S().words)}</textarea></label>
+        <div class="two">${k.num('Số chữ cái gây nhiễu', 'extra', S().extra, 0, 6)}${k.num('Giây mỗi từ (0 = không đếm giờ)', 'secs', S().secs, 0)}</div></div>
+        ${k.namesPanel('Các đội', 'Đội', '')}<div class="panel"><h3>Cách chơi</h3><ul class="rules"><li>Mỗi người ngoài hành tinh cầm một chữ cái. Học sinh chạm lần lượt các chữ để đánh vần từ trong hình.</li><li>Đánh vần xong được 10 điểm, mỗi lần chạm nhầm bớt 2 điểm.</li></ul></div></div>${k.startBtn('Hạ cánh 🛸')}`,
+    question:() => `${k.timebar()}${k.timeup(k.nm(S().active))}<h2><span class="team-name">${k.nm(S().active)}</span> đánh vần nào!</h2>${stage(false)}<div class="row"><button class="ghost" onclick="DV.answer(false)">Bỏ qua từ này</button><span class="note">Chạm nhầm: ${S().miss}</span></div>${scores()}`,
+    result:() => `<h1 class="${S().last.right ? 'pos' : 'neg'}">${S().last.right ? `Đúng rồi! +${S().last.p} điểm 👽` : 'Từ đúng là:'}</h1>${stage(true)}${scores()}<div class="row"><button class="btn btn-gold" onclick="DV.next()">Từ tiếp →</button><button class="btn btn-no" onclick="DV.end()">Tổng kết</button></div>`,
+    end:() => { const order = S().teams.slice().sort((a, b) => b.score - a.score); return `<div class="kicker">Tổng kết</div><h1>🏆 <span class="team-name">${order[0] ? esc(order[0].name) : ''}</span></h1>
+      ${k.endTable([['Hạng'], ['Đội'], ['Từ đánh vần đúng', 1], ['Điểm', 1]], order.map((t, i) => [i + 1, `<b>${esc(t.name)}</b>`, t.words, t.score]))}${k.resetBtn()}`; }
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render });
+})();
+
+/* ================= THẺ GHI NHỚ ================= */
+const TG = (() => {
+  const k = GameKit({ ns:'TG', key:'the-ghi-nho-v1', pre:'tg', keep:[],
+    fresh:() => ({ phase:'setup', names:[], secs:0, qText:SAMPLE_Q, questions:[], qi:0, curQ:null, showAns:false, teams:[], deck:[], cur:0, flip:false, known:[], learning:[], round:1, armReset:false }) });
+  const S = () => k.S;
+  const act = Object.assign(k.acts, {
+    start(){ const s = S(); k.readQs(); if (!s.questions.length) { k.err('Nhập ít nhất một thẻ.'); return; }
+      s.deck = s.questions.map((q, i) => i); for (let i = s.deck.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [s.deck[i], s.deck[j]] = [s.deck[j], s.deck[i]]; }
+      s.cur = 0; s.flip = false; s.known = []; s.learning = []; s.round = 1; s.phase = 'card'; SFX.click(); k.render(); },
+    turn(){ const s = S(); s.flip = !s.flip; SFX.flip(); k.render(); },
+    mark(ok){ const s = S(); if (s.phase !== 'card') return; const id = s.deck[s.cur]; (ok ? s.known : s.learning).push(id); s.cur++; s.flip = false; ok ? SFX.coin() : SFX.click();
+      if (s.cur >= s.deck.length) s.phase = 'sum'; k.render(); },
+    again(){ const s = S(); s.deck = s.learning.slice(); s.learning = []; s.cur = 0; s.flip = false; s.round++; s.phase = s.deck.length ? 'card' : 'sum'; k.render(); },
+    answer(){}
+  });
+  act.fix = () => [];
+  const card = () => { const s = S(), q = s.questions[s.deck[s.cur]]; const mc = mcParse(q.q);
+    return `<div class="tg-card ${s.flip ? 'flip' : ''}" onclick="TG.turn()" role="button" tabindex="0"><div class="tg-in"><div class="tg-f">${qStemHTML(mc ? q.q : q.q)}<small>Chạm để lật</small></div><div class="tg-b"><p class="qtext">${esc(q.a || '(chưa có đáp án)')}</p></div></div></div>`; };
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">🗂️🦭</div><div class="kicker">Ôn tập cá nhân / cả lớp</div><h1>Thẻ ghi nhớ</h1>
+      <div class="setup">${k.qPanel(`<li>Mặt trước là câu hỏi hoặc từ, chạm vào thẻ để lật xem đáp án.</li><li>Bấm <b>Đã biết</b> hoặc <b>Còn đang học</b>. Hết bộ thẻ thì ôn lại riêng những thẻ còn đang học.</li>`, 'Mỗi dòng một thẻ: mặt trước | mặt sau. Có thể dùng đúng bộ câu hỏi của các trò khác.')}</div>${k.startBtn('Bắt đầu ôn 🗂️')}`,
+    card:() => { const s = S(); return `<div class="tg-prog"><b>Vòng ${s.round}</b><span class="lm-prog"><i style="width:${(s.cur / s.deck.length * 100).toFixed(0)}%"></i></span><span>${s.cur + 1}/${s.deck.length}</span><span class="pill">✅ ${s.known.length}</span><span class="pill">📚 ${s.learning.length}</span></div>
+      ${card()}<div class="row"><button class="btn tg-still" onclick="TG.mark(false)">CÒN ĐANG HỌC</button><button class="btn tg-knew" onclick="TG.mark(true)">ĐÃ BIẾT</button></div>`; },
+    sum:() => { const s = S(); return `<div class="kaboom" aria-hidden="true">${s.learning.length ? '📚' : '🎉'}</div><h1>${s.learning.length ? `Còn ${s.learning.length} thẻ đang học` : 'Thuộc hết rồi!'}</h1><p class="lead">Đã biết ${s.known.length}/${s.questions.length} thẻ.</p>
+      <div class="row">${s.learning.length ? '<button class="btn btn-gold" onclick="TG.again()">Ôn lại thẻ còn đang học</button>' : ''}<button class="btn btn-no" onclick="TG.start()">Làm lại từ đầu</button></div>`; },
+    end:() => `<h1>Thẻ ghi nhớ</h1>${k.resetBtn('Bộ thẻ mới')}`
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render });
+})();
+
+/* ================= TUNG XÚC XẮC VÀ ĐỌC ================= */
+const XD = (() => {
+  const SAMPLE_X = 'sack pack pick stick\ntack lock kin kick\nten tick pen neck\ntrack tank kept sank\nset stack neck kit\ncap peck back sick';
+  const PIPS = { 1:[5], 2:[3, 7], 3:[3, 5, 7], 4:[1, 3, 7, 9], 5:[1, 3, 5, 7, 9], 6:[1, 3, 4, 6, 7, 9] };
+  const dieF = v => `<span class="xd-die">${Array.from({ length:9 }, (_, i) => `<i class="${PIPS[v].includes(i + 1) ? 'on' : ''}"></i>`).join('')}</span>`;
+  const k = GameKit({ ns:'XD', key:'xuc-xac-doc-v1', pre:'xd', keep:['words'],
+    fresh:() => ({ phase:'setup', names:['Đội 1','Đội 2'], words:SAMPLE_X, pts:10, secs:0, qText:'', questions:[], qi:0, curQ:null, showAns:false, teams:[], active:0, turn:0, grid:[], done:{}, roll:null, armReset:false }) });
+  const S = () => k.S;
+  const act = Object.assign(k.acts, {
+    start(){ const s = S(); s.names = k.readNames(); if (!s.names.length) s.names = ['Cả lớp']; s.pts = k.readNum('pts', 10, 0);
+      s.words = document.getElementById('xd-words').value;
+      const all = s.words.split(/[\n,;]+/).flatMap(l => l.trim().split(/\s+/)).filter(Boolean);
+      if (all.length < 6) { k.err('Cần ít nhất 6 từ.'); return; }
+      const per = Math.max(1, Math.min(6, Math.ceil(all.length / 6)));
+      s.grid = Array.from({ length:6 }, (_, r) => all.slice(r * per, r * per + per)); s.done = {};
+      s.teams = s.names.map(name => ({ name, score:0, read:0 })); s.active = 0; s.turn = 0; s.roll = null; k.undo = []; s.phase = 'roll'; SFX.click(); k.render(); },
+    roll(){ const s = S(); if (s.phase !== 'roll') return; s.phase = 'rolling'; k.render(); let n = 0;
+      const iv = setInterval(() => { const v = 1 + Math.floor(Math.random() * 6), el = document.getElementById('xd-d'); if (el) el.innerHTML = dieF(v); SFX.click();
+        if (++n >= 10) { clearInterval(iv); s.roll = v; s.phase = 'read'; SFX.coin(); k.render(); } }, 80); },
+    read(r, c){ const s = S(); if (s.phase !== 'read' || r !== s.roll - 1 || s.done[r + ',' + c] != null) return; k.snap(); s.done[r + ',' + c] = s.active; s.teams[s.active].score += s.pts; s.teams[s.active].read++; SFX.coin(); act.next(); },
+    skip(){ act.next(); },
+    next(){ const s = S(); if (!s.teams.length) return; const left = s.grid.flat().length - Object.keys(s.done).length; if (!left) { s.phase = 'end'; SFX.fanfare(); k.render(); return; } s.active = (s.active + 1) % s.teams.length; s.turn++; s.phase = 'roll'; k.render(); },
+    answer(){}
+  });
+  act.fix = () => (S().teams || []).map((t, i) => ({ label:t.name, val:t.score, step:10, add:d => act.adj(i, d) }));
+  const COLS = ['#e2476b', '#2f7ae0', '#1f9d6b', '#e8902a', '#8a4fd8', '#2aa6b8'];
+  function table(){
+    const s = S(), total = s.grid.flat().length;
+    return `<div class="xd-wrap"><table class="xd-t">${s.grid.map((row, r) => `<tr class="${s.roll === r + 1 && s.phase === 'read' ? 'hot' : ''}"><th>${dieF(r + 1)}</th>${row.map((w, c) => { const d = s.done[r + ',' + c];
+        return `<td class="${d != null ? 'x' : ''}" ${d != null ? `style="--c:${COLS[d % COLS.length]}"` : ''} onclick="XD.read(${r},${c})">${esc(w)}</td>`; }).join('')}</tr>`).join('')}</table>
+      <div class="xd-side"><div id="xd-d" class="xd-big">${dieF(s.roll || 1)}</div>
+      ${s.phase === 'roll' ? `<button class="btn btn-eat" onclick="XD.roll()">🎲 Tung</button>` : s.phase === 'read' ? `<p class="lead">Hàng ${s.roll}: đọc một từ rồi cô chạm vào từ đó</p><button class="ghost" onclick="XD.skip()">Đọc chưa đúng, lượt sau</button>` : ''}
+      <div class="xd-cnt">${Object.keys(s.done).length}/${total}</div></div></div>`;
+  }
+  const scores = () => `<div class="row">${S().teams.map((t, i) => `<span class="pill ${i === S().active ? 'on' : ''}" style="border-color:${COLS[i % COLS.length]}">${esc(t.name)} · ${t.score}</span>${k.editing ? k.adjScore(i) : ''}`).join('')}</div>`;
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">🎲📖</div><div class="kicker">Luyện đọc · Phonics</div><h1>Tung xúc xắc và đọc</h1>
+      <div class="setup"><div class="panel span2"><h3>Bảng từ</h3><label for="xd-words">Gõ các từ (cách nhau bằng dấu cách hoặc xuống dòng). Máy chia đều thành 6 hàng ứng với 6 mặt xúc xắc.<textarea id="xd-words" spellcheck="false" style="min-height:150px">${esc(S().words)}</textarea></label>
+        ${k.num('Điểm mỗi từ đọc đúng', 'pts', S().pts, 0)}</div>${k.namesPanel('Các đội', 'Đội', '')}
+        <div class="panel"><h3>Cách chơi</h3><ul class="rules"><li>Tung xúc xắc ra mặt nào thì đọc một từ trong hàng đó.</li><li>Đọc đúng, cô chạm vào từ để gạch đi và cộng điểm. Gạch hết bảng là xong.</li></ul></div></div>${k.startBtn('Bắt đầu 🎲')}`,
+    roll:() => `<h2><span class="team-name">${k.nm(S().active)}</span> tung xúc xắc</h2>${table()}${scores()}`,
+    rolling:() => `<h2><span class="team-name">${k.nm(S().active)}</span> đang tung…</h2>${table()}${scores()}`,
+    read:() => `<h2><span class="team-name">${k.nm(S().active)}</span> tung được ${S().roll}!</h2>${table()}${scores()}`,
+    end:() => { const order = S().teams.slice().sort((a, b) => b.score - a.score); return `<div class="kicker">Tổng kết</div><h1>🏆 <span class="team-name">${order[0] ? esc(order[0].name) : ''}</span></h1>
+      ${S().grid.length ? table() : ''}${k.endTable([['Hạng'], ['Đội'], ['Từ đã đọc', 1], ['Điểm', 1]], order.map((t, i) => [i + 1, `<b>${esc(t.name)}</b>`, t.read, t.score]))}${k.resetBtn()}`; }
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render });
+})();
+
+KITG.duongray = DR; KITNS.DR = DR; DR.ns = 'DR'; DR.pre = 'dr';
+KITG.tomau = TM; KITNS.TM = TM; TM.ns = 'TM'; TM.pre = 'tm';
+KITG.daiduong = DD; KITNS.DD = DD; DD.ns = 'DD'; DD.pre = 'dd';
+KITG.guongvui = GV; KITNS.GV = GV; GV.ns = 'GV'; GV.pre = 'gv';
+KITG.danhvan = DV; KITNS.DV = DV; DV.ns = 'DV'; DV.pre = 'dv';
+KITG.theghinho = TG; KITNS.TG = TG; TG.ns = 'TG'; TG.pre = 'tg';
+KITG.xucxacdoc = XD; KITNS.XD = XD; XD.ns = 'XD'; XD.pre = 'xd';
+/* ================= Khung chung cho các trò "trả lời đúng thì tiến thêm một bước" ================= */
+function TurnGame(o){
+  const k = GameKit({ ns:o.ns, key:o.key, pre:o.pre, keep:['goal'].concat(o.keep || []),
+    fresh:() => Object.assign({ phase:'setup', names:o.names || ['Đội 1','Đội 2','Đội 3','Đội 4'], goal:o.goal || 6, pts:10, secs:0,
+      qText:SAMPLE_Q, questions:[], qi:0, curQ:null, showAns:false, teams:[], active:0, turn:0, last:null, winner:null, armReset:false }, o.state || {}) });
+  const S = () => k.S;
+  const act = Object.assign(k.acts, {
+    start(){
+      const names = k.readNames(); if (!names.length) { k.err('Cần ít nhất 1 đội.'); return; }
+      const s = S(); s.names = names.slice(0, o.max || 6); s.goal = k.readNum('goal', o.goal || 6, 1, 40); s.pts = k.readNum('pts', 10, 0); s.secs = k.readNum('secs', 0, 0);
+      if (o.readExtra) o.readExtra(k, s);
+      k.readQs(); s.teams = s.names.map((name, i) => Object.assign({ name, prog:0, score:0, right:0 }, o.teamInit ? o.teamInit(i, s) : {}));
+      s.active = 0; s.turn = 0; s.winner = null; s.last = null; k.undo = []; s.phase = 'ready'; SFX.click(); k.render();
+    },
+    go(){ k.nextQ(); k.startT(); S().phase = 'question'; SFX.flip(); k.render(); },
+    answer(right, timeout){
+      const s = S(); if (s.phase !== 'question') return; k.snap(); k.stopT();
+      const t = s.teams[s.active];
+      if (right) { t.right++; t.score += s.pts; t.prog = Math.min(s.goal, t.prog + 1); s.last = { right:true, msg:o.onRight ? o.onRight(t, s) : '' }; SFX.coin(); }
+      else { s.last = { right:false, timeout:!!timeout, msg:o.onWrong ? o.onWrong(t, s) : '' }; SFX.bonk(); }
+      if (t.prog >= s.goal && s.winner == null) { s.winner = s.active; s.phase = 'won'; SFX.fanfare(); } else s.phase = 'result';
+      k.render();
+    },
+    next(){ const s = S(); if (!s.teams.length) return; s.active = (s.active + 1) % s.teams.length; s.turn++; s.phase = 'ready'; k.render(); },
+    adjP(i, d){ const s = S(), t = s.teams[i]; if (!t) return; k.snap(); t.prog = Math.max(0, Math.min(s.goal, t.prog + (Math.round(Number(d)) || 0))); k.render(); },
+    setvP(i, v){ const n = Math.round(Number(v)); if (Number.isFinite(n)) act.adjP(i, n - S().teams[i].prog); }
+  });
+  act.fix = () => (S().teams || []).flatMap((t, i) => [{ label:t.name + ' · điểm', val:t.score, step:10, add:d => act.adj(i, d) }, { label:t.name + ' · ' + (o.unit || 'bước'), val:t.prog, step:1, add:d => act.adjP(i, d) }]);
+  const nm = i => k.nm(i);
+  const board = () => `<div class="tg-board ${o.boardClass || ''}">${o.scene(S(), k)}</div>`;
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">${o.hero}</div><div class="kicker">${o.kicker}</div><h1>${o.title}</h1>
+      <div class="setup"><div class="panel"><h3>Luật</h3><div class="two">${k.num(o.goalLabel || 'Cần mấy câu đúng để thắng', 'goal', S().goal, 1, 40)}${k.num('Điểm mỗi câu đúng', 'pts', S().pts, 0)}${k.num('Giây mỗi câu (0 = không đếm giờ)', 'secs', S().secs, 0)}</div>${o.extraSetup ? o.extraSetup(k, S()) : ''}</div>
+        ${k.namesPanel('Các đội', 'Đội', `Tối đa ${o.max || 6} đội.`)}
+        ${k.qPanel(o.rules)}</div>${k.startBtn(o.startLabel || 'Bắt đầu')}`,
+    ready:() => `<div class="kicker">Lượt ${S().turn + 1}</div><h1><span class="team-name">${nm(S().active)}</span> ${o.readyVerb || 'tới lượt'}!</h1>
+      <button class="btn btn-eat" onclick="${o.ns}.go()">Ra câu hỏi</button>${board()}`,
+    question:() => `${k.timebar()}${k.timeup(nm(S().active))}${k.qCard(`Câu hỏi cho ${nm(S().active)}`)}${k.okno(o.okSmall || 'Tiến lên', o.noSmall || 'Đứng yên')}${board()}`,
+    result:() => { const s = S(), L = s.last, t = s.teams[s.active]; return `<h1 class="${L.right ? 'pos' : 'neg'}">${L.right ? (L.msg || 'Chính xác!') : (L.msg || (L.timeout ? 'Hết giờ!' : 'Chưa đúng!'))}</h1>
+      ${board()}<div class="row">${L.right ? deckBtn('gift', t.name) : deckBtn('pen', t.name)}</div><button class="btn btn-gold" onclick="${o.ns}.next()">Đội tiếp →</button>`; },
+    won:() => { const s = S(), t = s.teams[s.winner]; return `<div class="kaboom" aria-hidden="true">🏆</div><h1><span class="team-name">${esc(t.name)}</span> ${o.winText || 'về nhất!'}</h1>${board()}
+      <div class="row">${deckBtn('gift', t.name)}</div><div class="row"><button class="btn btn-gold" onclick="${o.ns}.next()">Chơi tiếp tranh hạng</button><button class="btn btn-no" onclick="${o.ns}.end()">Tổng kết</button></div>`; },
+    end:() => { const order = S().teams.slice().sort((a, b) => b.prog - a.prog || b.score - a.score); return `<div class="kicker">Tổng kết</div><h1>🏆 <span class="team-name">${order[0] ? esc(order[0].name) : ''}</span></h1>
+      ${k.endTable([['Hạng'], ['Đội'], [o.unitCap || 'Tiến độ', 1], ['Câu đúng', 1], ['Điểm', 1]], order.map((t, i) => [i + 1, `<b>${esc(t.name)}</b>`, `${t.prog}/${S().goal}`, t.right, `<b>${t.score}</b>`]))}
+      <div class="row">${order.length ? plushBtn(order[order.length - 1].name) : ''}</div>${k.resetBtn()}`; }
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render, _k:k });
+}
+const TGCOL = ['#e2476b', '#2f7ae0', '#1f9d6b', '#e8902a', '#8a4fd8', '#2aa6b8'];
+
+/* ================= ĐUA XE TẢI ================= */
+function truckSVG(col, driver){
+  return `<svg viewBox="0 0 120 80" class="dx-truck"><rect x="6" y="30" width="72" height="26" rx="6" fill="${col}"/><rect x="62" y="14" width="40" height="42" rx="8" fill="${col}"/><rect x="70" y="20" width="26" height="18" rx="4" fill="#bfe8ff"/>
+    <rect x="100" y="40" width="14" height="10" rx="3" fill="#ffd25a"/><rect x="2" y="26" width="58" height="8" rx="3" fill="rgba(0,0,0,.25)"/>
+    <circle cx="28" cy="62" r="14" fill="#2a2a2a"/><circle cx="28" cy="62" r="6" fill="#999"/><circle cx="86" cy="62" r="14" fill="#2a2a2a"/><circle cx="86" cy="62" r="6" fill="#999"/>
+    <text x="83" y="36" font-size="18" text-anchor="middle">${driver}</text></svg>`;
+}
+const DX = TurnGame({ ns:'DX', key:'dua-xe-tai-v1', pre:'dx', title:'Đua xe tải', hero:'🚚🏁', kicker:'Trò chơi ôn tập · Tối đa 6 đội', goal:8, unit:'đoạn đường', unitCap:'Quãng đường',
+  okSmall:'Xe chạy tới', noSmall:'Xe đứng yên', readyVerb:'nổ máy', winText:'về đích đầu tiên!', startLabel:'Nổ máy 🚚',
+  rules:`<li>Mỗi đội một xe tải có tài xế động vật. Trả lời đúng thì xe chạy tới một đoạn.</li><li>Xe nào chạm cờ ca-rô trước là thắng. Các đội còn lại chơi tiếp để tranh hạng.</li>`,
+  teamInit:i => ({ drv:['🐰', '🐶', '🐸', '🐱', '🐼', '🦊'][i] }),
+  onRight:(t, s) => `${t.drv} ${esc(t.name)} tăng tốc! (${t.prog}/${s.goal})`,
+  scene:s => `<div class="dx-track">${s.teams.map((t, i) => `<div class="dx-lane ${i === s.active ? 'now' : ''}"><span class="dx-nm">${esc(t.name)}</span><span class="dx-car" style="left:${(3 + t.prog / s.goal * 80).toFixed(1)}%">${truckSVG(TGCOL[i], t.drv)}</span></div>`).join('')}<i class="dx-fin"></i></div>` });
+
+/* ================= NHÀ MÁY ROBOT ================= */
+const RB_PARTS = ['Bánh xích', 'Chân', 'Thân', 'Tay', 'Đầu', 'Mắt', 'Ăng-ten', 'Sơn màu'];
+function robotSVG(n, col){
+  const c = n >= 8 ? col : '#b8c0cc', p = x => n >= x;
+  return `<svg viewBox="0 0 120 150" class="rb-svg">
+    ${p(1) ? `<rect x="22" y="128" width="76" height="16" rx="8" fill="#555"/><circle cx="34" cy="136" r="5" fill="#999"/><circle cx="60" cy="136" r="5" fill="#999"/><circle cx="86" cy="136" r="5" fill="#999"/>` : ''}
+    ${p(2) ? `<rect x="40" y="104" width="12" height="26" rx="4" fill="${c}"/><rect x="68" y="104" width="12" height="26" rx="4" fill="${c}"/>` : ''}
+    ${p(3) ? `<rect x="30" y="62" width="60" height="46" rx="10" fill="${c}"/><circle cx="60" cy="84" r="9" fill="#2f7ae0"/><rect x="42" y="98" width="36" height="4" rx="2" fill="rgba(0,0,0,.2)"/>` : ''}
+    ${p(4) ? `<rect x="6" y="66" width="24" height="10" rx="5" fill="${c}"/><rect x="90" y="66" width="24" height="10" rx="5" fill="${c}"/><circle cx="6" cy="71" r="6" fill="#777"/><circle cx="114" cy="71" r="6" fill="#777"/>` : ''}
+    ${p(5) ? `<rect x="36" y="22" width="48" height="38" rx="8" fill="${c}"/>` : ''}
+    ${p(6) ? `<circle cx="50" cy="38" r="7" fill="#fff"/><circle cx="70" cy="38" r="7" fill="#fff"/><circle cx="50" cy="38" r="3" fill="#222"/><circle cx="70" cy="38" r="3" fill="#222"/><rect x="50" y="50" width="20" height="4" rx="2" fill="#222"/>` : ''}
+    ${p(7) ? `<line x1="60" y1="22" x2="60" y2="6" stroke="#555" stroke-width="3"/><circle cx="60" cy="6" r="5" fill="#ff4a4a"/>` : ''}
+    ${n === 0 ? '<text x="60" y="90" text-anchor="middle" font-size="40">⚙️</text>' : ''}</svg>`;
+}
+const RB = TurnGame({ ns:'RB', key:'nha-may-robot-v1', pre:'rb', title:'Nhà máy robot', hero:'🤖⚙️', kicker:'Trò chơi ôn tập · Lắp ráp', goal:8, unit:'bộ phận', unitCap:'Bộ phận', goalLabel:'Số bộ phận (tối đa 8)',
+  okSmall:'Lắp thêm bộ phận', noSmall:'Chưa lắp được', readyVerb:'vào xưởng', winText:'chế tạo xong robot!', startLabel:'Mở xưởng ⚙️', boardClass:'rb-board',
+  rules:`<li>Mỗi đội chế tạo một robot. Trả lời đúng thì lắp thêm một bộ phận: bánh xích, chân, thân, tay, đầu, mắt, ăng-ten, rồi sơn màu.</li><li>Đội lắp xong robot trước là thắng.</li>`,
+  onRight:t => `Lắp xong: ${RB_PARTS[Math.min(7, t.prog - 1)]} 🔧`,
+  scene:s => `<div class="rb-floor">${s.teams.map((t, i) => `<div class="rb-bay ${i === s.active ? 'now' : ''}">${robotSVG(t.prog >= s.goal ? 8 : Math.round(t.prog / s.goal * 8), TGCOL[i])}<b>${esc(t.name)}</b><small>${t.prog}/${s.goal}</small></div>`).join('')}</div>` });
+
+/* ================= NHÀ MÁY RAU CỦ ================= */
+const RC_VEG = ['🥦', '🌽', '🥒', '🍅', '🥔', '🥕', '🍆', '🧅', '🫑', '🥬'];
+const RC = TurnGame({ ns:'RC', key:'nha-may-rau-cu-v1', pre:'rc', title:'Nhà máy rau củ', hero:'🚙🥕🥦', kicker:'Trò chơi ôn tập · Băng chuyền', goal:8, unit:'rau củ', unitCap:'Rau củ đã chở',
+  okSmall:'Đưa rau lên xe', noSmall:'Rau rơi mất', readyVerb:'nhận hàng', winText:'chở đầy xe rau củ!', startLabel:'Chạy băng chuyền 🥕',
+  rules:`<li>Mỗi đội có một chiếc xe chở hàng. Trả lời đúng thì một loại rau củ chạy theo băng chuyền vào thùng xe.</li><li>Xe nào chở đủ rau củ trước là thắng.</li>`,
+  onRight:t => `${RC_VEG[(t.prog - 1) % RC_VEG.length]} đã lên xe!`,
+  scene:s => `<div class="rc-shelf">${RC_VEG.map(v => `<span>${v}</span>`).join('')}</div><div class="rc-yard">${s.teams.map((t, i) => `<div class="rc-slot ${i === s.active ? 'now' : ''}"><div class="rc-belt"><i></i></div>
+      <div class="rc-car" style="--c:${TGCOL[i]}"><div class="rc-load">${Array.from({ length:t.prog }, (_, j) => RC_VEG[j % RC_VEG.length]).join('')}</div><svg viewBox="0 0 100 50"><rect x="4" y="14" width="92" height="24" rx="10" fill="${TGCOL[i]}"/><rect x="58" y="4" width="26" height="16" rx="5" fill="#bfe8ff"/><circle cx="26" cy="40" r="9" fill="#333"/><circle cx="76" cy="40" r="9" fill="#333"/><circle cx="70" cy="22" r="2" fill="#222"/><path d="M66 28 q6 4 12 0" stroke="#222" stroke-width="2" fill="none"/></svg></div>
+      <b>${esc(t.name)}</b><small>${t.prog}/${s.goal}</small></div>`).join('')}</div>` });
+
+/* ================= THÁP HALLOWEEN ================= */
+const TH_MON = [['#ff8a1a', '🎃'], ['#7ad06a', '🧟'], ['#c9b8f2', '👻'], ['#8a5cf0', '🦇'], ['#f2e2c4', '🧻'], ['#5ad0d0', '👾'], ['#ff5a7a', '😈'], ['#9aa0a8', '💀']];
+const TH = TurnGame({ ns:'TH', key:'thap-halloween-v1', pre:'th', title:'Tháp Halloween', hero:'🎃👻🍬', kicker:'Trò chơi ôn tập · Xếp tháp', goal:7, unit:'tầng', unitCap:'Chiều cao tháp',
+  okSmall:'Thả quái vật', noSmall:'Quái chạy mất', readyVerb:'thả quái', winText:'chạm tới kẹo! 🍬', startLabel:'Xây tháp 🎃', boardClass:'th-night',
+  rules:`<li>Trả lời đúng thì thả một con quái vật lên tháp của đội mình.</li><li>Tháp chạm tới cây kẹo 🍬 trước là thắng.</li>`,
+  onRight:t => `${TH_MON[(t.prog - 1) % TH_MON.length][1]} nhảy lên tháp!`,
+  scene:s => `<div class="th-row">${s.teams.map((t, i) => `<div class="th-col ${i === s.active ? 'now' : ''}"><span class="th-candy" style="bottom:${s.goal * 34 + 40}px">🍬</span>
+      <div class="th-stack">${Array.from({ length:t.prog }, (_, j) => `<i style="background:${TH_MON[j % TH_MON.length][0]};transform:rotate(${(j % 3 - 1) * 3}deg)">${TH_MON[j % TH_MON.length][1]}</i>`).join('')}</div>
+      <div class="th-base"></div><b>${esc(t.name)}</b></div>`).join('')}</div>` });
+
+/* ================= CẦN CẨU ================= */
+const CC = TurnGame({ ns:'CC', key:'can-cau-v1', pre:'cc', title:'Trò chơi cần cẩu', hero:'🏗️📦', kicker:'Trò chơi ôn tập · Xếp hộp', goal:6, unit:'hộp', unitCap:'Hộp đã nâng',
+  okSmall:'Cẩu nâng hộp', noSmall:'Hộp tuột móc', readyVerb:'điều khiển cần cẩu', winText:'xếp xong chồng hộp!', startLabel:'Khởi động cần cẩu 🏗️',
+  rules:`<li>Trả lời đúng thì cần cẩu nâng một thùng hàng đặt lên chồng hộp của đội.</li><li>Đội xếp đủ số hộp trước là thắng.</li>`,
+  onRight:t => `Đặt thêm thùng hàng 📦 (${t.prog})`,
+  scene:s => `<div class="cc-site">${s.teams.map((t, i) => `<div class="cc-col ${i === s.active ? 'now' : ''}">
+      <svg viewBox="0 0 120 70" class="cc-crane"><rect x="10" y="10" width="6" height="60" fill="#e8b42a"/><rect x="4" y="6" width="112" height="8" fill="#e8b42a"/><rect x="2" y="4" width="20" height="14" fill="#8a8a8a"/><line x1="96" y1="14" x2="96" y2="44" stroke="#333" stroke-width="2"/>${i === s.active && s.last && s.last.right && s.phase === 'result' ? '' : '<rect x="86" y="44" width="20" height="16" fill="#c9884a" stroke="#7a4a1a" stroke-width="2"/>'}</svg>
+      <div class="cc-stack">${Array.from({ length:t.prog }, () => '<i></i>').join('')}</div><b style="color:${TGCOL[i]}">${esc(t.name)}</b><small>${t.prog}/${s.goal}</small></div>`).join('')}</div>` });
+
+/* ================= THUỐC PHÉP THUẬT ================= */
+const TP_ING = ['🍄', '🌿', '🪶', '💎', '🐸', '⭐', '🌶️', '🫐'];
+const TP_ANIM = ['🐭', '🐱', '🐶', '🐷', '🐔', '🐧', '🦄', '🐉'];
+const TP = TurnGame({ ns:'TP', key:'thuoc-phep-v1', pre:'tp', title:'Thuốc phép thuật', hero:'🧙🧪🐸', kicker:'Trò chơi ôn tập · Pha chế', goal:9, unit:'nguyên liệu', unitCap:'Nguyên liệu', goalLabel:'Số nguyên liệu để thắng (3 = một lần biến hình)',
+  okSmall:'Thả nguyên liệu', noSmall:'Nồi sôi trào', readyVerb:'pha thuốc', winText:'pha xong thuốc thần!', startLabel:'Nhóm lửa 🔥', boardClass:'tp-room',
+  rules:`<li>Trả lời đúng thì thả một nguyên liệu vào vạc. Đủ 3 nguyên liệu thì con vật của đội biến hình thành con vật mới!</li><li>Đội pha đủ nguyên liệu trước là thắng.</li>`,
+  onRight:t => t.prog % 3 === 0 ? `✨ Bùm! Biến thành ${TP_ANIM[Math.min(TP_ANIM.length - 1, t.prog / 3)]}` : `Thả ${TP_ING[(t.prog - 1) % TP_ING.length]} vào vạc`,
+  scene:s => `<div class="tp-row">${s.teams.map((t, i) => `<div class="tp-col ${i === s.active ? 'now' : ''}"><span class="tp-anim">${TP_ANIM[Math.min(TP_ANIM.length - 1, Math.floor(t.prog / 3))]}</span>
+      <div class="tp-pot"><span class="tp-bub">${Array.from({ length:t.prog % 3 }, (_, j) => TP_ING[(t.prog - (t.prog % 3) + j) % TP_ING.length]).join('')}</span></div><b>${esc(t.name)}</b><small>${t.prog}/${s.goal}</small></div>`).join('')}</div>` });
+
+/* ================= VÒNG QUAY MAY MẮN ================= */
+const VQ = (() => {
+  const SEG = [['1', 1], ['2', 2], ['3', 3], ['4', 4], ['5', 5], ['6', 6], ['7', 7], ['8', 8], ['9', 9], ['½', 'half'], ['×2', 'x2'], ['🔄', 'swap'], ['⭐', 10], ['💣', 'zero'], ['1', 1], ['2', 2]];
+  const SC = ['#e2242c', '#ffb020', '#2f7ae0', '#1f9d6b'];
+  const k = GameKit({ ns:'VQ', key:'vong-quay-v1', pre:'vq', keep:['rounds'],
+    fresh:() => ({ phase:'setup', names:['Người 1','Người 2','Người 3','Người 4'], rounds:5, secs:0, qText:SAMPLE_Q, questions:[], qi:0, curQ:null, showAns:false, teams:[], active:0, turn:0, rot:0, seg:null, last:null, armReset:false }) });
+  const S = () => k.S;
+  let spinning = false;
+  const act = Object.assign(k.acts, {
+    start(){ const names = k.readNames(); if (!names.length) { k.err('Cần ít nhất 1 người chơi.'); return; } const s = S(); s.names = names.slice(0, 6); s.rounds = k.readNum('rounds', 5, 1, 30); s.secs = k.readNum('secs', 0, 0); k.readQs();
+      s.teams = s.names.map(name => ({ name, score:0, turns:0 })); s.active = 0; s.turn = 0; k.undo = []; s.phase = 'ready'; SFX.click(); k.render(); },
+    go(){ k.nextQ(); k.startT(); S().phase = 'question'; SFX.flip(); k.render(); },
+    answer(right, timeout){ const s = S(); if (s.phase !== 'question') return; k.snap(); k.stopT(); s.teams[s.active].turns++;
+      if (right) { s.phase = 'spin'; SFX.coin(); } else { s.last = { right:false, timeout:!!timeout }; s.phase = 'result'; SFX.bonk(); } k.render(); },
+    spin(){
+      const s = S(); if (s.phase !== 'spin' || spinning) return; spinning = true;
+      const n = SEG.length, idx = Math.floor(Math.random() * n), seg = 360 / n;
+      const target = s.rot - (s.rot % 360) + 360 * 6 + (360 - (idx + .5) * seg);
+      const w = document.getElementById('vq-w'); s.rot = target;
+      if (w) { w.style.transition = 'transform 4.2s cubic-bezier(.15,.85,.2,1)'; w.style.transform = `rotate(${target}deg)`; }
+      let c = 0; const iv = setInterval(() => { SFX.click(); if (++c > 26) clearInterval(iv); }, 150);
+      setTimeout(() => { spinning = false; act._apply(SEG[idx]); }, 4300);
+    },
+    _apply([lab, v]){
+      const s = S(), t = s.teams[s.active], before = t.score; let msg = '';
+      if (typeof v === 'number') { t.score += v; msg = `+${v} điểm`; }
+      else if (v === 'x2') { t.score *= 2; msg = 'Nhân đôi điểm!'; }
+      else if (v === 'half') { t.score = Math.floor(t.score / 2); msg = 'Mất một nửa điểm 😱'; }
+      else if (v === 'zero') { t.score = 0; msg = 'Bom nổ, về 0 điểm 💥'; }
+      else if (v === 'swap') { const others = s.teams.map((x, i) => i).filter(i => i !== s.active); if (others.length) { const j = others.reduce((a, b) => s.teams[b].score > s.teams[a].score ? b : a); [t.score, s.teams[j].score] = [s.teams[j].score, t.score]; msg = `Đổi điểm với ${s.teams[j].name}!`; } }
+      s.last = { right:true, lab, msg, d:t.score - before }; s.phase = 'result'; (v === 'zero' || v === 'half') ? SFX.boom() : SFX.fanfare(); k.render();
+    },
+    next(){ const s = S(); if (!s.teams.length) return; if (s.teams.every(t => t.turns >= s.rounds)) { s.phase = 'end'; SFX.fanfare(); k.render(); return; } s.active = (s.active + 1) % s.teams.length; s.turn++; s.phase = 'ready'; k.render(); }
+  });
+  function wheel(){
+    const n = SEG.length, seg = 360 / n, R = 140;
+    const paths = SEG.map(([lab], i) => { const a0 = (i * seg - 90) * Math.PI / 180, a1 = ((i + 1) * seg - 90) * Math.PI / 180, am = (a0 + a1) / 2;
+      return `<path d="M150 150 L${150 + R * Math.cos(a0)} ${150 + R * Math.sin(a0)} A${R} ${R} 0 0 1 ${150 + R * Math.cos(a1)} ${150 + R * Math.sin(a1)}Z" fill="${SC[i % 4]}" stroke="#1a1f4a" stroke-width="2"/>
+        <text x="${150 + R * .74 * Math.cos(am)}" y="${150 + R * .74 * Math.sin(am)}" transform="rotate(${(i + .5) * seg} ${150 + R * .74 * Math.cos(am)} ${150 + R * .74 * Math.sin(am)})" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="900" fill="#fff">${lab}</text>`; }).join('');
+    return `<div class="vq-wrap"><div class="vq-pin">▼</div><svg viewBox="0 0 300 300" class="vq-svg"><circle cx="150" cy="150" r="148" fill="#1a1f4a"/><g id="vq-w" style="transform-origin:150px 150px;transform:rotate(${S().rot}deg)">${paths}</g><circle cx="150" cy="150" r="30" fill="#2f4ae0" stroke="#fff" stroke-width="4"/><text x="150" y="155" text-anchor="middle" font-size="14" font-weight="900" fill="#fff">SPIN</text></svg></div>`;
+  }
+  const boxes = () => `<div class="vq-boxes">${S().teams.map((t, i) => `<div class="vq-box ${i === S().active ? 'now' : ''}"><span>${i + 1}</span><b>${esc(t.name)}</b><em>${t.score} PTS</em>${k.editing ? k.adjScore(i, 1) : ''}</div>`).join('')}</div>`;
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">🎡⭐</div><div class="kicker">Trò chơi ôn tập · Tối đa 6 người</div><h1>Vòng quay may mắn</h1>
+      <div class="setup"><div class="panel"><h3>Luật</h3><div class="two">${k.num('Mỗi người được mấy lượt', 'rounds', S().rounds, 1, 30)}${k.num('Giây mỗi câu (0 = không đếm giờ)', 'secs', S().secs, 0)}</div></div>
+        ${k.namesPanel('Người chơi / đội', 'Người chơi', 'Tối đa 6.')}
+        ${k.qPanel(`<li>Trả lời đúng thì được quay vòng quay: số là điểm cộng, ⭐ +10, ×2 nhân đôi, ½ mất nửa điểm, 💣 về 0, 🔄 đổi điểm với người cao điểm nhất.</li><li>Trả lời sai thì mất lượt quay. Hết lượt ai nhiều điểm nhất thắng.</li>`)}</div>${k.startBtn('Bắt đầu 🎡')}`,
+    ready:() => `<div class="vq-stage">${boxes()}${wheel()}</div><h2><span class="team-name">${k.nm(S().active)}</span> trả lời để được quay</h2><button class="btn btn-eat" onclick="VQ.go()">Ra câu hỏi</button>`,
+    question:() => `${k.timebar()}${k.timeup(k.nm(S().active))}${k.qCard(`Câu hỏi cho ${k.nm(S().active)}`)}${k.okno('Được quay', 'Mất lượt')}`,
+    spin:() => `<div class="vq-stage">${boxes()}${wheel()}</div><h2 class="pos">Đúng rồi! Mời ${k.nm(S().active)} quay</h2><button class="btn btn-eat" onclick="VQ.spin()">🎡 SPIN!</button>`,
+    result:() => { const s = S(), L = s.last; return `<div class="vq-stage">${boxes()}${wheel()}</div><h1 class="${L.right && L.d >= 0 ? 'pos' : 'neg'}">${L.right ? `Quay trúng ${L.lab}: ${esc(L.msg)}` : (L.timeout ? 'Hết giờ, mất lượt quay' : 'Chưa đúng, mất lượt quay')}</h1><button class="btn btn-gold" onclick="VQ.next()">Người tiếp →</button>`; },
+    end:() => { const order = S().teams.slice().sort((a, b) => b.score - a.score); return `<div class="kicker">Tổng kết</div><h1>🏆 <span class="team-name">${order[0] ? esc(order[0].name) : ''}</span></h1>${k.endTable([['Hạng'], ['Người chơi'], ['Điểm', 1]], order.map((t, i) => [i + 1, `<b>${esc(t.name)}</b>`, t.score]))}<div class="row">${order[0] ? deckBtn('gift', order[0].name) : ''}</div>${k.resetBtn()}`; }
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render });
+})();
+
+/* ================= HẢI CHIẾN ================= */
+function shipSVG(col, flip, hp, max){
+  return `<svg viewBox="0 0 200 150" class="hc-ship" style="${flip ? 'transform:scaleX(-1)' : ''}"><rect x="96" y="10" width="6" height="70" fill="#6b4a22"/><path d="M102 14 L150 30 L102 46Z" fill="#fff"/><path d="M96 20 L60 40 L96 60Z" fill="#f4e2c4"/><rect x="100" y="4" width="22" height="12" fill="${col}"/>
+    <path d="M20 80 L180 80 L160 120 Q100 132 40 120Z" fill="${col}" stroke="#2a1a0a" stroke-width="3"/><rect x="40" y="86" width="120" height="8" fill="rgba(255,255,255,.35)"/><circle cx="70" cy="104" r="8" fill="#fff"/><circle cx="72" cy="104" r="4" fill="#222"/><circle cx="130" cy="104" r="8" fill="#fff"/><circle cx="132" cy="104" r="4" fill="#222"/>
+    <rect x="160" y="70" width="34" height="10" rx="4" fill="#333"/>${hp < max * .5 ? '<text x="60" y="70" font-size="28">🔥</text>' : ''}</svg>`;
+}
+const HC = (() => {
+  const k = GameKit({ ns:'HC', key:'hai-chien-v1', pre:'hc', minTeams:2, keep:['hp'],
+    fresh:() => ({ phase:'setup', names:['Tàu Đỏ','Tàu Xám'], hp:5, secs:0, qText:SAMPLE_Q, questions:[], qi:0, curQ:null, showAns:false, teams:[], active:0, turn:0, last:null, winner:null, armReset:false }) });
+  const S = () => k.S;
+  const act = Object.assign(k.acts, {
+    start(){ const names = k.readNames(); if (names.length < 2) { k.err('Cần 2 đội.'); return; } const s = S(); s.names = names.slice(0, 2); s.hp = k.readNum('hp', 5, 1, 20); s.secs = k.readNum('secs', 0, 0); k.readQs();
+      s.teams = s.names.map(name => ({ name, hp:s.hp, score:0, hits:0 })); s.active = 0; s.turn = 0; s.winner = null; k.undo = []; s.phase = 'ready'; SFX.click(); k.render(); },
+    go(){ k.nextQ(); k.startT(); S().phase = 'question'; SFX.flip(); k.render(); },
+    answer(right, timeout){ const s = S(); if (s.phase !== 'question') return; k.snap(); k.stopT(); const me = s.teams[s.active], foe = s.teams[1 - s.active];
+      if (right) { foe.hp = Math.max(0, foe.hp - 1); me.hits++; me.score += 10; s.last = { right:true }; SFX.boom(); } else { s.last = { right:false, timeout:!!timeout }; SFX.bonk(); }
+      if (foe.hp <= 0) { s.winner = s.active; s.phase = 'won'; SFX.fanfare(); } else s.phase = 'result'; k.render(); },
+    next(){ const s = S(); s.active = 1 - s.active; s.turn++; s.phase = 'ready'; k.render(); },
+    adjH(i, d){ const t = S().teams[i]; if (!t) return; k.snap(); t.hp = Math.max(0, t.hp + (Math.round(Number(d)) || 0)); k.render(); }
+  });
+  act.fix = () => (S().teams || []).flatMap((t, i) => [{ label:t.name + ' · điểm', val:t.score, step:10, add:d => act.adj(i, d) }, { label:t.name + ' · máu tàu', val:t.hp, step:1, add:d => act.adjH(i, d) }]);
+  function sea(){
+    const s = S(), fire = s.phase === 'result' && s.last && s.last.right;
+    return `<div class="hc-sea">${s.teams.map((t, i) => `<div class="hc-side ${i === s.active ? 'now' : ''}"><b>${esc(t.name)}</b><span class="hc-hp">${Array.from({ length:s.hp }, (_, j) => `<i class="${j < t.hp ? 'on' : ''}"></i>`).join('')}</span>
+      <div class="hc-boat ${fire && i !== s.active ? 'hit' : ''}">${shipSVG(i ? '#7a8a9a' : '#e2473a', i === 1, t.hp, s.hp)}${fire && i === s.active ? `<i class="hc-ball ${i ? 'l' : 'r'}"></i>` : ''}${fire && i !== s.active ? '<em class="hc-boom">💥</em>' : ''}</div></div>`).join('')}<div class="hc-waves"></div></div>`;
+  }
+  const V = {
+    setup:() => `<div class="tg-hero" aria-hidden="true">🏴‍☠️⚓💣</div><div class="kicker">Trò chơi ôn tập · Hai đội đối đầu</div><h1>Hải chiến</h1>
+      <div class="setup"><div class="panel"><h3>Luật</h3><div class="two">${k.num('Máu mỗi tàu', 'hp', S().hp, 1, 20)}${k.num('Giây mỗi câu (0 = không đếm giờ)', 'secs', S().secs, 0)}</div></div>
+        <div class="panel"><h3>Hai tàu</h3>${S().names.slice(0, 2).map((v, i) => `<label for="hc-nm${i}">${i ? 'Tàu bên phải' : 'Tàu bên trái'}<input id="hc-nm${i}" data-hcname value="${esc(v)}"></label>`).join('')}</div>
+        ${k.qPanel(`<li>Hai tàu thay phiên trả lời. Trả lời đúng thì bắn đại bác, tàu đối phương mất 1 máu.</li><li>Tàu nào chìm trước là thua.</li>`)}</div>${k.startBtn('Ra khơi ⚓')}`,
+    ready:() => `${sea()}<h2><span class="team-name">${k.nm(S().active)}</span> nạp đạn!</h2><button class="btn btn-eat" onclick="HC.go()">Ra câu hỏi</button>`,
+    question:() => `${k.timebar()}${k.timeup(k.nm(S().active))}${k.qCard(`Câu hỏi cho ${k.nm(S().active)}`)}${k.okno('Khai hoả!', 'Đạn xịt')}`,
+    result:() => `${sea()}<h1 class="${S().last.right ? 'pos' : 'neg'}">${S().last.right ? 'BÙM! Bắn trúng! 💥' : 'Đạn rơi xuống biển 💦'}</h1><button class="btn btn-gold" onclick="HC.next()">Lượt tàu kia →</button>`,
+    won:() => `${sea()}<h1>🏆 <span class="team-name">${k.nm(S().winner)}</span> đánh chìm tàu địch!</h1><div class="row">${deckBtn('gift', S().teams[S().winner].name)}${plushBtn(S().teams[1 - S().winner].name)}</div><button class="btn btn-no" onclick="HC.end()">Tổng kết</button>`,
+    end:() => { const order = S().teams.slice().sort((a, b) => b.hp - a.hp || b.score - a.score); return `<div class="kicker">Tổng kết</div><h1>🏆 <span class="team-name">${order[0] ? esc(order[0].name) : ''}</span></h1>${k.endTable([['Tàu'], ['Máu còn', 1], ['Phát trúng', 1], ['Điểm', 1]], order.map(t => [`<b>${esc(t.name)}</b>`, t.hp, t.hits, t.score]))}${k.resetBtn()}`; }
+  };
+  k.render = () => k.draw(V, null);
+  return Object.assign(act, { render:k.render });
+})();
+
+KITG.duaxe = DX; KITNS.DX = DX; DX.ns = 'DX'; DX.pre = 'dx';
+KITG.vongquay = VQ; KITNS.VQ = VQ; VQ.ns = 'VQ'; VQ.pre = 'vq';
+KITG.robot = RB; KITNS.RB = RB; RB.ns = 'RB'; RB.pre = 'rb';
+KITG.raucu = RC; KITNS.RC = RC; RC.ns = 'RC'; RC.pre = 'rc';
+KITG.halloween = TH; KITNS.TH = TH; TH.ns = 'TH'; TH.pre = 'th';
+KITG.cancau = CC; KITNS.CC = CC; CC.ns = 'CC'; CC.pre = 'cc';
+KITG.thuocphep = TP; KITNS.TP = TP; TP.ns = 'TP'; TP.pre = 'tp';
+KITG.haichien = HC; KITNS.HC = HC; HC.ns = 'HC'; HC.pre = 'hc';
+/* ================= TÌM ĐIỂM KHÁC BIỆT (bài đăng 10) ================= */
+const KB2 = (() => {
+  const k = GameKit({ ns:'KB2', key:'tim-khac-biet-v1', pre:'kd', keep:['pics', 'nDiff', 'pts', 'findSecs'],
+    fresh:() => ({ phase:'setup', names:['Nhóm 1','Nhóm 2','Nhóm 3','Nhóm 4'], pics:[], nDiff:5, pts:10, findSecs:90, secs:0,
+      qText:SAMPLE_Q, questions:[], qi:0, curQ:null, showAns:false, teams:[], round:0, turn:0, A:'', B:'', diffs:[], finder:0, order:[], oi:0, last:null, armReset:false }) });
+  const S = () => k.S;
+  let miss = null, findT = null, findEnd = 0;
+  const load = src => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = src; });
+  const R = (a, b) => a + Math.random() * (b - a);
+  // cảnh có sẵn khi cô chưa dán ảnh
+  function scene(ctx, W, H, seed){
+    let x = seed * 9301 + 49297; const rnd = () => (x = (x * 9301 + 49297) % 233280) / 233280;
+    const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#8fd3ff'); g.addColorStop(.62, '#d8f2ff'); g.addColorStop(.62, '#7cc35a'); g.addColorStop(1, '#5aa83a');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    const em = (e, x0, y0, s) => { ctx.font = `${s}px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e, x0, y0); };
+    em('☀️', W * .12, H * .14, H * .16);
+    const items = [['☁️', .35, .12, .14], ['☁️', .7, .2, .12], ['🏠', .5, .5, .26], ['🌳', .16, .52, .24], ['🌳', .86, .5, .22], ['🌷', .3, .8, .1], ['🌻', .66, .82, .12], ['🐶', .42, .78, .12], ['🐱', .8, .78, .11], ['🦋', .6, .32, .08], ['🐦', .25, .3, .08], ['🍎', .12, .72, .08], ['🚲', .9, .88, .12], ['🎈', .44, .26, .1], ['🍄', .55, .92, .08]];
+    items.forEach(([e, a, b, s]) => em(e, (a + (rnd() - .5) * .04) * W, (b + (rnd() - .5) * .03) * H, s * H));
+  }
+  // tạo ảnh B bằng cách đổi N vùng nhỏ của ảnh A
+  async function makePair(src, n){
+    const W = 960, H = 640, cA = document.createElement('canvas'), cB = document.createElement('canvas');
+    cA.width = cB.width = W; cA.height = cB.height = H;
+    const a = cA.getContext('2d');
+    if (src) { const im = await load(src); const sc = Math.max(W / im.width, H / im.height); a.drawImage(im, (W - im.width * sc) / 2, (H - im.height * sc) / 2, im.width * sc, im.height * sc); }
+    else scene(a, W, H, Math.floor(Math.random() * 1000));
+    const b = cB.getContext('2d'); b.drawImage(cA, 0, 0);
+    const diffs = [], kinds = ['hue', 'flip', 'erase', 'patch', 'dark', 'dot'];
+    for (let t = 0; diffs.length < n && t < 400; t++) {
+      const r = R(.045, .07) * W, x = R(r + 10, W - r - 10), y = R(r + 10, H - r - 10);
+      if (diffs.some(d => Math.hypot(d.x * W - x, d.y * H - y) < (d.r * W + r) * 1.15)) continue;
+      // tránh vùng một màu (đổi ở đó học sinh không nhìn ra)
+      const px = a.getImageData(x - r, y - r, r * 2, r * 2).data; let mn = 765, mx = 0;
+      for (let i = 0; i < px.length; i += 64) { const v = px[i] + px[i + 1] + px[i + 2]; mn = Math.min(mn, v); mx = Math.max(mx, v); }
+      if (mx - mn < 90 && t < 300) continue;
+      const kind = kinds[diffs.length % kinds.length];
+      b.save(); b.beginPath(); b.arc(x, y, r, 0, Math.PI * 2); b.clip();
+      if (kind === 'hue') { b.filter = `hue-rotate(${R(110, 220)}deg) saturate(1.6)`; b.drawImage(cA, 0, 0); }
+      else if (kind === 'dark') { b.filter = 'brightness(.45) contrast(1.3)'; b.drawImage(cA, 0, 0); }
+      else if (kind === 'flip') { b.translate(x * 2, 0); b.scale(-1, 1); b.drawImage(cA, 0, 0); }
+      else if (kind === 'erase') { const d = a.getImageData(x - r, y - r - r * 1.2, 1, 1).data; b.fillStyle = `rgb(${d[0]},${d[1]},${d[2]})`; b.fillRect(x - r, y - r, r * 2, r * 2); }
+      else if (kind === 'patch') { const sx = R(r, W - r), sy = R(r, H - r); b.drawImage(cA, sx - r, sy - r, r * 2, r * 2, x - r, y - r, r * 2, r * 2); }
+      else { b.drawImage(cA, 0, 0); b.font = `${r * 1.1}px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif`; b.textAlign = 'center'; b.textBaseline = 'middle'; b.fillText(['⭐', '🍀', '❤️', '🔵', '🌸'][Math.floor(Math.random() * 5)], x, y); }
+      b.restore();
+      diffs.push({ x:x / W, y:y / H, r:r / W * 1.15, by:null });
+    }
+    return { A:await ImgStore.put(cA.toDataURL('image/jpeg', .85)), B:await ImgStore.put(cB.toDataURL('image/jpeg', .85)), diffs };
+  }
+  function tick(){
+    clearInterval(findT);
+    findT = setInterval(() => {
+      const s = S(), el = document.getElementById('kd-ft'); if (s.phase !== 'find') { clearInterval(findT); return; }
+      const left = Math.max(0, findEnd - Date.now()); if (el) el.textContent = Math.ceil(left / 1000) + 's';
+      if (left <= 0) { clearInterval(findT); SFX.gong ? SFX.gong() : SFX.beep(1320); act.stopFind(); }
+    }, 250);
+  }
+  const act = Object.assign(k.acts, {
+    setPic(i, id){ S().pics[i] = id; k.save(); const b = document.querySelector(`.imgpick[data-key="kd-${i}"]`); const ph = b && b.querySelector('img,.imgpick-ph'); if (ph) ph.outerHTML = `<img data-img="${id}" alt="">`; },
+    addPic(){ S().names = k.readNames(); S().pics.push(''); k.render(); },
+    delPic(i){ S().names = k.readNames(); S().pics.splice(i, 1); k.render(); },
+    start(){
+      const s = S(), names = k.readNames(); if (names.length < 1) { k.err('Cần ít nhất 1 nhóm.'); return; }
+      s.names = names; s.nDiff = k.readNum('ndiff', 5, 2, 9); s.pts = k.readNum('pts', 10, 0); s.findSecs = k.readNum('fsecs', 90, 0); s.secs = k.readNum('secs', 0, 0);
+      k.readQs(); s.pics = s.pics.filter(Boolean);
+      s.teams = names.map(name => ({ name, score:0, found:0 })); s.round = 0; s.turn = 0; k.undo = [];
+      s.phase = 'present'; SFX.click(); k.render();
+    },
+    async newRound(){
+      const s = S(); s.phase = 'making'; k.render();
+      try {
+        const src = s.pics.length ? await ImgStore.get(s.pics[s.round % s.pics.length]) : '';
+        const p = await makePair(src, s.nDiff);
+        Object.assign(s, p); s.finder = 0; s.order = []; s.oi = 0; s.last = null; s.found0 = s.teams.map(() => 0);
+        s.phase = 'find'; findEnd = Date.now() + s.findSecs * 1000; if (s.findSecs) tick(); SFX.flip(); k.render();
+      } catch(e) { s.phase = 'present'; k.render(); Refill.toast('Chưa tạo được ảnh, thử ảnh khác nha.'); }
+    },
+    pickFinder(i){ S().finder = i; SFX.click(); k.render(); },
+    hit(ev, el){
+      const s = S(); if (s.phase !== 'find') return;
+      const r = el.getBoundingClientRect(), x = (ev.clientX - r.left) / r.width, y = (ev.clientY - r.top) / r.height;
+      const d = s.diffs.find(d => !d.by && Math.hypot((d.x - x) * r.width, (d.y - y) * r.height) < d.r * r.width * 1.3);
+      if (d) { k.snap(); d.by = s.finder; s.found0[s.finder]++; s.teams[s.finder].found++; SFX.coin(); if (s.diffs.every(z => z.by != null)) { act.stopFind(); return; } k.render(); }
+      else { miss = { x, y, t:Date.now() }; SFX.bonk(); k.render(); setTimeout(() => { miss = null; if (S().phase === 'find') k.render(); }, 700); }
+    },
+    stopFind(){
+      const s = S(); if (s.phase !== 'find') return; clearInterval(findT);
+      s.order = s.teams.map((t, i) => i).filter(i => s.found0[i] > 0).sort((a, b) => s.found0[b] - s.found0[a]);
+      s.oi = 0; s.phase = s.order.length ? 'won' : 'none'; SFX.fanfare(); k.render();
+    },
+    reveal(){ const s = S(); s.diffs.forEach(d => { if (d.by == null) d.by = -1; }); k.render(); },
+    ask(){ const s = S(); k.nextQ(); k.startT(); s.phase = 'question'; SFX.flip(); k.render(); },
+    answer(right, timeout){
+      const s = S(); if (s.phase !== 'question') return; k.snap(); k.stopT();
+      const i = s.order[s.oi];
+      if (right) { s.teams[i].score += s.pts; s.last = { right:true, i }; s.phase = 'result'; SFX.coin(); k.render(); return; }
+      s.oi++; SFX.bonk();
+      if (s.oi < s.order.length) { s.last = { right:false, i, timeout:!!timeout, pass:s.order[s.oi] }; s.showAns = false; MCPICK = null; s.phase = 'pass'; k.render(); return; }
+      s.last = { right:false, none:true }; s.showAns = true; s.phase = 'result'; k.render();
+    },
+    passOn(){ k.startT(); S().phase = 'question'; k.render(); },
+    next(){ const s = S(); if (!s.teams.length) return; s.round++; s.turn++; s.phase = 'present'; k.render(); }
+  });
+  act.fix = () => (S().teams || []).map((t, i) => ({ label:t.name, val:t.score, step:10, add:d => act.adj(i, d) }));
+  const COL = ['#e2476b', '#2f7ae0', '#1f9d6b', '#e8902a', '#8a4fd8', '#2aa6b8', '#7a8a2a', '#c4151d'];
+  function pics(show){
+    const s = S();
+    const marks = s.diffs.map(d => d.by == null ? '' : `<i class="kd-ring ${d.by < 0 ? 'miss' : ''}" style="left:${d.x * 100}%;top:${d.y * 100}%;width:${d.r * 200}%;--c:${d.by < 0 ? '#ffb020' : COL[d.by % COL.length]}"></i>`).join('');
+    const mk = miss ? `<i class="kd-x" style="left:${miss.x * 100}%;top:${miss.y * 100}%">✖</i>` : '';
+    const pic = id => `<div class="kd-pic" onclick="KB2.hit(event,this)"><img data-img="${id}" alt="" draggable="false">${marks}${mk}</div>`;
+    return `<div class="kd-pair">${pic(s.A)}${pic(s.B)}</div>`;
+  }
+  const scores = () => `<div class="row">${S().teams.map((t, i) => `<span class="pill">${esc(t.name)} · ${t.score}</span>${k.editing ? k.adjScore(i) : ''}`).join('')}</div>`;
+  const V = {
+    setup:() => `<div class="kd-hero" aria-hidden="true">🔍🖼️🖼️</div><div class="kicker">Bài đăng 10 · Trò chơi nhanh</div><h1>Tìm điểm khác biệt</h1>
+      <div class="setup"><div class="panel span2"><h3>Ảnh để tìm (không bắt buộc)</h3>
+        <p class="note">Cô chỉ cần dán <b>một</b> ảnh bất kỳ, máy tự tạo ảnh thứ hai có các điểm khác. Chưa có ảnh thì máy dùng tranh phong cảnh có sẵn.</p>
+        <div class="bt-eds">${S().pics.map((id, i) => `<div class="bt-ed"><b>Ảnh ${i + 1}</b>${ImgStore.picker('kd-' + i, id, 'Chọn / dán ảnh', x => KB2.setPic(i, x))}<button type="button" class="ghost" onclick="KB2.delPic(${i})">Xoá ảnh này</button></div>`).join('')}</div>
+        <button type="button" class="btn btn-gold" onclick="KB2.addPic()">＋ Thêm ảnh</button></div>
+        ${k.namesPanel('Các nhóm', 'Nhóm', '')}
+        <div class="panel"><h3>Luật</h3><div class="two">${k.num('Số điểm khác biệt mỗi ảnh', 'ndiff', S().nDiff, 2, 9)}${k.num('Giây để tìm (0 = không giới hạn)', 'fsecs', S().findSecs, 0)}${k.num('Điểm mỗi câu đúng', 'pts', S().pts, 0)}${k.num('Giây trả lời câu hỏi (0 = không đếm)', 'secs', S().secs, 0)}</div></div>
+        ${k.qPanel(`<li>Thuyết trình xong một phần thì bấm “Mở trò chơi”. Hai bức ảnh hiện ra, các nhóm giơ tay chỉ điểm khác.</li><li>Cô chọn nhóm đang chỉ rồi bấm vào chỗ khác biệt trên ảnh: đúng thì khoanh tròn màu của nhóm đó.</li><li>Nhóm tìm được nhiều nhất được trả lời câu hỏi, đúng +${S().pts} điểm. Sai thì nhường nhóm tìm được nhiều thứ hai. Xong quay lại thuyết trình phần tiếp theo.</li>`)}</div>${k.startBtn('Bắt đầu 🔍')}`,
+    present:() => `<div class="kicker">Vòng ${S().round + 1}</div><h1>🎤 Đang thuyết trình phần ${S().round + 1}</h1><p class="lead">Thuyết trình xong nội dung này thì mở trò chơi tìm điểm khác biệt.</p>
+      <button class="btn btn-eat" onclick="KB2.newRound()">🔍 Mở trò chơi</button>${scores()}`,
+    making:() => `<h2>🎨 Đang tạo hai bức ảnh…</h2><div class="kaboom" aria-hidden="true">🖼️</div>`,
+    find:() => { const s = S(), left = s.diffs.filter(d => d.by == null).length; return `<div class="kd-top"><b>Tìm ${s.diffs.length} điểm khác biệt · còn ${left}</b>${s.findSecs ? `<span class="kd-ft" id="kd-ft">${Math.max(0, Math.ceil((findEnd - Date.now()) / 1000))}s</span>` : ''}</div>
+      <div class="kd-who"><span class="note">Nhóm nào đang chỉ?</span>${s.teams.map((t, i) => `<button class="chip ${s.finder === i ? 'sel' : ''}" style="--c:${COL[i % COL.length]}" onclick="KB2.pickFinder(${i})"><i class="kd-dot"></i>${esc(t.name)} · ${s.found0[i]}</button>`).join('')}</div>
+      ${pics()}<div class="row"><button class="ghost" onclick="KB2.reveal()">👀 Hiện các điểm còn lại</button><button class="btn btn-gold" onclick="KB2.stopFind()">⏹ Dừng tìm, chọn nhóm trả lời</button></div>`; },
+    won:() => { const s = S(); return `${pics()}<h1>🔍 <span class="team-name">${k.nm(s.order[0])}</span> tìm được nhiều nhất (${s.found0[s.order[0]]})!</h1>
+      <p class="lead">Nhóm này được trả lời câu hỏi.</p><button class="btn btn-eat" onclick="KB2.ask()">Ra câu hỏi</button>`; },
+    none:() => `${pics()}<h1 class="neg">Chưa nhóm nào tìm ra điểm khác</h1><div class="row"><button class="btn btn-gold" onclick="KB2.next()">Thuyết trình tiếp →</button></div>`,
+    question:() => { const i = S().order[S().oi]; return `${k.timebar()}${k.timeup(k.nm(i))}${k.qCard(`Câu hỏi cho ${k.nm(i)}`)}${k.okno(`+${S().pts} điểm`, S().oi + 1 < S().order.length ? 'Nhường nhóm tiếp' : 'Hết lượt')}`; },
+    pass:() => `<h2 class="neg">${k.nm(S().last.i)} chưa trả lời đúng</h2><p class="lead">Quyền trả lời chuyển cho <span class="team-name">${k.nm(S().last.pass)}</span>.</p><button class="btn btn-eat" onclick="KB2.passOn()">Mời ${k.nm(S().last.pass)} trả lời</button>`,
+    result:() => { const s = S(), L = s.last; return `${L.right ? `<div class="kaboom" aria-hidden="true">🎉</div><h1 class="pos">${k.nm(L.i)} +${s.pts} điểm!</h1>` : `<h1 class="neg">Không nhóm nào trả lời đúng</h1>${s.curQ ? `<p class="lead">Đáp án: <b>${esc(s.curQ.a || '')}</b></p>` : ''}`}
+      ${scores()}<div class="row">${L.right ? deckBtn('gift', s.teams[L.i].name) : ''}</div>
+      <div class="row"><button class="btn btn-gold" onclick="KB2.next()">🎤 Thuyết trình phần tiếp</button><button class="btn btn-no" onclick="KB2.end()">Tổng kết</button></div>`; },
+    end:() => { const order = S().teams.slice().sort((a, b) => b.score - a.score || b.found - a.found); return `<div class="kicker">Tổng kết buổi</div><h1>🏆 <span class="team-name">${order[0] ? esc(order[0].name) : ''}</span></h1>
+      ${k.endTable([['Hạng'], ['Nhóm'], ['Điểm khác tìm được', 1], ['Điểm', 1]], order.map((t, i) => [i + 1, `<b>${esc(t.name)}</b>`, t.found, `<b>${t.score}</b>`]))}
+      <div class="row">${order[0] ? deckBtn('gift', order[0].name) : ''}</div>${k.resetBtn()}`; }
+  };
+  if (S().phase === 'making') S().phase = 'present';
+  k.render = () => { k.draw(V, null); if (S().phase === 'find' && S().findSecs && !findEnd) { findEnd = Date.now() + S().findSecs * 1000; tick(); } };
+  return Object.assign(act, { render:k.render });
+})();
+
+KITG.khacbiet = KB2; KITNS.KB2 = KB2; KB2.ns = 'KB2'; KB2.pre = 'kd';
 /* ================= ĐOÁN GIÁ (bài đăng 09) ================= */
 const DG = (() => {
   const blank = () => ({ img:'', name:'', price:'' });
@@ -8500,7 +10196,7 @@ window.__AI = AI;
 /* ---------- Khung dưới mỗi ô câu hỏi: nhặt từ ảnh + soạn thêm câu tương tự ---------- */
 const Photo = (() => {
   // textarea id -> whether that game writes a point level first ("3 | câu | đáp án")
-  const TARGETS = { 'qtext':false, 'b-qtext':false, 'd-qtext':false, 'h-qtext':false, 'p-qtext':true, 't-qtext':false, 'm-qtext':false, 'k-qtext':false, 'c-qtext':false, 'r-qtext':false, 'z-qtext':false, 'x-qtext':false, 'dg-qtext':false, 'cq-qtext':false, 'bt-qtext':false, 'gl-qtext':false, 'lg-qtext':false, 'oc-qtext':false, 'kb-qtext':false, 'tr-qtext':false, 'lm-qtext':false, 'dk-qtext':false, 'rg-qtext':false, 'dm-qtext':false, 'ns-qtext':false, 'td-qtext':false };
+  const TARGETS = { 'qtext':false, 'b-qtext':false, 'd-qtext':false, 'h-qtext':false, 'p-qtext':true, 't-qtext':false, 'm-qtext':false, 'k-qtext':false, 'c-qtext':false, 'r-qtext':false, 'z-qtext':false, 'x-qtext':false, 'tt-qtext':false, 'su-qtext':false, 'bb-qtext':false, 'mm-qtext':false, 'cs-qtext':false, 'xd-qtext':false, 'tg-qtext':false, 'dv-qtext':false, 'gv-qtext':false, 'dd-qtext':false, 'tm-qtext':false, 'dr-qtext':false, 'hc-qtext':false, 'tp-qtext':false, 'cc-qtext':false, 'th-qtext':false, 'rc-qtext':false, 'rb-qtext':false, 'vq-qtext':false, 'dx-qtext':false, 'kd-qtext':false, 'dg-qtext':false, 'cq-qtext':false, 'bt-qtext':false, 'gl-qtext':false, 'lg-qtext':false, 'oc-qtext':false, 'kb-qtext':false, 'tr-qtext':false, 'lm-qtext':false, 'dk-qtext':false, 'rg-qtext':false, 'dm-qtext':false, 'ns-qtext':false, 'td-qtext':false };
   const files = {}, undoText = {}, ctl = {};
   const val = (id, d) => { const el = document.getElementById(id); const n = el ? parseInt(el.value, 10) : NaN; return Number.isFinite(n) && n > 0 ? n : d; };
   const filled = sel => [...document.querySelectorAll(sel)].filter(x => x.value.trim()).length;
@@ -8866,7 +10562,7 @@ function qHTMLcore(q, show){
 }
 /* ---------- Ô dán câu trắc nghiệm dưới mỗi ô câu hỏi ---------- */
 const MCImport = (() => {
-  const TARGETS = { 'qtext':false, 'b-qtext':false, 'd-qtext':false, 'h-qtext':false, 'p-qtext':true, 't-qtext':false, 'm-qtext':false, 'k-qtext':false, 'c-qtext':false, 'r-qtext':false, 'z-qtext':false, 'x-qtext':false, 'dg-qtext':false, 'cq-qtext':false, 'bt-qtext':false, 'gl-qtext':false, 'lg-qtext':false, 'oc-qtext':false, 'kb-qtext':false, 'tr-qtext':false, 'lm-qtext':false, 'dk-qtext':false, 'rg-qtext':false, 'dm-qtext':false, 'ns-qtext':false, 'td-qtext':false };
+  const TARGETS = { 'qtext':false, 'b-qtext':false, 'd-qtext':false, 'h-qtext':false, 'p-qtext':true, 't-qtext':false, 'm-qtext':false, 'k-qtext':false, 'c-qtext':false, 'r-qtext':false, 'z-qtext':false, 'x-qtext':false, 'tt-qtext':false, 'su-qtext':false, 'bb-qtext':false, 'mm-qtext':false, 'cs-qtext':false, 'xd-qtext':false, 'tg-qtext':false, 'dv-qtext':false, 'gv-qtext':false, 'dd-qtext':false, 'tm-qtext':false, 'dr-qtext':false, 'hc-qtext':false, 'tp-qtext':false, 'cc-qtext':false, 'th-qtext':false, 'rc-qtext':false, 'rb-qtext':false, 'vq-qtext':false, 'dx-qtext':false, 'kd-qtext':false, 'dg-qtext':false, 'cq-qtext':false, 'bt-qtext':false, 'gl-qtext':false, 'lg-qtext':false, 'oc-qtext':false, 'kb-qtext':false, 'tr-qtext':false, 'lm-qtext':false, 'dk-qtext':false, 'rg-qtext':false, 'dm-qtext':false, 'ns-qtext':false, 'td-qtext':false };
   const parsed = {}, level = {};
   const EXAMPLE = `1. She ___ to school every day.
 A. go
@@ -9189,7 +10885,7 @@ Reply with only a JSON array like [{"i":${part[0]},"level":3}], one object per q
 /* ================= Thêm / bớt nhóm ở màn hình cài đặt ================= */
 const TeamCtl = (() => {
   // attribute on the name inputs -> [min, max] teams for that game
-  const GROUPS = { 'data-name':[2, 12], 'data-bname':[2, 12], 'data-dname':[2, 12], 'data-hname':[2, 6], 'data-pname':[2, 12], 'data-tname':[2, 12], 'data-cname':[1, 8], 'data-zname':[1, 8], 'data-dgname':[2, 12], 'data-cqname':[1, 8], 'data-btname':[1, 8], 'data-glname':[1, 6], 'data-lgname':[1, 8], 'data-ocname':[1, 8], 'data-kbname':[1, 8], 'data-trname':[1, 8], 'data-lmname':[1, 8], 'data-dkname':[2, 2], 'data-rgname':[1, 8], 'data-dmname':[1, 8], 'data-nsname':[2, 4], 'data-tdname':[1, 8], 'data-xname':[1, 8] };
+  const GROUPS = { 'data-name':[2, 12], 'data-bname':[2, 12], 'data-dname':[2, 12], 'data-hname':[2, 6], 'data-pname':[2, 12], 'data-tname':[2, 12], 'data-cname':[1, 8], 'data-zname':[1, 8], 'data-ttname':[2, 2], 'data-suname':[1, 6], 'data-bbname':[1, 6], 'data-mmname':[1, 6], 'data-csname':[1, 40], 'data-xdname':[1, 6], 'data-tgname':[1, 6], 'data-dvname':[1, 6], 'data-gvname':[1, 6], 'data-ddname':[1, 6], 'data-tmname':[1, 6], 'data-drname':[1, 6], 'data-hcname':[2, 2], 'data-tpname':[1, 6], 'data-ccname':[1, 6], 'data-thname':[1, 6], 'data-rcname':[1, 6], 'data-rbname':[1, 6], 'data-vqname':[1, 6], 'data-dxname':[1, 6], 'data-kdname':[1, 8], 'data-dgname':[2, 12], 'data-cqname':[1, 8], 'data-btname':[1, 8], 'data-glname':[1, 6], 'data-lgname':[1, 8], 'data-ocname':[1, 8], 'data-kbname':[1, 8], 'data-trname':[1, 8], 'data-lmname':[1, 8], 'data-dkname':[2, 2], 'data-rgname':[1, 8], 'data-dmname':[1, 8], 'data-nsname':[2, 4], 'data-tdname':[1, 8], 'data-xname':[1, 8] };
   const labelsOf = attr => [...document.querySelectorAll(`input[${attr}]`)].map(i => i.closest('label')).filter(Boolean);
   function sync(attr){
     const ctl = document.querySelector(`.team-ctl[data-attr="${attr}"]`); if (!ctl) return;
